@@ -7,7 +7,7 @@
   <meta name="description" content="Scrappy Dolls is the studio of artist Kanda Kay — one-of-a-kind handmade cloth dolls, each stitched by hand from quilting cottons, vintage prints, and beloved fabric remnants.">
   <link rel="canonical" href="https://scrappydolls.com/">
   <meta name="robots" content="index,follow,max-image-preview:large">
-  <meta name="theme-color" content="#c25b6f">
+  <meta name="theme-color" content="#b13e54">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -24,6 +24,11 @@
   <meta name="twitter:description" content="One-of-a-kind handmade cloth dolls, stitched by hand from quilting cottons, vintage prints, and beloved fabric remnants.">
   <meta name="twitter:image" content="https://scrappydolls.com/og-image.jpg">
 
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <!-- Structured data -->
   <script type="application/ld+json">
   {
@@ -39,9 +44,7 @@
       "name": "Kanda Kay",
       "sameAs": "https://www.facebook.com/kandakayartist/"
     },
-    "sameAs": [
-      "https://www.facebook.com/kandakayartist/"
-    ]
+    "sameAs": ["https://www.facebook.com/kandakayartist/"]
   }
   </script>
   <script type="application/ld+json">
@@ -55,254 +58,720 @@
 
   <style>
     :root {
-      --ink: #2a2126;
-      --ink-soft: #5a4a52;
-      --paper: #fdf7f3;
-      --paper-2: #f6ebe2;
-      --accent: #c25b6f;
-      --accent-dark: #9a3f53;
-      --thread: #d9b382;
-      --rule: #e7d6c8;
-      --max: 64rem;
+      /* Surfaces */
+      --paper:    #faf3ee;
+      --paper-2:  #f0e5da;
+      --paper-3:  #e9dccd;
+
+      /* Type */
+      --ink:        #1a1318;
+      --ink-soft:   #5a4a52;
+      --ink-muted:  #8a7780;
+
+      /* Accents */
+      --rose:       #b13e54;
+      --rose-dark:  #8b2d40;
+      --rose-light: #e8a3b0;
+      --sage:       #7a8568;
+      --gold:       #c9a567;
+      --thread:     #d9b382;
+
+      /* Lines & shadows */
+      --rule: #e2cfbe;
+      --rule-soft: #ede0d2;
+      --shadow-sm: 0 1px 2px rgba(26, 19, 24, 0.04);
+      --shadow-md: 0 12px 32px rgba(139, 45, 64, 0.10);
+      --shadow-lg: 0 30px 80px rgba(26, 19, 24, 0.14);
+
+      /* Typography */
+      --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      --font-sans:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+      /* Layout */
+      --max:    74rem;
+      --max-narrow: 52rem;
+      --radius: 18px;
+      --radius-lg: 28px;
     }
+
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+      font-family: var(--font-sans);
       color: var(--ink);
       background: var(--paper);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
     }
-    a { color: var(--accent-dark); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-    a:hover { color: var(--accent); }
-    h1, h2, h3 {
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      letter-spacing: -0.01em;
-      line-height: 1.15;
-      margin: 0 0 0.5em;
-    }
-    h1 { font-size: clamp(2.25rem, 5vw, 3.5rem); }
-    h2 { font-size: clamp(1.5rem, 3vw, 2.125rem); }
-    h3 { font-size: 1.125rem; }
-    p { margin: 0 0 1em; }
-    img { max-width: 100%; height: auto; display: block; }
-    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem; }
 
+    a {
+      color: var(--rose-dark);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    a:hover { color: var(--rose); }
+
+    img { max-width: 100%; height: auto; display: block; }
+
+    /* === Display type === */
+    .h-display {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-variation-settings: "opsz" 144, "SOFT" 100;
+      letter-spacing: -0.02em;
+      line-height: 1.02;
+      color: var(--ink);
+      margin: 0;
+    }
+    h1.h-display { font-size: clamp(2.75rem, 7vw, 5.5rem); }
+    h2.h-display { font-size: clamp(2rem, 4.5vw, 3.25rem); }
+
+    h3 {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-variation-settings: "opsz" 36, "SOFT" 80;
+      font-size: 1.35rem;
+      letter-spacing: -0.01em;
+      margin: 0 0 0.4rem;
+      line-height: 1.2;
+    }
+
+    p { margin: 0 0 1em; }
+
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rose);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 0 0 1.25rem;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 1.75rem;
+      height: 1px;
+      background: currentColor;
+      display: inline-block;
+    }
+
+    .lede {
+      font-family: var(--font-display);
+      font-weight: 350;
+      font-variation-settings: "opsz" 36, "SOFT" 100;
+      font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+      line-height: 1.45;
+      color: var(--ink-soft);
+      max-width: 38rem;
+    }
+
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.5rem; }
+    .wrap-narrow { max-width: var(--max-narrow); margin: 0 auto; padding: 0 1.5rem; }
+
+    /* === Header === */
     header.site {
-      padding: 1.25rem 0;
-      border-bottom: 1px dashed var(--rule);
-      background: var(--paper);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      background: color-mix(in oklab, var(--paper) 82%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--rule) 50%, transparent);
     }
     header.site .wrap {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
     }
     .brand {
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      font-weight: 700;
-      letter-spacing: 0.02em;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-variation-settings: "opsz" 36, "SOFT" 80;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
       color: var(--ink);
       text-decoration: none;
-      font-size: 1.05rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.18rem;
     }
-    .brand span { color: var(--accent); }
+    .brand em {
+      font-style: italic;
+      color: var(--rose);
+      font-weight: 400;
+    }
+    nav.primary {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
     nav.primary a {
       color: var(--ink-soft);
       text-decoration: none;
-      margin-left: 1.25rem;
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
     }
-    nav.primary a:hover { color: var(--accent); }
+    nav.primary a:hover { color: var(--ink); }
+    nav.primary .btn-mini {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      font-weight: 500;
+      font-size: 0.88rem;
+      transition: background 0.2s ease;
+    }
+    nav.primary .btn-mini:hover { background: var(--rose-dark); color: #fff; }
+    @media (max-width: 40rem) {
+      nav.primary { gap: 0.9rem; }
+      nav.primary a:not(.btn-mini) { display: none; }
+    }
 
-    .hero {
-      padding: 4rem 0 3rem;
-      background:
-        radial-gradient(ellipse at 80% 0%, #fbe1d6 0%, transparent 60%),
-        radial-gradient(ellipse at 0% 100%, #f5d9e0 0%, transparent 55%),
-        var(--paper);
-    }
-    .hero p.lede {
-      font-size: 1.2rem;
-      color: var(--ink-soft);
-      max-width: 36rem;
-    }
-    .hero-row {
-      display: grid;
-      gap: 2.5rem;
-      grid-template-columns: 1.4fr 1fr;
+    /* === Buttons === */
+    .btn {
+      display: inline-flex;
       align-items: center;
+      gap: 0.5rem;
+      padding: 0.95rem 1.5rem;
+      border-radius: 999px;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.25s ease, color 0.2s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
     }
-    @media (max-width: 48rem) {
-      .hero-row { grid-template-columns: 1fr; }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary {
+      background: var(--ink);
+      color: var(--paper);
+      box-shadow: var(--shadow-sm);
     }
-    .hero-image {
-      aspect-ratio: 1 / 1;
-      border-radius: 18px;
-      border: 1px solid var(--rule);
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(154, 63, 83, 0.08);
-      background: var(--paper-2);
+    .btn-primary:hover {
+      background: var(--rose-dark);
+      color: #fff;
+      box-shadow: var(--shadow-md);
     }
-    .hero-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--ink);
     }
+    .btn-ghost:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .btn .arrow {
+      display: inline-block;
+      transition: transform 0.25s ease;
+    }
+    .btn:hover .arrow { transform: translateX(3px); }
+
     .cta-row {
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem;
-      margin-top: 1.5rem;
+      margin-top: 2rem;
     }
-    .btn {
-      display: inline-block;
-      padding: 0.85rem 1.4rem;
-      border-radius: 999px;
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      font-weight: 600;
-      text-decoration: none;
-      font-size: 0.95rem;
-      transition: transform 0.08s ease, background 0.15s ease;
-    }
-    .btn:active { transform: translateY(1px); }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: var(--accent-dark); color: #fff; }
-    .btn-ghost {
-      background: transparent;
-      color: var(--ink);
-      border: 1px solid var(--rule);
-    }
-    .btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
 
-    section {
-      padding: 3.5rem 0;
-      border-bottom: 1px dashed var(--rule);
-    }
+    /* === Generic section === */
+    section { padding: 6rem 0; position: relative; }
     section.alt { background: var(--paper-2); }
+    section.dark { background: var(--ink); color: var(--paper); }
+    section.dark .lede,
+    section.dark p { color: color-mix(in oklab, var(--paper) 75%, transparent); }
+    section.dark h2.h-display,
+    section.dark h3 { color: var(--paper); }
 
-    .grid {
-      display: grid;
-      gap: 1.5rem;
-      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    /* Stitched dashed divider */
+    .stitched {
+      width: 100%;
+      height: 1px;
+      background-image: linear-gradient(to right, var(--rule) 50%, transparent 50%);
+      background-size: 12px 1px;
+      background-repeat: repeat-x;
+      border: none;
+      margin: 0;
     }
-    .card {
-      background: #fff;
-      border: 1px solid var(--rule);
-      border-radius: 14px;
-      padding: 1.4rem;
-      box-shadow: 0 1px 0 rgba(0,0,0,0.02);
-    }
-    .card h3 { color: var(--accent-dark); }
-    .card p { margin-bottom: 0; color: var(--ink-soft); }
 
-    .about-row {
+    /* === HERO === */
+    .hero {
+      padding: clamp(4rem, 9vw, 8rem) 0 clamp(4rem, 8vw, 7rem);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 85% 10%, color-mix(in oklab, var(--rose-light) 60%, transparent) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 5% 95%, color-mix(in oklab, var(--thread) 35%, transparent) 0%, transparent 65%),
+        var(--paper);
+      z-index: -1;
+    }
+    .hero-grid {
       display: grid;
-      gap: 2rem;
-      grid-template-columns: 1.2fr 1fr;
+      gap: clamp(2rem, 5vw, 4rem);
+      grid-template-columns: 1.25fr 1fr;
       align-items: center;
     }
-    @media (max-width: 48rem) {
-      .about-row { grid-template-columns: 1fr; }
+    @media (max-width: 52rem) {
+      .hero-grid { grid-template-columns: 1fr; }
     }
-    .about-portrait {
+    .hero-image-stack {
+      position: relative;
       aspect-ratio: 4 / 5;
-      background: var(--paper-2) url("images/doll-feature-horns.jpg") center/cover no-repeat;
-      border-radius: 18px;
+    }
+    .hero-image-stack .frame {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      transform: rotate(-1.5deg);
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .hero-image-stack:hover .frame { transform: rotate(-0.5deg) scale(1.01); }
+    .hero-image-stack .frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-image-stack .badge {
+      position: absolute;
+      bottom: -1.5rem;
+      left: -1.5rem;
+      background: var(--paper);
       border: 1px solid var(--rule);
+      border-radius: 999px;
+      padding: 0.7rem 1.25rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow: var(--shadow-md);
+      transform: rotate(-3deg);
+    }
+    .hero-image-stack .badge em {
+      color: var(--rose);
+      font-style: normal;
+      font-weight: 700;
+    }
+    @media (max-width: 52rem) {
+      .hero-image-stack { max-width: 24rem; margin: 1rem auto 2rem; }
     }
 
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px dashed var(--rule);
+      flex-wrap: wrap;
+    }
+    .hero-meta div { display: flex; flex-direction: column; gap: 0.15rem; }
+    .hero-meta .k {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 500;
+      font-variation-settings: "opsz" 36, "SOFT" 100;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .hero-meta .v {
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* === ABOUT === */
+    .about-grid {
+      display: grid;
+      gap: clamp(2.5rem, 6vw, 5rem);
+      grid-template-columns: 1fr 1.1fr;
+      align-items: center;
+    }
+    @media (max-width: 52rem) {
+      .about-grid { grid-template-columns: 1fr; }
+    }
+    .about-portrait {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--paper-3) url("images/doll-feature-horns.jpg") center/cover no-repeat;
+      box-shadow: var(--shadow-lg);
+      transform: rotate(1deg);
+    }
+    .about-portrait::after {
+      content: "";
+      position: absolute;
+      inset: 0.6rem;
+      border: 1px dashed color-mix(in oklab, var(--paper) 70%, transparent);
+      border-radius: calc(var(--radius-lg) - 8px);
+      pointer-events: none;
+    }
+    .pull-quote {
+      font-family: var(--font-display);
+      font-weight: 350;
+      font-variation-settings: "opsz" 144, "SOFT" 100;
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+      line-height: 1.3;
+      color: var(--ink);
+      margin: 1.5rem 0 0;
+      padding-left: 1.5rem;
+      border-left: 2px solid var(--rose);
+    }
+    .pull-quote em {
+      color: var(--rose);
+      font-style: italic;
+    }
+
+    /* === PROCESS === */
+    .process {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 3rem;
+      counter-reset: step;
+    }
+    @media (max-width: 60rem) {
+      .process { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 32rem) {
+      .process { grid-template-columns: 1fr; }
+    }
+    .step {
+      position: relative;
+      padding: 2rem 1.5rem 1.75rem;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .step:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--rose-light);
+    }
+    .step::before {
+      counter-increment: step;
+      content: "0" counter(step);
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-style: italic;
+      font-variation-settings: "opsz" 36, "SOFT" 100;
+      font-size: 2.25rem;
+      color: var(--rose);
+      display: block;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+    .step p {
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    /* === MARQUEE === */
+    .marquee {
+      padding: 3.5rem 0;
+      background: var(--ink);
+      overflow: hidden;
+      position: relative;
+      border-top: 1px solid color-mix(in oklab, var(--paper) 8%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--paper) 8%, transparent);
+    }
+    .marquee-track {
+      display: flex;
+      gap: 1.25rem;
+      width: max-content;
+      animation: marquee 60s linear infinite;
+    }
+    .marquee:hover .marquee-track { animation-play-state: paused; }
+    .marquee-track img {
+      height: 16rem;
+      width: auto;
+      border-radius: var(--radius);
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .marquee-track { animation: none; }
+    }
+
+    /* === GALLERY === */
+    .gallery-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+    .gallery-head p {
+      max-width: 28rem;
+      color: var(--ink-soft);
+      margin: 0;
+    }
     .gallery {
       display: grid;
-      gap: 1rem;
-      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+      gap: 1.25rem;
+      grid-template-columns: repeat(6, 1fr);
+      grid-auto-rows: 13rem;
     }
     .gallery figure {
       margin: 0;
-      border-radius: 14px;
+      border-radius: var(--radius);
       overflow: hidden;
-      background: #fff;
-      border: 1px solid var(--rule);
+      background: var(--paper-3);
+      position: relative;
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+      cursor: zoom-in;
     }
-    .gallery img {
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
+    .gallery figure:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .gallery figure img {
       width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    .gallery figcaption {
-      padding: 0.65rem 0.85rem;
-      font-family: "Helvetica Neue", Arial, sans-serif;
+    .gallery figure:hover img { transform: scale(1.04); }
+    /* Asymmetric layout */
+    .gallery figure:nth-child(1) { grid-column: span 3; grid-row: span 2; }   /* big featured */
+    .gallery figure:nth-child(2) { grid-column: span 3; grid-row: span 1; }
+    .gallery figure:nth-child(3) { grid-column: span 2; grid-row: span 1; }
+    .gallery figure:nth-child(4) { grid-column: span 1; grid-row: span 1; }
+    .gallery figure:nth-child(5) { grid-column: span 2; grid-row: span 2; }
+    .gallery figure:nth-child(6) { grid-column: span 2; grid-row: span 1; }
+    .gallery figure:nth-child(7) { grid-column: span 2; grid-row: span 1; }
+    .gallery figure:nth-child(8) { grid-column: span 3; grid-row: span 2; }
+    .gallery figure:nth-child(9) { grid-column: span 3; grid-row: span 2; }
+    @media (max-width: 60rem) {
+      .gallery {
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: 11rem;
+      }
+      .gallery figure:nth-child(n) { grid-column: span 1; grid-row: span 1; }
+      .gallery figure:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+    }
+    @media (max-width: 30rem) {
+      .gallery { grid-template-columns: 1fr; }
+      .gallery figure:nth-child(n) { grid-column: span 1; grid-row: span 1; }
+    }
+
+    /* === TESTIMONIAL === */
+    .testimonial {
+      text-align: center;
+    }
+    .testimonial blockquote {
+      font-family: var(--font-display);
+      font-weight: 350;
+      font-variation-settings: "opsz" 144, "SOFT" 100;
+      font-style: italic;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      line-height: 1.3;
+      max-width: 44rem;
+      margin: 0 auto 2rem;
+      color: var(--ink);
+      position: relative;
+    }
+    .testimonial blockquote::before,
+    .testimonial blockquote::after {
+      font-family: var(--font-display);
+      color: var(--rose);
+      opacity: 0.5;
+      font-size: 4rem;
+      line-height: 0;
+      vertical-align: -0.4em;
+    }
+    .testimonial blockquote::before { content: "\201C"; margin-right: 0.15em; }
+    .testimonial blockquote::after { content: "\201D"; margin-left: 0.05em; }
+    .testimonial cite {
+      font-style: normal;
+      font-family: var(--font-sans);
       font-size: 0.85rem;
-      color: var(--ink-soft);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      font-weight: 500;
     }
-details.faq {
-      border-top: 1px solid var(--rule);
-      padding: 1rem 0;
+
+    /* === FAQ === */
+    details.faq {
+      border-bottom: 1px solid var(--rule);
+      padding: 1.4rem 0;
     }
-    details.faq:last-of-type { border-bottom: 1px solid var(--rule); }
+    details.faq:first-of-type { border-top: 1px solid var(--rule); }
     details.faq summary {
       cursor: pointer;
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      font-weight: 600;
-      font-size: 1.05rem;
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-variation-settings: "opsz" 36, "SOFT" 80;
+      font-size: 1.2rem;
       list-style: none;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
+      color: var(--ink);
+      transition: color 0.2s ease;
     }
+    details.faq summary:hover { color: var(--rose); }
     details.faq summary::-webkit-details-marker { display: none; }
     details.faq summary::after {
-      content: "+";
-      color: var(--accent);
-      font-size: 1.5rem;
-      line-height: 1;
+      content: "";
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 999px;
+      background:
+        linear-gradient(currentColor, currentColor) center/0.7rem 1px no-repeat,
+        linear-gradient(currentColor, currentColor) center/1px 0.7rem no-repeat,
+        color-mix(in oklab, var(--rose) 10%, transparent);
+      color: var(--rose);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      flex-shrink: 0;
     }
-    details.faq[open] summary::after { content: "–"; }
-    details.faq p { margin: 0.75rem 0 0; color: var(--ink-soft); }
-
-    .join-card {
-      background: #fff;
-      border: 1px solid var(--rule);
-      border-radius: 18px;
-      padding: 2rem;
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: 1fr auto;
-      align-items: center;
+    details.faq[open] summary::after {
+      transform: rotate(45deg);
+      background:
+        linear-gradient(currentColor, currentColor) center/0.7rem 1px no-repeat,
+        linear-gradient(currentColor, currentColor) center/1px 0.7rem no-repeat,
+        color-mix(in oklab, var(--rose) 18%, transparent);
     }
-    @media (max-width: 40rem) {
-      .join-card { grid-template-columns: 1fr; }
-    }
-    .join-card h2 { margin-bottom: 0.25rem; }
-    .join-card p { margin: 0; color: var(--ink-soft); }
-
-    footer.site {
-      padding: 2.5rem 0 3rem;
+    details.faq p {
+      margin: 1rem 0 0;
       color: var(--ink-soft);
-      font-family: "Helvetica Neue", Arial, sans-serif;
+      max-width: 44rem;
+    }
+
+    /* === CTA / FOLLOW === */
+    .follow-card {
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: var(--radius-lg);
+      padding: clamp(2.5rem, 5vw, 4rem);
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: 1.4fr 1fr;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .follow-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 50% 60% at 90% 0%, color-mix(in oklab, var(--rose) 35%, transparent), transparent 70%);
+      pointer-events: none;
+    }
+    .follow-card > * { position: relative; }
+    .follow-card h2 {
+      color: var(--paper);
+      margin: 0 0 0.5rem;
+    }
+    .follow-card p {
+      color: color-mix(in oklab, var(--paper) 75%, transparent);
+      margin: 0;
+      max-width: 28rem;
+    }
+    .follow-card .btn-primary {
+      background: var(--paper);
+      color: var(--ink);
+      justify-self: end;
+    }
+    .follow-card .btn-primary:hover {
+      background: var(--rose-light);
+      color: var(--ink);
+    }
+    @media (max-width: 48rem) {
+      .follow-card { grid-template-columns: 1fr; }
+      .follow-card .btn-primary { justify-self: start; }
+    }
+
+    /* === FOOTER === */
+    footer.site {
+      padding: 4rem 0 3rem;
+      background: var(--paper-2);
+      color: var(--ink-soft);
       font-size: 0.9rem;
     }
     footer.site .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      justify-content: space-between;
-      align-items: center;
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: 1fr auto;
+      align-items: end;
     }
-    footer.site a { color: var(--ink-soft); }
-    footer.site a:hover { color: var(--accent); }
+    @media (max-width: 40rem) {
+      footer.site .row { grid-template-columns: 1fr; }
+    }
+    footer.site .sig {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-variation-settings: "opsz" 144, "SOFT" 100;
+      font-size: 1.5rem;
+      color: var(--ink);
+      margin: 0 0 0.5rem;
+      line-height: 1;
+    }
+    footer.site a {
+      color: var(--ink);
+      font-weight: 500;
+      text-decoration: none;
+      border-bottom: 1px solid var(--rule);
+      transition: border-color 0.2s ease;
+    }
+    footer.site a:hover { border-color: var(--rose); }
+    footer.site .legal { font-size: 0.8rem; color: var(--ink-muted); }
 
+    /* === Skip link === */
     .skip {
       position: absolute; left: -9999px; top: auto;
     }
     .skip:focus {
-      position: static; padding: 0.5rem 1rem; background: var(--accent); color: #fff;
+      position: static;
+      padding: 0.5rem 1rem;
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    /* === Reveal-on-scroll === */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
     }
   </style>
 </head>
@@ -311,78 +780,136 @@ details.faq {
 
   <header class="site">
     <div class="wrap">
-      <a class="brand" href="/">scrappy<span>dolls</span></a>
+      <a class="brand" href="/">scrappy<em>dolls</em></a>
       <nav class="primary" aria-label="Primary">
         <a href="#about">About</a>
+        <a href="#process">Process</a>
         <a href="#gallery">Gallery</a>
         <a href="#faq">FAQ</a>
-        <a href="#follow">Follow</a>
+        <a class="btn-mini" href="https://www.facebook.com/kandakayartist/" rel="noopener">Follow</a>
       </nav>
     </div>
   </header>
 
   <main id="main">
-    <section class="hero" aria-labelledby="hero-title">
+
+    <!-- HERO -->
+    <section class="hero">
       <div class="wrap">
-        <div class="hero-row">
+        <div class="hero-grid">
           <div>
-            <h1 id="hero-title">Handmade cloth dolls, stitched one at a time.</h1>
-            <p class="lede">Scrappy Dolls is the studio of artist Kanda Kay — small, soft dolls hand-cut and hand-sewn from quilting cottons, vintage prints, and fabric remnants too lovely to throw away. No two are alike.</p>
+            <p class="eyebrow">Handmade by Kanda Kay</p>
+            <h1 class="h-display">Cloth dolls,<br>stitched <em style="color: var(--rose); font-style: italic; font-weight: 400;">one&nbsp;at&nbsp;a&nbsp;time</em>.</h1>
+            <p class="lede" style="margin-top: 1.75rem;">Scrappy Dolls is a small studio of one-of-a-kind cloth dolls — each hand-cut and hand-sewn from quilting cottons, vintage prints, and beloved fabric remnants too lovely to throw away.</p>
             <div class="cta-row">
-              <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">Follow on Facebook</a>
+              <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">
+                Follow on Facebook <span class="arrow" aria-hidden="true">→</span>
+              </a>
               <a class="btn btn-ghost" href="#gallery">See the dolls</a>
             </div>
+            <div class="hero-meta">
+              <div>
+                <span class="k">100%</span>
+                <span class="v">Handmade</span>
+              </div>
+              <div>
+                <span class="k">1 of 1</span>
+                <span class="v">Every doll</span>
+              </div>
+              <div>
+                <span class="k">∞</span>
+                <span class="v">Stitches of love</span>
+              </div>
+            </div>
           </div>
-          <div class="hero-image">
-            <img src="images/doll-closeup-hero.jpg" alt="Close-up of a handmade Scrappy Doll by Kanda Kay — a burlap face with embroidered features, button eyes, and yarn hair" width="800" height="800" fetchpriority="high">
+          <div class="hero-image-stack reveal">
+            <div class="frame">
+              <img src="images/doll-closeup-hero.jpg" alt="Close-up of a handmade Scrappy Doll by Kanda Kay — a burlap face with embroidered features, button eyes, and yarn hair" width="800" height="800" fetchpriority="high">
+            </div>
+            <div class="badge">No two <em>alike</em></div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="about" aria-labelledby="about-title">
+    <!-- ABOUT -->
+    <section id="about">
       <div class="wrap">
-        <div class="about-row">
+        <div class="about-grid">
+          <div class="about-portrait reveal" role="img" aria-label="A handmade Scrappy Doll by Kanda Kay — brown curly hair, a poppy headband, and a green floral dress"></div>
+          <div class="reveal">
+            <p class="eyebrow">The Studio</p>
+            <h2 class="h-display">Made by hand.<br>Made <em style="color: var(--rose); font-style: italic; font-weight: 400;">to keep</em>.</h2>
+            <p class="pull-quote">Every Scrappy Doll begins as a pile of fabric — quilt offcuts, an old pillowcase, the last good piece of a favorite shirt.</p>
+            <p style="margin-top: 1.5rem; color: var(--ink-soft);">Kanda Kay cuts, pieces, and stitches each doll by hand, finishing with embroidered features and a name only that doll will ever wear. The result is a small, sturdy companion — warm-feeling, washable, and unmistakably one of a kind.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section id="process" class="alt">
+      <div class="wrap">
+        <div class="reveal" style="max-width: 36rem;">
+          <p class="eyebrow">The Process</p>
+          <h2 class="h-display">From scraps<br>to <em style="color: var(--rose); font-style: italic; font-weight: 400;">heirloom</em>.</h2>
+        </div>
+        <div class="process">
+          <article class="step reveal">
+            <h3>Gather</h3>
+            <p>Vintage prints, quilt remnants, and meaningful scraps — every doll begins with fabric that already has a story.</p>
+          </article>
+          <article class="step reveal">
+            <h3>Cut &amp; piece</h3>
+            <p>Pattern pieces are hand-cut, then arranged and pieced into a unique combination of color, weight, and texture.</p>
+          </article>
+          <article class="step reveal">
+            <h3>Stitch</h3>
+            <p>Each seam is sewn by hand for strength and character. Faces are embroidered with thread; nothing is glued or printed.</p>
+          </article>
+          <article class="step reveal">
+            <h3>Finish</h3>
+            <p>Hair, jewelry, dresses, and details are added one at a time until a doll has clearly arrived as itself.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <section class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <img src="images/doll-yellow-yarn.jpg" alt="">
+        <img src="images/doll-rainbow-hair.jpg" alt="">
+        <img src="images/doll-feature-horns.jpg" alt="">
+        <img src="images/doll-patriotic.jpg" alt="">
+        <img src="images/doll-route-66.jpg" alt="">
+        <img src="images/doll-orange-dress.jpg" alt="">
+        <img src="images/doll-owl.jpg" alt="">
+        <img src="images/doll-mouse-pair.jpg" alt="">
+        <img src="images/doll-dog-pair.jpg" alt="">
+        <!-- Duplicates for seamless loop -->
+        <img src="images/doll-yellow-yarn.jpg" alt="">
+        <img src="images/doll-rainbow-hair.jpg" alt="">
+        <img src="images/doll-feature-horns.jpg" alt="">
+        <img src="images/doll-patriotic.jpg" alt="">
+        <img src="images/doll-route-66.jpg" alt="">
+        <img src="images/doll-orange-dress.jpg" alt="">
+        <img src="images/doll-owl.jpg" alt="">
+        <img src="images/doll-mouse-pair.jpg" alt="">
+        <img src="images/doll-dog-pair.jpg" alt="">
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery">
+      <div class="wrap">
+        <div class="gallery-head reveal">
           <div>
-            <h2 id="about-title">Made by hand. Made to keep.</h2>
-            <p>Every Scrappy Doll begins as a pile of fabric — quilt offcuts, an old pillowcase, the last good piece of a favorite shirt. Kanda Kay cuts, pieces, and stitches each doll by hand, finishing with embroidered features and a name only that doll will ever wear.</p>
-            <p>The result is a small, sturdy companion: warm-feeling, washable, and unmistakably one of a kind.</p>
-            <!-- TODO: Replace the two paragraphs above with Kanda's actual bio / artist statement when ready. -->
+            <p class="eyebrow">Recent Work</p>
+            <h2 class="h-display">A roster of <em style="color: var(--rose); font-style: italic; font-weight: 400;">characters</em>.</h2>
           </div>
-          <div class="about-portrait" role="img" aria-label="A handmade Scrappy Doll by Kanda Kay — brown curly hair, a poppy headband, and a green floral dress"></div>
+          <p>A look at recent Scrappy Dolls. New work appears first on Facebook — follow along to see them as they're finished.</p>
         </div>
-      </div>
-    </section>
-
-    <section id="what" class="alt" aria-labelledby="what-title">
-      <div class="wrap">
-        <h2 id="what-title">What makes a Scrappy Doll different</h2>
-        <div class="grid" style="margin-top: 2rem;">
-          <article class="card">
-            <h3>One-of-a-kind</h3>
-            <p>Every doll is a unique combination of fabrics, faces, and finishings. You'll never see another exactly like yours.</p>
-          </article>
-          <article class="card">
-            <h3>Made from fabric with a story</h3>
-            <p>Vintage prints, quilt remnants, and rescued scraps — each doll carries the texture and history of the cloth it came from.</p>
-          </article>
-          <article class="card">
-            <h3>Hand-stitched, built to last</h3>
-            <p>Cut, sewn, stuffed, and finished by hand. Sturdy seams and embroidered features mean these dolls hold up to real love.</p>
-          </article>
-          <article class="card">
-            <h3>Low waste, high heart</h3>
-            <p>Sewing scrappy gives beautiful fabric a second life — the kind of object that gets prettier the longer you have it.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="gallery" aria-labelledby="gallery-title">
-      <div class="wrap">
-        <h2 id="gallery-title">Recent dolls</h2>
-        <p style="color: var(--ink-soft); max-width: 36rem;">A look at recent Scrappy Dolls. New work appears first on Facebook.</p>
-
         <div class="gallery">
           <figure>
             <img src="images/doll-collection.jpg" alt="A wall display of dozens of handmade Scrappy Dolls by Kanda Kay, each one one-of-a-kind" loading="lazy" width="1200" height="1200">
@@ -415,9 +942,23 @@ details.faq {
       </div>
     </section>
 
-    <section id="faq" class="alt" aria-labelledby="faq-title">
-      <div class="wrap" style="max-width: 48rem;">
-        <h2 id="faq-title">Frequently asked questions</h2>
+    <!-- TESTIMONIAL -->
+    <!-- TODO: confirm with user before publishing — testimonial copy is the user's own words about Kanda; attribution placeholder needs sign-off. -->
+    <section class="testimonial alt">
+      <div class="wrap-narrow reveal">
+        <p class="eyebrow" style="justify-content: center;">A Word From a Collector</p>
+        <blockquote>This artist is magic. I have several pieces, including one she made on commission. She is amazing and talented — one of a kind.</blockquote>
+        <cite>Jeremiah Barber, son &amp; collector</cite>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <div class="wrap-narrow">
+        <div class="reveal" style="margin-bottom: 2.5rem;">
+          <p class="eyebrow">Frequently Asked</p>
+          <h2 class="h-display">Good <em style="color: var(--rose); font-style: italic; font-weight: 400;">questions</em>.</h2>
+        </div>
         <!-- TODO: Confirm answers with Kanda before publishing — these are reasonable defaults, not commitments. -->
         <details class="faq">
           <summary>Are dolls available to purchase?</summary>
@@ -435,32 +976,63 @@ details.faq {
           <summary>How do I care for a Scrappy Doll?</summary>
           <p>Spot clean with a damp cloth and mild soap. For a deeper clean, hand-wash gently in cool water and reshape while damp; lay flat to dry.</p>
         </details>
+        <details class="faq">
+          <summary>How long does it take to make a doll?</summary>
+          <p>It depends on the fabric, the character, and the level of detail. A doll can take anywhere from an afternoon to several days — and each one tells you when it's done.</p>
+        </details>
       </div>
     </section>
 
-    <section id="follow" aria-labelledby="follow-title">
+    <!-- FOLLOW -->
+    <section id="follow">
       <div class="wrap">
-        <div class="join-card">
+        <div class="follow-card reveal">
           <div>
-            <h2 id="follow-title">See new dolls as they're finished.</h2>
-            <p>Follow Scrappy Dolls on Facebook for new work, sneak peeks, and the stories behind the fabric.</p>
+            <p class="eyebrow" style="color: var(--rose-light);">Stay close</p>
+            <h2 class="h-display">See new dolls<br>as they're <em style="color: var(--rose-light); font-style: italic; font-weight: 400;">finished</em>.</h2>
+            <p style="margin-top: 1rem;">Follow Scrappy Dolls on Facebook for new work, sneak peeks of what's on the table, and the stories behind the fabric.</p>
           </div>
-          <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">Follow on Facebook</a>
+          <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">
+            Follow on Facebook <span class="arrow" aria-hidden="true">→</span>
+          </a>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="site">
-    <div class="wrap row">
-      <div>&copy; <span id="y"></span> Scrappy Dolls by Kanda Kay. Made by hand.</div>
-      <div>
-        <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a>
+    <div class="wrap">
+      <div class="row">
+        <div>
+          <p class="sig">Scrappy Dolls</p>
+          <p style="margin: 0;">Handmade cloth dolls by <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Kanda Kay</a>.</p>
+        </div>
+        <div style="text-align: right;">
+          <p style="margin: 0 0 0.5rem;"><a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a></p>
+          <p class="legal">&copy; <span id="y"></span> Scrappy Dolls. Made by hand.</p>
+        </div>
       </div>
     </div>
   </footer>
 
-  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Reveal-on-scroll
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible');
+            io.unobserve(e.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    } else {
+      document.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-visible'));
+    }
+  </script>
 
   <!-- FAQ structured data -->
   <script type="application/ld+json">
@@ -498,6 +1070,14 @@ details.faq {
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Spot clean with a damp cloth and mild soap. For a deeper clean, hand-wash gently in cool water and reshape while damp; lay flat to dry."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How long does it take to make a doll?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "It depends on the fabric, the character, and the level of detail. A doll can take anywhere from an afternoon to several days — and each one tells you when it's done."
         }
       }
     ]
