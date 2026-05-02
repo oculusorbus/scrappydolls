@@ -55,12 +55,28 @@
         "@id": "https://scrappydolls.com/#business",
         "name": "Scrappy Dolls",
         "alternateName": "Scrappy Dolls by Kanda Kay",
-        "description": "Handmade cloth dolls and custom memory dolls by artist Kanda Kay. One-of-a-kind keepsakes stitched from quilting cottons, vintage prints, and fabric remnants.",
+        "description": "Handmade cloth dolls and custom memory dolls by artist Kanda Kay, based in San Antonio, Texas. One-of-a-kind keepsakes stitched from quilting cottons, vintage prints, and fabric remnants.",
         "slogan": "Cloth dolls, stitched one at a time.",
         "url": "https://scrappydolls.com/",
         "image": "https://scrappydolls.com/images/og-image.jpg",
         "logo": "https://scrappydolls.com/favicon-192.png",
         "founder": { "@id": "https://scrappydolls.com/#kanda" },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "San Antonio",
+          "addressRegion": "TX",
+          "addressCountry": "US"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 29.4252,
+          "longitude": -98.4946
+        },
+        "areaServed": [
+          { "@type": "City", "name": "San Antonio" },
+          { "@type": "State", "name": "Texas" },
+          { "@type": "Country", "name": "United States" }
+        ],
         "knowsAbout": [
           "Handmade cloth dolls",
           "Memory dolls",
@@ -94,8 +110,17 @@
         "@id": "https://scrappydolls.com/#kanda",
         "name": "Kanda Kay",
         "jobTitle": "Doll Artist",
-        "description": "Artist behind Scrappy Dolls. Each doll is hand-cut and hand-stitched from quilting cottons, vintage prints, and beloved fabric remnants.",
+        "description": "Artist behind Scrappy Dolls, based in San Antonio, Texas. Each doll is hand-cut and hand-stitched from quilting cottons, vintage prints, and beloved fabric remnants.",
         "url": "https://scrappydolls.com/",
+        "homeLocation": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "San Antonio",
+            "addressRegion": "TX",
+            "addressCountry": "US"
+          }
+        },
         "worksFor": { "@id": "https://scrappydolls.com/#business" },
         "sameAs": ["https://www.facebook.com/kandakayartist/"]
       },
@@ -1144,7 +1169,7 @@
         </div>
         <div style="text-align: right;">
           <p style="margin: 0 0 0.5rem;"><a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a></p>
-          <p class="legal">&copy; <span id="y"></span> Scrappy Dolls. Made by hand.</p>
+          <p class="legal">&copy; <span id="y"></span> Scrappy Dolls. Made by hand in San Antonio, Texas.</p>
         </div>
       </div>
     </div>
