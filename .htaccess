@@ -1,0 +1,27 @@
+# Use index.html when present, else index.php
+DirectoryIndex index.html index.php
+
+# Block access to dotfiles (.htaccess, .git, etc.)
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+# Block direct access to sensitive directories (also enforced by their own .htaccess)
+RedirectMatch 403 ^/(config|lib|sql|vendor)(/|$)
+
+# Don't expose composer files if they end up uploaded
+<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|\.env(\..*)?)$">
+  Require all denied
+</FilesMatch>
+
+# Force HTTPS (PayPal webhooks require it). Comment out in local dev.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+</IfModule>
+
+# Sensible defaults
+ServerSignature Off
+Options -Indexes

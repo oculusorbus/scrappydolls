@@ -1,3 +1,14 @@
 ImageAssistant_Batch_Image_Downloader/
 ImageAssistant_Batch_Image_Downloader1/
 .DS_Store
+
+# Secrets
+/config/config.php
+
+# Uploaded product images (committed metadata in DB, not files)
+/uploads/*
+!/uploads/.htaccess
+!/uploads/.gitkeep
+
+# Composer (if used later)
+/vendor/

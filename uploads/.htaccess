@@ -1,0 +1,18 @@
+# Block direct PHP execution from /uploads (defense-in-depth)
+<FilesMatch "\.(php|phtml|phar|pl|py|cgi|sh|asp|aspx|jsp)$">
+  Require all denied
+</FilesMatch>
+
+# Disable any fancy handling — serve as files
+RemoveHandler .php .phtml .phar
+RemoveType .php .phtml .phar
+
+# No directory listing
+Options -Indexes -ExecCGI
+
+# Allow cross-origin loading of images (e.g. from PayPal previews)
+<IfModule mod_headers.c>
+  <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+</IfModule>
