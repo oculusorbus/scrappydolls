@@ -56,12 +56,22 @@ try {
         $upd = $pdo->prepare("UPDATE products SET status='sold', sold_at=NOW() WHERE id=:id AND status='available'");
         $upd->execute([':id' => $product['id']]);
 
+        // Pull UTMs/session attribution from the buyer's session if we recorded an intent
+        $attr = null;
+        $intentSel = $pdo->prepare('SELECT utm_source, utm_medium, utm_campaign, session_hash FROM order_intents WHERE paypal_order_id = :p ORDER BY id DESC LIMIT 1');
+        $intentSel->execute([':p' => $orderId]);
+        $attr = $intentSel->fetch() ?: null;
+
+        $ref = tracking_referrer();
+
         $ins = $pdo->prepare('
             INSERT INTO orders
                 (product_id, paypal_order_id, paypal_capture_id, amount_cents, currency,
-                 customer_email, customer_name, shipping_address, status, paid_at)
+                 customer_email, customer_name, shipping_address, status, paid_at,
+                 utm_source, utm_medium, utm_campaign, session_hash, referrer_host)
             VALUES
-                (:pid, :poid, :pcid, :amt, :cur, :email, :name, :ship, :status, NOW())
+                (:pid, :poid, :pcid, :amt, :cur, :email, :name, :ship, :status, NOW(),
+                 :usrc, :umed, :ucamp, :sh, :rh)
         ');
         $ins->execute([
             ':pid'    => $product['id'],
@@ -73,9 +83,15 @@ try {
             ':name'   => $payer['name'],
             ':ship'   => $shipping ? json_encode($shipping) : null,
             ':status' => 'paid',
+            ':usrc'   => $attr['utm_source']   ?? null,
+            ':umed'   => $attr['utm_medium']   ?? null,
+            ':ucamp'  => $attr['utm_campaign'] ?? null,
+            ':sh'     => $attr['session_hash'] ?? tracking_session_hash(),
+            ':rh'     => $ref['host'] ?? null,
         ]);
         $newOrderId = (int)$pdo->lastInsertId();
         $pdo->commit();
+        track_intent_captured($orderId);
     } catch (Throwable $e) {
         $pdo->rollBack();
         throw $e;

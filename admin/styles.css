@@ -263,3 +263,142 @@ td.actions a,td.actions button{margin-left:.4rem}
 .kv{display:grid;grid-template-columns:8rem 1fr;gap:.5rem 1rem;font-size:.92rem}
 .kv dt{color:var(--ink-muted);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
 .kv dd{margin:0}
+
+/* === Reports === */
+.range-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.75rem}
+.range-tabs a{
+  padding:.45rem .9rem;border-radius:999px;
+  font-size:.85rem;font-weight:500;text-decoration:none;
+  color:var(--ink-soft);border:1px solid var(--rule);background:var(--paper);
+  transition:all .15s ease;
+}
+.range-tabs a:hover{color:var(--ink);border-color:var(--ink)}
+.range-tabs a.is-active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+.kpi-grid{
+  display:grid;gap:1rem;
+  grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));
+  margin-bottom:2rem;
+}
+.kpi{
+  background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius);
+  padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:.35rem;
+}
+.kpi .label{
+  font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-muted);font-weight:600;
+}
+.kpi .value{
+  font-family:var(--font-display);font-weight:500;
+  font-size:1.85rem;line-height:1;letter-spacing:-.02em;color:var(--ink);
+}
+.kpi .delta{
+  font-size:.78rem;font-weight:600;display:inline-flex;gap:.3rem;align-items:center;
+}
+.kpi .delta.up   {color:var(--green)}
+.kpi .delta.down {color:var(--red)}
+.kpi .delta.flat {color:var(--ink-muted)}
+.kpi .sub{font-size:.78rem;color:var(--ink-muted)}
+
+.report-grid{display:grid;gap:1.25rem;margin-bottom:1.5rem}
+.report-grid.cols-2{grid-template-columns:1fr 1fr}
+.report-grid.cols-3{grid-template-columns:1.4fr 1fr}
+@media (max-width:55rem){.report-grid.cols-2,.report-grid.cols-3{grid-template-columns:1fr}}
+
+.report-card{
+  background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius);
+  padding:1.5rem;
+}
+.report-card h2{
+  margin:0 0 .25rem;font-family:var(--font-display);font-weight:500;
+  font-size:1.2rem;letter-spacing:-.005em;
+}
+.report-card .h-sub{
+  font-size:.82rem;color:var(--ink-muted);margin:0 0 1.1rem;
+}
+.report-card .chart-host{position:relative;height:18rem}
+.report-card .chart-host.tall{height:22rem}
+
+/* Funnel */
+.funnel{display:flex;flex-direction:column;gap:.6rem;margin-top:.5rem}
+.funnel .step{position:relative;background:var(--paper-2);border-radius:8px;overflow:hidden}
+.funnel .step .fill{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,var(--rose) 0%,var(--rose-dark) 100%);
+  opacity:.92;
+  transition:width .6s cubic-bezier(.2,.8,.2,1);
+}
+.funnel .step .row{
+  position:relative;display:flex;justify-content:space-between;align-items:center;
+  padding:.85rem 1rem;color:var(--ink);font-weight:500;
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+}
+.funnel .step.dark .row{color:#fff;text-shadow:none}
+.funnel .step .label{font-size:.95rem}
+.funnel .step .count{font-family:var(--font-display);font-weight:500;font-size:1.1rem}
+.funnel .step .conv{font-size:.78rem;color:var(--ink-muted);margin-left:.5rem;font-weight:500}
+.funnel .step.dark .conv{color:rgba(255,255,255,.78)}
+
+/* Bar lists (top states / channels) */
+.bar-list{display:flex;flex-direction:column;gap:.65rem;margin-top:.5rem}
+.bar-list .bar{
+  display:grid;grid-template-columns:9rem 1fr 4.5rem;gap:.75rem;align-items:center;
+  font-size:.9rem;
+}
+.bar-list .bar .label{color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-list .bar .track{background:var(--paper-2);border-radius:999px;height:.55rem;position:relative;overflow:hidden}
+.bar-list .bar .track .fill{
+  position:absolute;left:0;top:0;bottom:0;
+  background:linear-gradient(90deg,var(--rose-light),var(--rose));
+  border-radius:999px;
+  transition:width .4s ease;
+}
+.bar-list .bar .val{text-align:right;color:var(--ink-soft);font-variant-numeric:tabular-nums;font-size:.85rem}
+
+/* Insights tile */
+.insights{
+  background:var(--ink);color:var(--paper);
+  border-radius:var(--radius);padding:1.5rem 1.75rem;margin-bottom:1.25rem;
+  position:relative;overflow:hidden;
+}
+.insights::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 50% 60% at 95% 0%,color-mix(in oklab,var(--rose) 35%, transparent),transparent 70%);
+}
+.insights h2{
+  position:relative;margin:0 0 1rem;font-family:var(--font-display);
+  font-weight:500;font-size:1.2rem;color:var(--paper);
+}
+.insights ul{position:relative;list-style:none;padding:0;margin:0;display:grid;gap:.6rem}
+.insights li{
+  display:flex;gap:.7rem;align-items:flex-start;font-size:.95rem;
+  color:color-mix(in oklab,var(--paper) 90%, transparent);line-height:1.5;
+}
+.insights li::before{
+  content:"";display:block;width:.5rem;height:.5rem;border-radius:999px;
+  background:var(--rose-light);flex-shrink:0;margin-top:.5rem;
+}
+.insights strong{color:var(--paper);font-weight:600}
+
+/* Top dolls table tweaks */
+.report-card table{font-size:.9rem}
+.report-card th{background:transparent;padding:.5rem .75rem .65rem;border-bottom:1px solid var(--rule)}
+.report-card td{padding:.65rem .75rem}
+
+/* Empty state for reports */
+.report-empty{
+  text-align:center;padding:3rem 1rem;color:var(--ink-muted);
+}
+
+/* Operations strip */
+.ops-strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));
+  gap:1.25rem;
+}
+.ops-strip .ops-stat .v{
+  font-family:var(--font-display);font-weight:500;font-size:1.6rem;line-height:1;color:var(--ink);
+}
+.ops-strip .ops-stat .l{
+  font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);
+  font-weight:600;margin-top:.45rem;
+}

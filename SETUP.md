@@ -34,6 +34,11 @@ Self-contained PHP/MySQL e-commerce for Kanda's dolls, with a public shop, an ad
    mysql -u <user> -p scrappydolls < sql/schema.sql
    ```
    Or paste the contents of `sql/schema.sql` into phpMyAdmin → SQL.
+4. Run the migrations in order (numbered files in `sql/migrations/`):
+   ```bash
+   mysql -u <user> -p scrappydolls < sql/migrations/002_add_analytics.sql
+   ```
+   Migrations are additive — safe to run on an already-populated DB. If you set up before this migration existed, run it now to enable Reports.
 
 ## Step 2 — Config
 
@@ -125,6 +130,44 @@ If `webhook_id` is empty, the webhook endpoint refuses all requests (signature v
 
 **Backup**: at minimum, `mysqldump` the database weekly and back up `/uploads/` to S3 or similar.
 
+## Reports & analytics (`/admin/reports.php`)
+
+Once orders start flowing, the Reports page surfaces:
+
+- **KPI strip** — revenue, orders, AOV, visitors, conversion rate, time-to-ship — each with delta vs the prior equivalent period.
+- **Highlights** — auto-generated insights (best sales day, top channel, abandoned-checkout count, repeat-buyer rate, oldest aging doll).
+- **Revenue trend** — daily line chart for the selected range.
+- **Sales funnel** — visitors → product viewers → checkout starts → completed purchases, with conversion % between stages.
+- **Channels** — revenue by acquisition source (UTM `source` first, falling back to referrer host, then "direct").
+- **Top dolls** — views, buy clicks, units sold, revenue per doll.
+- **Geography** — top regions by revenue (state + country from PayPal shipping addresses).
+- **Operations** — avg time to sell, time to ship, refund rate, repeat customer rate, inventory counts.
+- **Aging inventory** — available dolls listed 30+ days, sorted oldest first.
+
+Date ranges: 7d / 30d / 90d / YTD / All time (querystring `?range=`).
+
+### How to attribute campaigns
+
+Tag your social/email links with UTM parameters and they'll show up in the Channels chart and on each order:
+
+```
+https://scrappydolls.com/shop/?utm_source=facebook&utm_medium=post&utm_campaign=fall-launch
+https://scrappydolls.com/shop/?utm_source=instagram&utm_medium=story
+https://scrappydolls.com/shop/?utm_source=newsletter&utm_medium=email&utm_campaign=oct-issue
+```
+
+Attribution is **first-touch** — the UTM from the buyer's first visit is what gets credited, even if they come back days later via a different path. Stored on the order row (`utm_source`, `utm_medium`, `utm_campaign`).
+
+### Privacy
+
+Tracking is first-party and minimal:
+- IPs are sha256-hashed with the site URL as salt — never stored raw.
+- A long-lived cookie (`sd_sid`, 30 days, HttpOnly + SameSite=Lax) creates a per-visitor pseudonymous ID.
+- Bots are filtered by user-agent before any row hits the DB.
+- No third-party services. No data leaves your server.
+
+If the EU/UK ever becomes a meaningful audience, you'll likely want to add a cookie banner per ePrivacy. For Texas/US-only audiences, this setup is fine as-is.
+
 ## File reference
 
 | Path | Purpose |
@@ -140,6 +183,9 @@ If `webhook_id` is empty, the webhook endpoint refuses all requests (signature v
 | `admin/delete.php` | Delete doll (POST only, soft-delete if orders exist) |
 | `admin/orders.php` | Order list |
 | `admin/order.php` | Single order detail, mark shipped, notes |
+| `admin/reports.php` | Analytics dashboard: KPIs, funnel, channels, geography, operations |
+| `lib/analytics.php` | First-party tracking helpers (page views, intents, UTM) |
+| `sql/migrations/002_add_analytics.sql` | Adds page_views, order_intents, UTM cols on orders |
 | `api/create-order.php` | Called by Smart Buttons to create the PayPal order |
 | `api/capture-order.php` | Called on user approval; captures payment, marks sold, emails |
 | `api/webhook.php` | PayPal webhook (verify signature, idempotent) |

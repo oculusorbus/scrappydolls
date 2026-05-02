@@ -32,6 +32,8 @@ try {
     );
     if (empty($resp['id'])) json_response(['error' => 'PayPal returned no order id'], 502);
 
+    track_order_intent((int)$product['id'], $resp['id'], (int)$product['price_cents']);
+
     json_response(['id' => $resp['id']]);
 } catch (Throwable $e) {
     error_log('create-order error: ' . $e->getMessage());

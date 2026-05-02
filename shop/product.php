@@ -28,6 +28,8 @@ $pageImage = $images ? url('uploads/' . $images[0]['filename']) : url('images/og
 $pageUrl   = url('shop/product.php?slug=' . urlencode($product['slug']));
 $ogType    = 'product';
 
+track_view('/shop/product/' . $product['slug'], (int)$product['id']);
+
 require __DIR__ . '/header.php';
 ?>
 

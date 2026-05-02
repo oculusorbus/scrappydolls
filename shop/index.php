@@ -13,6 +13,8 @@ $rows = db()->query("
   ORDER BY p.created_at DESC
 ")->fetchAll();
 
+track_view('/shop/');
+
 require __DIR__ . '/header.php';
 ?>
 
