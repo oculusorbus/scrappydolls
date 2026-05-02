@@ -6,6 +6,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     json_response(['error' => 'Method not allowed'], 405);
 }
 
+if (!paypal_is_configured()) {
+    json_response(['error' => 'Online payment is not configured yet — please message via Facebook to buy.'], 503);
+}
+
 $raw = file_get_contents('php://input') ?: '';
 $body = json_decode($raw, true) ?: $_POST;
 $productId = (int)($body['product_id'] ?? 0);

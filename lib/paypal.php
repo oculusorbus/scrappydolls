@@ -11,6 +11,14 @@ function paypal_base_url(): string {
     return $env === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
 }
 
+function paypal_is_configured(): bool {
+    $id = trim((string)config('paypal.client_id'));
+    $secret = trim((string)config('paypal.secret'));
+    if ($id === '' || $secret === '') return false;
+    if ($id === 'CHANGE_ME' || $secret === 'CHANGE_ME') return false;
+    return true;
+}
+
 function paypal_client_id(): string {
     return (string)config('paypal.client_id');
 }

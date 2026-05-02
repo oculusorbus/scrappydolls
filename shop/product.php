@@ -63,11 +63,21 @@ require __DIR__ . '/header.php';
         <?php endif; ?>
 
         <?php if ($product['status'] === 'available'): ?>
-          <div class="buy-card">
-            <div id="paypal-button-container"></div>
-            <div id="buy-error" class="flash flash-error" style="display:none;margin-top:1rem"></div>
-            <p class="note">Pay with PayPal or any major credit card. Your payment is processed securely by PayPal.</p>
-          </div>
+          <?php if (paypal_is_configured()): ?>
+            <div class="buy-card">
+              <div id="paypal-button-container"></div>
+              <div id="buy-error" class="flash flash-error" style="display:none;margin-top:1rem"></div>
+              <p class="note">Pay with PayPal or any major credit card. Your payment is processed securely by PayPal.</p>
+            </div>
+          <?php else: ?>
+            <div class="buy-card">
+              <p style="font-family:var(--font-display);font-weight:500;font-size:1.2rem;margin:0 0 1.25rem;line-height:1.3">To take this doll home, send Kanda a message on Facebook.</p>
+              <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener" target="_blank" style="width:100%;justify-content:center">
+                Message on Facebook <span aria-hidden="true">→</span>
+              </a>
+              <p class="note">Mention <em>“<?= h($product['title']) ?>”</em> so she knows which one.</p>
+            </div>
+          <?php endif; ?>
         <?php else: ?>
           <div class="sold-banner">
             <strong>Sold</strong>
@@ -119,7 +129,7 @@ require __DIR__ . '/header.php';
 </script>
 <?php endif; ?>
 
-<?php if ($product['status'] === 'available'): ?>
+<?php if ($product['status'] === 'available' && paypal_is_configured()): ?>
 <script src="https://www.paypal.com/sdk/js?client-id=<?= h(urlencode(paypal_client_id())) ?>&currency=<?= h(paypal_currency()) ?>&intent=capture&components=buttons"
         data-namespace="paypalSDK"></script>
 <script>
