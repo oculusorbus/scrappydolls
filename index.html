@@ -3,8 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Scrappy Dolls — Handmade Cloth Dolls by Kanda Kay</title>
-  <meta name="description" content="Scrappy Dolls is the studio of artist Kanda Kay — one-of-a-kind handmade cloth dolls, each stitched by hand from quilting cottons, vintage prints, and beloved fabric remnants.">
+  <title>Scrappy Dolls — Handmade Cloth &amp; Memory Dolls by Kanda Kay</title>
+  <meta name="description" content="Handmade cloth dolls and custom memory dolls by artist Kanda Kay. One-of-a-kind keepsakes stitched from quilting cottons, vintage prints, and fabric remnants.">
+  <meta name="author" content="Kanda Kay">
+  <meta name="keywords" content="handmade cloth dolls, memory dolls, custom dolls, keepsake dolls, one of a kind dolls, artisan dolls, fabric dolls, doll commissions, Kanda Kay, Scrappy Dolls">
   <link rel="canonical" href="https://scrappydolls.com/">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta name="theme-color" content="#b13e54">
@@ -12,21 +14,31 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon-192.png">
+
+  <!-- Preload hero image for LCP -->
+  <link rel="preload" as="image" href="/images/doll-closeup-hero.jpg" fetchpriority="high">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Scrappy Dolls — Handmade Cloth Dolls by Kanda Kay">
-  <meta property="og:description" content="One-of-a-kind handmade cloth dolls, stitched by hand from quilting cottons, vintage prints, and beloved fabric remnants.">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="Scrappy Dolls — Handmade Cloth &amp; Memory Dolls by Kanda Kay">
+  <meta property="og:description" content="Handmade cloth dolls and custom memory dolls by artist Kanda Kay — one-of-a-kind keepsakes stitched from quilting cottons, vintage prints, and fabric remnants.">
   <meta property="og:url" content="https://scrappydolls.com/">
   <meta property="og:site_name" content="Scrappy Dolls">
-  <meta property="og:image" content="https://scrappydolls.com/og-image.jpg">
-  <meta property="og:image:alt" content="A handmade Scrappy Doll by Kanda Kay">
+  <meta property="og:image" content="https://scrappydolls.com/images/og-image.jpg">
+  <meta property="og:image:secure_url" content="https://scrappydolls.com/images/og-image.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1008">
+  <meta property="og:image:height" content="560">
+  <meta property="og:image:alt" content="A handmade Scrappy Doll by Kanda Kay — burlap face with embroidered features and yarn hair">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Scrappy Dolls — Handmade Cloth Dolls by Kanda Kay">
-  <meta name="twitter:description" content="One-of-a-kind handmade cloth dolls, stitched by hand from quilting cottons, vintage prints, and beloved fabric remnants.">
-  <meta name="twitter:image" content="https://scrappydolls.com/og-image.jpg">
+  <meta name="twitter:title" content="Scrappy Dolls — Handmade Cloth &amp; Memory Dolls by Kanda Kay">
+  <meta name="twitter:description" content="Handmade cloth dolls and custom memory dolls by artist Kanda Kay — one-of-a-kind keepsakes stitched from beloved fabric.">
+  <meta name="twitter:image" content="https://scrappydolls.com/images/og-image.jpg">
+  <meta name="twitter:image:alt" content="A handmade Scrappy Doll by Kanda Kay">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,26 +49,84 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "@id": "https://scrappydolls.com/#business",
-    "name": "Scrappy Dolls",
-    "description": "Handmade cloth dolls by artist Kanda Kay. One-of-a-kind dolls stitched from quilting cottons, vintage prints, and fabric remnants.",
-    "url": "https://scrappydolls.com/",
-    "image": "https://scrappydolls.com/og-image.jpg",
-    "founder": {
-      "@type": "Person",
-      "name": "Kanda Kay",
-      "sameAs": "https://www.facebook.com/kandakayartist/"
-    },
-    "sameAs": ["https://www.facebook.com/kandakayartist/"]
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Scrappy Dolls",
-    "url": "https://scrappydolls.com/"
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://scrappydolls.com/#business",
+        "name": "Scrappy Dolls",
+        "alternateName": "Scrappy Dolls by Kanda Kay",
+        "description": "Handmade cloth dolls and custom memory dolls by artist Kanda Kay. One-of-a-kind keepsakes stitched from quilting cottons, vintage prints, and fabric remnants.",
+        "slogan": "Cloth dolls, stitched one at a time.",
+        "url": "https://scrappydolls.com/",
+        "image": "https://scrappydolls.com/images/og-image.jpg",
+        "logo": "https://scrappydolls.com/favicon-192.png",
+        "founder": { "@id": "https://scrappydolls.com/#kanda" },
+        "knowsAbout": [
+          "Handmade cloth dolls",
+          "Memory dolls",
+          "Custom doll commissions",
+          "Keepsake dolls",
+          "Fabric arts",
+          "Quilting"
+        ],
+        "makesOffer": [
+          {
+            "@type": "Offer",
+            "name": "Custom Memory Dolls",
+            "description": "One-of-a-kind cloth dolls made from a customer's own meaningful fabric — outgrown clothing, a wedding dress, a beloved quilt.",
+            "category": "Memory dolls",
+            "availability": "https://schema.org/InStock",
+            "seller": { "@id": "https://scrappydolls.com/#business" }
+          },
+          {
+            "@type": "Offer",
+            "name": "Original Scrappy Dolls",
+            "description": "Original one-of-a-kind handmade cloth dolls stitched from quilting cottons, vintage prints, and fabric remnants.",
+            "category": "Cloth dolls",
+            "availability": "https://schema.org/LimitedAvailability",
+            "seller": { "@id": "https://scrappydolls.com/#business" }
+          }
+        ],
+        "sameAs": ["https://www.facebook.com/kandakayartist/"]
+      },
+      {
+        "@type": "Person",
+        "@id": "https://scrappydolls.com/#kanda",
+        "name": "Kanda Kay",
+        "jobTitle": "Doll Artist",
+        "description": "Artist behind Scrappy Dolls. Each doll is hand-cut and hand-stitched from quilting cottons, vintage prints, and beloved fabric remnants.",
+        "url": "https://scrappydolls.com/",
+        "worksFor": { "@id": "https://scrappydolls.com/#business" },
+        "sameAs": ["https://www.facebook.com/kandakayartist/"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://scrappydolls.com/#website",
+        "name": "Scrappy Dolls",
+        "url": "https://scrappydolls.com/",
+        "inLanguage": "en-US",
+        "publisher": { "@id": "https://scrappydolls.com/#business" }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://scrappydolls.com/#webpage",
+        "url": "https://scrappydolls.com/",
+        "name": "Scrappy Dolls — Handmade Cloth & Memory Dolls by Kanda Kay",
+        "description": "Handmade cloth dolls and custom memory dolls by artist Kanda Kay. One-of-a-kind keepsakes stitched from quilting cottons, vintage prints, and fabric remnants.",
+        "inLanguage": "en-US",
+        "isPartOf": { "@id": "https://scrappydolls.com/#website" },
+        "about": { "@id": "https://scrappydolls.com/#business" },
+        "primaryImageOfPage": { "@id": "https://scrappydolls.com/#hero-image" }
+      },
+      {
+        "@type": "ImageObject",
+        "@id": "https://scrappydolls.com/#hero-image",
+        "url": "https://scrappydolls.com/images/doll-closeup-hero.jpg",
+        "caption": "Close-up of a handmade Scrappy Doll by Kanda Kay — burlap face, embroidered features, button eyes, yarn hair.",
+        "creditText": "Kanda Kay",
+        "creator": { "@id": "https://scrappydolls.com/#kanda" }
+      }
+    ]
   }
   </script>
 
@@ -842,7 +912,7 @@
           <div>
             <p class="eyebrow">Handmade by Kanda Kay</p>
             <h1 class="h-display">Cloth dolls,<br>stitched <em style="color: var(--rose); font-style: italic; font-weight: 400;">one&nbsp;at&nbsp;a&nbsp;time</em>.</h1>
-            <p class="lede" style="margin-top: 1.75rem;">Scrappy Dolls is a small studio of one-of-a-kind cloth dolls — each hand-cut and hand-sewn from quilting cottons, vintage prints, and beloved fabric remnants too lovely to throw away.</p>
+            <p class="lede" style="margin-top: 1.75rem;">Scrappy Dolls is a small studio of one-of-a-kind cloth dolls and custom memory dolls — each hand-cut and hand-sewn from quilting cottons, vintage prints, and beloved fabric remnants too lovely to throw away.</p>
             <div class="cta-row">
               <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">
                 Follow on Facebook <span class="arrow" aria-hidden="true">→</span>
@@ -1144,6 +1214,36 @@
           "@type": "Answer",
           "text": "It depends on the fabric, the character, and the level of detail. A doll can take anywhere from an afternoon to several days — and each one tells you when it's done."
         }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Customer reviews structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Review",
+        "itemReviewed": { "@id": "https://scrappydolls.com/#business" },
+        "author": { "@type": "Person", "name": "Carrie S." },
+        "datePublished": "2017-10-25",
+        "reviewBody": "Kanda is an AMAZING artist! She is friendly, professional, very reasonable in pricing, and responsive. We are SO HAPPY with the final product — she captured our furr-babes so perfectly in her whimsical, fun way!"
+      },
+      {
+        "@type": "Review",
+        "itemReviewed": { "@id": "https://scrappydolls.com/#business" },
+        "author": { "@type": "Person", "name": "Albert H." },
+        "datePublished": "2019-09-12",
+        "reviewBody": "I know and recommend this artist — she is amazing and talented. One of a kind."
+      },
+      {
+        "@type": "Review",
+        "itemReviewed": { "@id": "https://scrappydolls.com/#business" },
+        "author": { "@type": "Person", "name": "Terise B." },
+        "datePublished": "2022-10-30",
+        "reviewBody": "This artist is magic! I have quite a few pieces, plus one that was specifically commissioned."
       }
     ]
   }
