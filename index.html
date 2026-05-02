@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scrappy Dolls — Handmade Cloth Dolls by Kanda Kay</title>
+  <meta name="description" content="Scrappy Dolls is the studio of artist Kanda Kay — one-of-a-kind handmade cloth dolls, each stitched by hand from quilting cottons, vintage prints, and beloved fabric remnants.">
+  <link rel="canonical" href="https://scrappydolls.com/">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="theme-color" content="#c25b6f">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Scrappy Dolls — Handmade Cloth Dolls by Kanda Kay">
+  <meta property="og:description" content="One-of-a-kind handmade cloth dolls, stitched by hand from quilting cottons, vintage prints, and beloved fabric remnants.">
+  <meta property="og:url" content="https://scrappydolls.com/">
+  <meta property="og:site_name" content="Scrappy Dolls">
+  <meta property="og:image" content="https://scrappydolls.com/og-image.jpg">
+  <meta property="og:image:alt" content="A handmade Scrappy Doll by Kanda Kay">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Scrappy Dolls — Handmade Cloth Dolls by Kanda Kay">
+  <meta name="twitter:description" content="One-of-a-kind handmade cloth dolls, stitched by hand from quilting cottons, vintage prints, and beloved fabric remnants.">
+  <meta name="twitter:image" content="https://scrappydolls.com/og-image.jpg">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": "https://scrappydolls.com/#business",
+    "name": "Scrappy Dolls",
+    "description": "Handmade cloth dolls by artist Kanda Kay. One-of-a-kind dolls stitched from quilting cottons, vintage prints, and fabric remnants.",
+    "url": "https://scrappydolls.com/",
+    "image": "https://scrappydolls.com/og-image.jpg",
+    "founder": {
+      "@type": "Person",
+      "name": "Kanda Kay",
+      "sameAs": "https://www.facebook.com/kandakayartist/"
+    },
+    "sameAs": [
+      "https://www.facebook.com/kandakayartist/"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Scrappy Dolls",
+    "url": "https://scrappydolls.com/"
+  }
+  </script>
+
+  <style>
+    :root {
+      --ink: #2a2126;
+      --ink-soft: #5a4a52;
+      --paper: #fdf7f3;
+      --paper-2: #f6ebe2;
+      --accent: #c25b6f;
+      --accent-dark: #9a3f53;
+      --thread: #d9b382;
+      --rule: #e7d6c8;
+      --max: 64rem;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent-dark); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    a:hover { color: var(--accent); }
+    h1, h2, h3 {
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+      margin: 0 0 0.5em;
+    }
+    h1 { font-size: clamp(2.25rem, 5vw, 3.5rem); }
+    h2 { font-size: clamp(1.5rem, 3vw, 2.125rem); }
+    h3 { font-size: 1.125rem; }
+    p { margin: 0 0 1em; }
+    img { max-width: 100%; height: auto; display: block; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem; }
+
+    header.site {
+      padding: 1.25rem 0;
+      border-bottom: 1px dashed var(--rule);
+      background: var(--paper);
+    }
+    header.site .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand {
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 1.05rem;
+    }
+    .brand span { color: var(--accent); }
+    nav.primary a {
+      color: var(--ink-soft);
+      text-decoration: none;
+      margin-left: 1.25rem;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      font-size: 0.95rem;
+    }
+    nav.primary a:hover { color: var(--accent); }
+
+    .hero {
+      padding: 4rem 0 3rem;
+      background:
+        radial-gradient(ellipse at 80% 0%, #fbe1d6 0%, transparent 60%),
+        radial-gradient(ellipse at 0% 100%, #f5d9e0 0%, transparent 55%),
+        var(--paper);
+    }
+    .hero p.lede {
+      font-size: 1.2rem;
+      color: var(--ink-soft);
+      max-width: 36rem;
+    }
+    .hero-row {
+      display: grid;
+      gap: 2.5rem;
+      grid-template-columns: 1.4fr 1fr;
+      align-items: center;
+    }
+    @media (max-width: 48rem) {
+      .hero-row { grid-template-columns: 1fr; }
+    }
+    .hero-image {
+      aspect-ratio: 1 / 1;
+      border-radius: 18px;
+      border: 1px solid var(--rule);
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(154, 63, 83, 0.08);
+      background: var(--paper-2);
+    }
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 1.4rem;
+      border-radius: 999px;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: transform 0.08s ease, background 0.15s ease;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-dark); color: #fff; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--rule);
+    }
+    .btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+
+    section {
+      padding: 3.5rem 0;
+      border-bottom: 1px dashed var(--rule);
+    }
+    section.alt { background: var(--paper-2); }
+
+    .grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    }
+    .card {
+      background: #fff;
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      padding: 1.4rem;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+    }
+    .card h3 { color: var(--accent-dark); }
+    .card p { margin-bottom: 0; color: var(--ink-soft); }
+
+    .about-row {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: 1.2fr 1fr;
+      align-items: center;
+    }
+    @media (max-width: 48rem) {
+      .about-row { grid-template-columns: 1fr; }
+    }
+    .about-portrait {
+      aspect-ratio: 4 / 5;
+      background: var(--paper-2) url("images/doll-feature-horns.jpg") center/cover no-repeat;
+      border-radius: 18px;
+      border: 1px solid var(--rule);
+    }
+
+    .gallery {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    }
+    .gallery figure {
+      margin: 0;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid var(--rule);
+    }
+    .gallery img {
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      width: 100%;
+    }
+    .gallery figcaption {
+      padding: 0.65rem 0.85rem;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+    }
+details.faq {
+      border-top: 1px solid var(--rule);
+      padding: 1rem 0;
+    }
+    details.faq:last-of-type { border-bottom: 1px solid var(--rule); }
+    details.faq summary {
+      cursor: pointer;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      font-weight: 600;
+      font-size: 1.05rem;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    details.faq summary::-webkit-details-marker { display: none; }
+    details.faq summary::after {
+      content: "+";
+      color: var(--accent);
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+    details.faq[open] summary::after { content: "–"; }
+    details.faq p { margin: 0.75rem 0 0; color: var(--ink-soft); }
+
+    .join-card {
+      background: #fff;
+      border: 1px solid var(--rule);
+      border-radius: 18px;
+      padding: 2rem;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+    @media (max-width: 40rem) {
+      .join-card { grid-template-columns: 1fr; }
+    }
+    .join-card h2 { margin-bottom: 0.25rem; }
+    .join-card p { margin: 0; color: var(--ink-soft); }
+
+    footer.site {
+      padding: 2.5rem 0 3rem;
+      color: var(--ink-soft);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      font-size: 0.9rem;
+    }
+    footer.site .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer.site a { color: var(--ink-soft); }
+    footer.site a:hover { color: var(--accent); }
+
+    .skip {
+      position: absolute; left: -9999px; top: auto;
+    }
+    .skip:focus {
+      position: static; padding: 0.5rem 1rem; background: var(--accent); color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="/">scrappy<span>dolls</span></a>
+      <nav class="primary" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#faq">FAQ</a>
+        <a href="#follow">Follow</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap">
+        <div class="hero-row">
+          <div>
+            <h1 id="hero-title">Handmade cloth dolls, stitched one at a time.</h1>
+            <p class="lede">Scrappy Dolls is the studio of artist Kanda Kay — small, soft dolls hand-cut and hand-sewn from quilting cottons, vintage prints, and fabric remnants too lovely to throw away. No two are alike.</p>
+            <div class="cta-row">
+              <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">Follow on Facebook</a>
+              <a class="btn btn-ghost" href="#gallery">See the dolls</a>
+            </div>
+          </div>
+          <div class="hero-image">
+            <img src="images/doll-closeup-hero.jpg" alt="Close-up of a handmade Scrappy Doll by Kanda Kay — a burlap face with embroidered features, button eyes, and yarn hair" width="800" height="800" fetchpriority="high">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" aria-labelledby="about-title">
+      <div class="wrap">
+        <div class="about-row">
+          <div>
+            <h2 id="about-title">Made by hand. Made to keep.</h2>
+            <p>Every Scrappy Doll begins as a pile of fabric — quilt offcuts, an old pillowcase, the last good piece of a favorite shirt. Kanda Kay cuts, pieces, and stitches each doll by hand, finishing with embroidered features and a name only that doll will ever wear.</p>
+            <p>The result is a small, sturdy companion: warm-feeling, washable, and unmistakably one of a kind.</p>
+            <!-- TODO: Replace the two paragraphs above with Kanda's actual bio / artist statement when ready. -->
+          </div>
+          <div class="about-portrait" role="img" aria-label="A handmade Scrappy Doll by Kanda Kay — brown curly hair, a poppy headband, and a green floral dress"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="what" class="alt" aria-labelledby="what-title">
+      <div class="wrap">
+        <h2 id="what-title">What makes a Scrappy Doll different</h2>
+        <div class="grid" style="margin-top: 2rem;">
+          <article class="card">
+            <h3>One-of-a-kind</h3>
+            <p>Every doll is a unique combination of fabrics, faces, and finishings. You'll never see another exactly like yours.</p>
+          </article>
+          <article class="card">
+            <h3>Made from fabric with a story</h3>
+            <p>Vintage prints, quilt remnants, and rescued scraps — each doll carries the texture and history of the cloth it came from.</p>
+          </article>
+          <article class="card">
+            <h3>Hand-stitched, built to last</h3>
+            <p>Cut, sewn, stuffed, and finished by hand. Sturdy seams and embroidered features mean these dolls hold up to real love.</p>
+          </article>
+          <article class="card">
+            <h3>Low waste, high heart</h3>
+            <p>Sewing scrappy gives beautiful fabric a second life — the kind of object that gets prettier the longer you have it.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" aria-labelledby="gallery-title">
+      <div class="wrap">
+        <h2 id="gallery-title">Recent dolls</h2>
+        <p style="color: var(--ink-soft); max-width: 36rem;">A look at recent Scrappy Dolls. New work appears first on Facebook.</p>
+
+        <div class="gallery">
+          <figure>
+            <img src="images/doll-collection.jpg" alt="A wall display of dozens of handmade Scrappy Dolls by Kanda Kay, each one one-of-a-kind" loading="lazy" width="1200" height="1200">
+          </figure>
+          <figure>
+            <img src="images/doll-yellow-yarn.jpg" alt="Scrappy Doll with yellow yarn hair, a burlap face, brass button accents, and a patterned orange and red dress" loading="lazy" width="1200" height="1200">
+          </figure>
+          <figure>
+            <img src="images/doll-rainbow-hair.jpg" alt="Scrappy Doll with multicolored yarn hair, an embroidered smile, and a vibrant patchwork dress with lace trim" loading="lazy" width="1200" height="1200">
+          </figure>
+          <figure>
+            <img src="images/doll-route-66.jpg" alt="Scrappy Doll wearing a Route 66 Motel Court t-shirt, with black yarn pigtails tied with red ribbon" loading="lazy" width="1200" height="1200">
+          </figure>
+          <figure>
+            <img src="images/doll-patriotic.jpg" alt="Patriotic Scrappy Doll in red, white, and blue with curly brown hair, a star headband, and beaded jewelry" loading="lazy" width="1200" height="1200">
+          </figure>
+          <figure>
+            <img src="images/doll-orange-dress.jpg" alt="Scrappy Doll with black curly yarn hair and an orange and blue speckled dress with lace trim" loading="lazy" width="1200" height="1200">
+          </figure>
+          <figure>
+            <img src="images/doll-owl.jpg" alt="Handmade owl Scrappy Doll in blue tweed fabric with burlap eyes and a felt beak" loading="lazy" width="1200" height="1200">
+          </figure>
+          <figure>
+            <img src="images/doll-mouse-pair.jpg" alt="A pair of mouse-eared Scrappy Dolls — one in plaid fabric, one in green floral fabric" loading="lazy" width="1200" height="1200">
+          </figure>
+          <figure>
+            <img src="images/doll-dog-pair.jpg" alt="Two handmade Scrappy Dog Dolls — a brown puppy and a tan terrier with button eyes" loading="lazy" width="1200" height="1200">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="alt" aria-labelledby="faq-title">
+      <div class="wrap" style="max-width: 48rem;">
+        <h2 id="faq-title">Frequently asked questions</h2>
+        <!-- TODO: Confirm answers with Kanda before publishing — these are reasonable defaults, not commitments. -->
+        <details class="faq">
+          <summary>Are dolls available to purchase?</summary>
+          <p>New dolls are announced on the <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Scrappy Dolls Facebook page</a> as they're finished. Send a message there to ask about what's currently available.</p>
+        </details>
+        <details class="faq">
+          <summary>Can a doll be made from my own fabric?</summary>
+          <p>Memory dolls — made from a child's outgrown clothing, a wedding dress, a beloved quilt — are part of what scrappy dolls are best at. Reach out via Facebook to talk through your fabric and what you'd like.</p>
+        </details>
+        <details class="faq">
+          <summary>Are Scrappy Dolls safe for children?</summary>
+          <p>Dolls are sewn with sturdy seams and embroidered features (no buttons or small attached parts), and stuffed with fiberfill. They make wonderful keepsakes and play companions for older babies and children.</p>
+        </details>
+        <details class="faq">
+          <summary>How do I care for a Scrappy Doll?</summary>
+          <p>Spot clean with a damp cloth and mild soap. For a deeper clean, hand-wash gently in cool water and reshape while damp; lay flat to dry.</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="follow" aria-labelledby="follow-title">
+      <div class="wrap">
+        <div class="join-card">
+          <div>
+            <h2 id="follow-title">See new dolls as they're finished.</h2>
+            <p>Follow Scrappy Dolls on Facebook for new work, sneak peeks, and the stories behind the fabric.</p>
+          </div>
+          <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">Follow on Facebook</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap row">
+      <div>&copy; <span id="y"></span> Scrappy Dolls by Kanda Kay. Made by hand.</div>
+      <div>
+        <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+
+  <!-- FAQ structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Are dolls available to purchase?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "New dolls are announced on the Scrappy Dolls Facebook page as they're finished. Send a message there to ask about what's currently available."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can a doll be made from my own fabric?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Memory dolls — made from a child's outgrown clothing, a wedding dress, a beloved quilt — are part of what scrappy dolls are best at. Reach out via Facebook to talk through your fabric and what you'd like."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Are Scrappy Dolls safe for children?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Dolls are sewn with sturdy seams and embroidered features (no buttons or small attached parts), and stuffed with fiberfill. They make wonderful keepsakes and play companions for older babies and children."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I care for a Scrappy Doll?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Spot clean with a damp cloth and mild soap. For a deeper clean, hand-wash gently in cool water and reshape while damp; lay flat to dry."
+        }
+      }
+    ]
+  }
+  </script>
+</body>
+</html>
