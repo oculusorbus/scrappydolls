@@ -584,38 +584,76 @@
       .gallery figure:nth-child(n) { grid-column: span 1; grid-row: span 1; }
     }
 
-    /* === TESTIMONIAL === */
-    .testimonial {
+    /* === TESTIMONIALS === */
+    .testimonials-head {
       text-align: center;
+      margin-bottom: 3rem;
     }
-    .testimonial blockquote {
-      font-family: var(--font-display);
-      font-weight: 350;
-      font-variation-settings: "opsz" 144, "SOFT" 100;
-      font-style: italic;
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
-      line-height: 1.3;
-      max-width: 44rem;
-      margin: 0 auto 2rem;
-      color: var(--ink);
-      position: relative;
+    .testimonials-head .eyebrow { justify-content: center; }
+    .testimonials-grid {
+      display: grid;
+      gap: 1.75rem;
+      grid-template-columns: repeat(3, 1fr);
     }
-    .testimonial blockquote::before,
-    .testimonial blockquote::after {
+    @media (max-width: 60rem) {
+      .testimonials-grid { grid-template-columns: 1fr; }
+    }
+    .testimonial-card {
+      margin: 0;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      padding: 2rem 1.75rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .testimonial-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--rose-light);
+    }
+    .testimonial-card::before {
+      content: "\201C";
       font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 3.5rem;
+      line-height: 0.7;
       color: var(--rose);
       opacity: 0.5;
-      font-size: 4rem;
-      line-height: 0;
-      vertical-align: -0.4em;
+      display: block;
+      margin-bottom: 0.75rem;
     }
-    .testimonial blockquote::before { content: "\201C"; margin-right: 0.15em; }
-    .testimonial blockquote::after { content: "\201D"; margin-left: 0.05em; }
-    .testimonial cite {
+    .testimonial-card blockquote {
+      font-family: var(--font-display);
+      font-weight: 350;
+      font-variation-settings: "opsz" 36, "SOFT" 100;
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      color: var(--ink);
+      margin: 0 0 1.5rem;
+      flex: 1;
+    }
+    .testimonial-card figcaption {
+      padding-top: 1rem;
+      border-top: 1px dashed var(--rule);
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .testimonial-card cite {
       font-style: normal;
       font-family: var(--font-sans);
       font-size: 0.85rem;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .testimonial-card .meta {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--ink-muted);
       font-weight: 500;
@@ -942,13 +980,36 @@
       </div>
     </section>
 
-    <!-- TESTIMONIAL -->
-    <!-- TODO: confirm with user before publishing — testimonial copy is the user's own words about Kanda; attribution placeholder needs sign-off. -->
-    <section class="testimonial alt">
-      <div class="wrap-narrow reveal">
-        <p class="eyebrow" style="justify-content: center;">A Word From a Collector</p>
-        <blockquote>This artist is magic. I have several pieces, including one she made on commission. She is amazing and talented — one of a kind.</blockquote>
-        <cite>Jeremiah Barber, son &amp; collector</cite>
+    <!-- TESTIMONIALS -->
+    <section class="testimonials alt">
+      <div class="wrap">
+        <div class="testimonials-head reveal">
+          <p class="eyebrow">Kind Words</p>
+          <h2 class="h-display">From <em style="color: var(--rose); font-style: italic; font-weight: 400;">collectors</em>.</h2>
+        </div>
+        <div class="testimonials-grid">
+          <figure class="testimonial-card reveal">
+            <blockquote>Kanda is an AMAZING artist! She is friendly, professional, very reasonable in pricing, and responsive. We are SO HAPPY with the final product — she captured our furr-babes so perfectly in her whimsical, fun way!</blockquote>
+            <figcaption>
+              <cite>Carrie S.</cite>
+              <span class="meta">Commissioned pet portraits</span>
+            </figcaption>
+          </figure>
+          <figure class="testimonial-card reveal">
+            <blockquote>I know and recommend this artist — she is amazing and talented. One of a kind.</blockquote>
+            <figcaption>
+              <cite>Albert H.</cite>
+              <span class="meta">Collector</span>
+            </figcaption>
+          </figure>
+          <figure class="testimonial-card reveal">
+            <blockquote>This artist is magic! I have quite a few pieces, plus one that was specifically commissioned.</blockquote>
+            <figcaption>
+              <cite>Terise B.</cite>
+              <span class="meta">Collector &amp; commission client</span>
+            </figcaption>
+          </figure>
+        </div>
       </div>
     </section>
 
