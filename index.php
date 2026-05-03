@@ -1521,7 +1521,7 @@ if (count($_pool) >= 21) {
         </details>
         <details class="faq">
           <summary>How do I care for a Scrappy Doll?</summary>
-          <p>Spot clean with a damp cloth and mild soap. For a deeper clean, hand-wash gently in cool water and reshape while damp; lay flat to dry.</p>
+          <p>Spot clean only, with a damp cloth and mild soap if needed. Treat your Scrappy Doll as a display piece, not a toy that takes a wash — hand-washing, soaking, or laundering will loosen the adhesives and undermine the fabric construction, and can cause the doll to fall apart.</p>
         </details>
         <details class="faq">
           <summary>How long does it take to make a doll?</summary>
@@ -1683,7 +1683,7 @@ if (count($_pool) >= 21) {
         "name": "How do I care for a Scrappy Doll?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Spot clean with a damp cloth and mild soap. For a deeper clean, hand-wash gently in cool water and reshape while damp; lay flat to dry."
+          "text": "Spot clean only, with a damp cloth and mild soap if needed. Treat your Scrappy Doll as a display piece, not a toy that takes a wash. Hand-washing, soaking, or laundering will loosen the adhesives and undermine the fabric construction, and can cause the doll to fall apart."
         }
       },
       {
