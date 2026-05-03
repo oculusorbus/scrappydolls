@@ -59,6 +59,8 @@ function mail_admin_new_order(array $order, array $product): void {
 function mail_customer_receipt(array $order, array $product): void {
     $email = $order['customer_email'] ?? null;
     if (!$email) return;
+    $cfg = config('mail');
+    $replyTo = $cfg['admin_email'] ?? null;
     $title = $product['title'] ?? 'your doll';
     $price = fmt_price((int)$order['amount_cents']);
     $body = "Thank you for your order!\n\n"
@@ -67,5 +69,5 @@ function mail_customer_receipt(array $order, array $product): void {
           . "You'll get a separate note from PayPal with your payment receipt.\n\n"
           . "If you have questions, just reply to this email.\n\n"
           . "— Kanda Kay\n  scrappydolls.com\n";
-    send_mail($email, "Order confirmed — $title", $body);
+    send_mail($email, "Order confirmed — $title", $body, $replyTo);
 }
