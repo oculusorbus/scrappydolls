@@ -73,7 +73,7 @@ require __DIR__ . '/header.php';
               <?php else: ?>
                 <form method="POST" action="/api/cart-add-form.php" style="margin:0">
                   <input type="hidden" name="product_id" value="<?= (int)$product['id'] ?>">
-                  <input type="hidden" name="return_url" value="/shop/cart.php">
+                  <input type="hidden" name="return_url" value="/shop/product.php?slug=<?= h(urlencode($product['slug'])) ?>">
                   <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Add to cart</button>
                 </form>
                 <a class="btn btn-ghost" href="/shop/cart.php" style="width:100%;justify-content:center;margin-top:.65rem">
