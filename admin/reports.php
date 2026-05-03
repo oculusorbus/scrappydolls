@@ -125,10 +125,11 @@ $topStmt = $pdo->prepare("
     GROUP BY product_id
   ) i ON i.product_id = p.id
   LEFT JOIN (
-    SELECT product_id, COUNT(*) AS units, SUM(amount_cents) AS revenue
-    FROM orders
-    WHERE status IN ('paid','shipped') AND paid_at BETWEEN :f3 AND :t3
-    GROUP BY product_id
+    SELECT oi.product_id, COUNT(*) AS units, SUM(oi.amount_cents) AS revenue
+    FROM order_items oi
+    JOIN orders o2 ON o2.id = oi.order_id
+    WHERE o2.status IN ('paid','shipped') AND o2.paid_at BETWEEN :f3 AND :t3
+    GROUP BY oi.product_id
   ) o ON o.product_id = p.id
   WHERE COALESCE(o.revenue,0) + COALESCE(v.views,0) + COALESCE(i.intents,0) > 0
   ORDER BY revenue DESC, units DESC, views DESC

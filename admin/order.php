@@ -23,16 +23,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect('/admin/order.php?id=' . $id);
 }
 
-$stmt = db()->prepare("
-  SELECT o.*, p.title AS product_title, p.slug AS product_slug,
-    (SELECT filename FROM product_images WHERE product_id = p.id ORDER BY sort_order ASC, id ASC LIMIT 1) AS thumb
-  FROM orders o
-  JOIN products p ON p.id = o.product_id
-  WHERE o.id = :id
-");
+$stmt = db()->prepare("SELECT * FROM orders WHERE id = :id");
 $stmt->execute([':id' => $id]);
 $order = $stmt->fetch();
 if (!$order) { flash('error','Order not found.'); redirect('/admin/orders.php'); }
+
+$itStmt = db()->prepare("
+  SELECT oi.*, p.slug AS product_slug,
+    (SELECT filename FROM product_images WHERE product_id = oi.product_id ORDER BY sort_order ASC, id ASC LIMIT 1) AS thumb
+  FROM order_items oi
+  LEFT JOIN products p ON p.id = oi.product_id
+  WHERE oi.order_id = :id
+  ORDER BY oi.id ASC
+");
+$itStmt->execute([':id' => $id]);
+$items = $itStmt->fetchAll();
 
 $shipping = $order['shipping_address'] ? json_decode($order['shipping_address'], true) : null;
 
@@ -52,16 +57,29 @@ require __DIR__ . '/header.php';
 <div class="detail-grid">
   <div>
     <div class="card" style="margin-bottom:1.25rem">
-      <h3>Doll</h3>
-      <div style="display:flex;gap:1rem;align-items:center">
-        <?php if ($order['thumb']): ?>
-          <img src="<?= h(thumb_url($order['thumb'])) ?>" alt="" style="width:5rem;height:5rem;object-fit:cover;object-position:center top;border-radius:8px;border:1px solid var(--rule)">
-        <?php endif; ?>
-        <div>
-          <strong style="font-size:1.1rem"><?= h($order['product_title']) ?></strong><br>
-          <a href="/shop/product.php?slug=<?= h(urlencode($order['product_slug'])) ?>" target="_blank" rel="noopener" style="font-size:.85rem">View on site →</a>
+      <h3><?= count($items) === 1 ? 'Doll' : 'Dolls (' . count($items) . ')' ?></h3>
+      <?php if (!$items): ?>
+        <p style="color:var(--ink-muted);margin:0">No items recorded for this order.</p>
+      <?php else: ?>
+        <div style="display:flex;flex-direction:column;gap:.85rem">
+          <?php foreach ($items as $it): ?>
+            <div style="display:flex;gap:1rem;align-items:center">
+              <?php if ($it['thumb']): ?>
+                <img src="<?= h(thumb_url($it['thumb'])) ?>" alt="" style="width:4.5rem;height:4.5rem;object-fit:cover;object-position:center top;border-radius:8px;border:1px solid var(--rule);flex-shrink:0">
+              <?php endif; ?>
+              <div style="min-width:0">
+                <strong style="font-size:1.05rem"><?= h($it['title_snapshot']) ?></strong>
+                <span style="color:var(--ink-muted);margin-left:.5rem"><?= fmt_price((int)$it['amount_cents']) ?></span><br>
+                <?php if ($it['product_slug']): ?>
+                  <a href="/shop/product.php?slug=<?= h(urlencode($it['product_slug'])) ?>" target="_blank" rel="noopener" style="font-size:.85rem">View on site →</a>
+                <?php else: ?>
+                  <span style="font-size:.82rem;color:var(--ink-muted)">Product was deleted from catalog</span>
+                <?php endif; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
         </div>
-      </div>
+      <?php endif; ?>
     </div>
 
     <?php if ($order['status'] === 'paid'): ?>

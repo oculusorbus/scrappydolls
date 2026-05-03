@@ -31,7 +31,9 @@ try {
     // we void the auth so no money moves and ask the buyer to retry.
     $cartIds = cart_ids();
     if (!$cartIds) {
-        @paypal_void_authorization($authId);
+        try { paypal_void_authorization($authId); } catch (Throwable $vErr) {
+            error_log('Void on empty cart failed: ' . $vErr->getMessage());
+        }
         json_response(['error' => 'Your cart is empty.'], 400);
     }
     $place = implode(',', array_fill(0, count($cartIds), '?'));

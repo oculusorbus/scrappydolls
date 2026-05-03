@@ -15,9 +15,10 @@ $pending = (int)db()->query("SELECT COUNT(*) FROM orders WHERE status='paid'")->
 $revenue = (int)db()->query("SELECT COALESCE(SUM(amount_cents),0) FROM orders WHERE status IN ('paid','shipped')")->fetchColumn();
 
 $recent = db()->query("
-  SELECT o.id, o.amount_cents, o.status, o.created_at, o.customer_name, p.title
+  SELECT o.id, o.amount_cents, o.status, o.created_at, o.customer_name,
+    (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) AS item_count,
+    (SELECT title_snapshot FROM order_items WHERE order_id = o.id ORDER BY id ASC LIMIT 1) AS first_title
   FROM orders o
-  JOIN products p ON p.id = o.product_id
   ORDER BY o.created_at DESC
   LIMIT 8
 ")->fetchAll();
@@ -45,11 +46,16 @@ $recent = db()->query("
 <?php else: ?>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Doll</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+      <thead><tr><th>Items</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
       <tbody>
-      <?php foreach ($recent as $o): ?>
+      <?php foreach ($recent as $o):
+        $count = (int)($o['item_count'] ?? 0);
+        $title = $o['first_title']
+            ? ($count > 1 ? h($o['first_title']) . " <span style=\"color:var(--ink-muted)\">+ " . ($count - 1) . " more</span>" : h($o['first_title']))
+            : '<span style="color:var(--ink-muted)">(no items)</span>';
+      ?>
         <tr>
-          <td><a href="/admin/order.php?id=<?= (int)$o['id'] ?>"><?= h($o['title']) ?></a></td>
+          <td><a href="/admin/order.php?id=<?= (int)$o['id'] ?>"><?= $title ?></a></td>
           <td><?= h($o['customer_name'] ?: '—') ?></td>
           <td><?= fmt_price((int)$o['amount_cents']) ?></td>
           <td><span class="badge badge-<?= h($o['status']) ?>"><?= h($o['status']) ?></span></td>

@@ -19,7 +19,8 @@ $resource = $event['resource'] ?? [];
 
 switch ($type) {
     case 'PAYMENT.CAPTURE.COMPLETED':
-        // Backup path in case onApprove never reached capture-order.php
+        // Backup path in case onApprove never reached capture-cart-order.php.
+        // The capture event references the parent order via a "up" link.
         $captureId = $resource['id'] ?? null;
         $orderLink = null;
         foreach (($resource['links'] ?? []) as $link) {
@@ -31,56 +32,87 @@ switch ($type) {
         }
         if (!$orderLink) break;
 
-        // Idempotent insert
+        // Idempotent: skip if we already wrote this order.
         $exists = db()->prepare('SELECT id FROM orders WHERE paypal_order_id = :p');
         $exists->execute([':p' => $orderLink]);
         if ($exists->fetch()) break;
 
         try {
             $orderData = paypal_get_order($orderLink);
-            $refId = $orderData['purchase_units'][0]['reference_id'] ?? '';
-            if (!preg_match('/^doll-(\d+)$/', $refId, $m)) break;
-            $productId = (int)$m[1];
-
+            $unit = $orderData['purchase_units'][0] ?? [];
             $payer    = paypal_extract_payer($orderData);
             $shipping = paypal_extract_shipping($orderData);
-            $amt = $resource['amount']['value'] ?? '0';
-            $currency = $resource['amount']['currency_code'] ?? 'USD';
+            $totalAmt = $resource['amount']['value'] ?? ($unit['amount']['value'] ?? '0');
+            $currency = $resource['amount']['currency_code'] ?? ($unit['amount']['currency_code'] ?? 'USD');
+
+            // Pull product IDs from PayPal items[] (sku = "doll-<id>"), falling back
+            // to the legacy single-product reference_id format for old orders.
+            $productIds = [];
+            foreach (($unit['items'] ?? []) as $it) {
+                if (preg_match('/^doll-(\d+)$/', (string)($it['sku'] ?? ''), $m)) {
+                    $productIds[] = (int)$m[1];
+                }
+            }
+            if (!$productIds && preg_match('/^doll-(\d+)$/', (string)($unit['reference_id'] ?? ''), $m)) {
+                $productIds = [(int)$m[1]];
+            }
+            if (!$productIds) break;
+
+            // Fetch product snapshots for the items we're inserting.
+            $place = implode(',', array_fill(0, count($productIds), '?'));
+            $pStmt = db()->prepare("SELECT id, title, price_cents FROM products WHERE id IN ($place)");
+            $pStmt->execute($productIds);
+            $byId = [];
+            foreach ($pStmt->fetchAll() as $p) $byId[(int)$p['id']] = $p;
 
             $pdo = db();
             $pdo->beginTransaction();
-            $pdo->prepare("UPDATE products SET status='sold', sold_at=COALESCE(sold_at, NOW()) WHERE id=:id AND status='available'")
-                ->execute([':id' => $productId]);
+            $upd = $pdo->prepare("UPDATE products SET status='sold', sold_at=COALESCE(sold_at, NOW()) WHERE id=:id AND status='available'");
+            foreach ($productIds as $pid) $upd->execute([':id' => $pid]);
 
             $ins = $pdo->prepare('
                 INSERT INTO orders
                     (product_id, paypal_order_id, paypal_capture_id, amount_cents, currency,
                      customer_email, customer_name, shipping_address, status, paid_at)
                 VALUES
-                    (:pid, :poid, :pcid, :amt, :cur, :email, :name, :ship, "paid", NOW())
+                    (NULL, :poid, :pcid, :amt, :cur, :email, :name, :ship, "paid", NOW())
             ');
             $ins->execute([
-                ':pid'   => $productId,
                 ':poid'  => $orderLink,
                 ':pcid'  => $captureId,
-                ':amt'   => (int)round(((float)$amt) * 100),
+                ':amt'   => (int)round(((float)$totalAmt) * 100),
                 ':cur'   => $currency,
                 ':email' => $payer['email'],
                 ':name'  => $payer['name'],
                 ':ship'  => $shipping ? json_encode($shipping) : null,
             ]);
             $newOrderId = (int)$pdo->lastInsertId();
+
+            $itemIns = $pdo->prepare('
+                INSERT INTO order_items (order_id, product_id, title_snapshot, amount_cents, currency)
+                VALUES (:oid, :pid, :title, :amt, :cur)
+            ');
+            foreach ($productIds as $pid) {
+                $p = $byId[$pid] ?? null;
+                $itemIns->execute([
+                    ':oid'   => $newOrderId,
+                    ':pid'   => $pid,
+                    ':title' => $p['title'] ?? "Doll #$pid",
+                    ':amt'   => (int)($p['price_cents'] ?? 0),
+                    ':cur'   => $currency,
+                ]);
+            }
             $pdo->commit();
 
-            $prodStmt = $pdo->prepare('SELECT * FROM products WHERE id = :id');
-            $prodStmt->execute([':id' => $productId]);
-            $product = $prodStmt->fetch();
             $orderStmt = $pdo->prepare('SELECT * FROM orders WHERE id = :id');
             $orderStmt->execute([':id' => $newOrderId]);
             $order = $orderStmt->fetch();
-            if ($order && $product) {
-                @mail_admin_new_order($order, $product);
-                @mail_customer_receipt($order, $product);
+            $itemsStmt = $pdo->prepare('SELECT * FROM order_items WHERE order_id = :id ORDER BY id ASC');
+            $itemsStmt->execute([':id' => $newOrderId]);
+            $items = $itemsStmt->fetchAll();
+            if ($order && $items) {
+                @mail_admin_new_order_multi($order, $items);
+                @mail_customer_receipt_multi($order, $items);
             }
         } catch (Throwable $e) {
             error_log('Webhook capture-completed error: ' . $e->getMessage());

@@ -12,9 +12,10 @@ if (in_array($filter, ['pending','paid','shipped','refunded','failed'], true)) {
 }
 
 $sql = "
-  SELECT o.*, p.title AS product_title, p.slug AS product_slug
+  SELECT o.*,
+    (SELECT COUNT(*) FROM order_items oi WHERE oi.order_id = o.id) AS item_count,
+    (SELECT title_snapshot FROM order_items oi WHERE oi.order_id = o.id ORDER BY id ASC LIMIT 1) AS first_item_title
   FROM orders o
-  JOIN products p ON p.id = o.product_id
   $where
   ORDER BY o.created_at DESC
 ";
@@ -41,13 +42,18 @@ $rows = $stmt->fetchAll();
   <div class="table-wrap">
     <table>
       <thead>
-        <tr><th>#</th><th>Doll</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr>
+        <tr><th>#</th><th>Items</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr>
       </thead>
       <tbody>
-        <?php foreach ($rows as $o): ?>
+        <?php foreach ($rows as $o):
+          $count = (int)($o['item_count'] ?? 0);
+          $label = $o['first_item_title']
+              ? ($count > 1 ? h($o['first_item_title']) . " <span style=\"color:var(--ink-muted)\">+ " . ($count - 1) . " more</span>" : h($o['first_item_title']))
+              : '<span style="color:var(--ink-muted)">(no items)</span>';
+        ?>
           <tr>
             <td>#<?= (int)$o['id'] ?></td>
-            <td><?= h($o['product_title']) ?></td>
+            <td><?= $label ?></td>
             <td>
               <?= h($o['customer_name'] ?: '—') ?>
               <?php if ($o['customer_email']): ?><br><span style="font-size:.8rem;color:var(--ink-muted)"><?= h($o['customer_email']) ?></span><?php endif; ?>
