@@ -1087,6 +1087,35 @@ if (count($_pool) >= 21) {
     }
 
     /* === FAQ === */
+    .faq-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    .faq-head > div { flex: 1 1 auto; min-width: 0; }
+    .faq-toggle {
+      background: transparent;
+      border: 1px solid var(--rule);
+      color: var(--ink-soft);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+      flex-shrink: 0;
+      align-self: flex-end;
+    }
+    .faq-toggle:hover {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+    .faq-toggle:active { transform: translateY(1px); }
     details.faq {
       border-bottom: 1px solid var(--rule);
       padding: 1.4rem 0;
@@ -1502,9 +1531,12 @@ if (count($_pool) >= 21) {
     <!-- FAQ -->
     <section id="faq">
       <div class="wrap-narrow">
-        <div class="reveal" style="margin-bottom: 2.5rem;">
-          <p class="eyebrow">Frequently Asked</p>
-          <h2 class="h-display">Good <em style="color: var(--rose); font-style: italic; font-weight: 400;">questions</em>.</h2>
+        <div class="faq-head reveal">
+          <div>
+            <p class="eyebrow">Frequently Asked</p>
+            <h2 class="h-display">Good <em style="color: var(--rose); font-style: italic; font-weight: 400;">questions</em>.</h2>
+          </div>
+          <button type="button" class="faq-toggle" id="faq-toggle-all" aria-pressed="false">Expand all</button>
         </div>
         <!-- TODO: Confirm answers with Kanda before publishing — these are reasonable defaults, not commitments. -->
         <details class="faq">
@@ -1587,6 +1619,29 @@ if (count($_pool) >= 21) {
     } else {
       document.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-visible'));
     }
+
+    // FAQ expand/collapse all
+    (function () {
+      const btn = document.getElementById('faq-toggle-all');
+      if (!btn) return;
+      const faqs = document.querySelectorAll('#faq details.faq');
+      if (!faqs.length) return;
+
+      function syncLabel() {
+        const allOpen = Array.from(faqs).every((d) => d.open);
+        btn.textContent = allOpen ? 'Collapse all' : 'Expand all';
+        btn.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
+      }
+
+      btn.addEventListener('click', () => {
+        const allOpen = Array.from(faqs).every((d) => d.open);
+        faqs.forEach((d) => { d.open = !allOpen; });
+        syncLabel();
+      });
+
+      faqs.forEach((d) => d.addEventListener('toggle', syncLabel));
+      syncLabel();
+    })();
 
     // Lightbox
     (function () {
