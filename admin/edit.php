@@ -120,7 +120,7 @@ require __DIR__ . '/header.php';
   <div class="flash flash-error"><?= h($e) ?></div>
 <?php endforeach; ?>
 
-<form class="form" method="post" enctype="multipart/form-data">
+<form class="form form-save" method="post" enctype="multipart/form-data">
   <?= csrf_field() ?>
 
   <div class="row cols-2">
@@ -219,6 +219,28 @@ require __DIR__ . '/header.php';
   .image-tile.marked{outline:3px solid var(--red);outline-offset:-3px}
   .image-tile.marked img{opacity:.4}
   .image-tile .del{user-select:none}
+  .btn.is-saving{position:relative;opacity:.85;pointer-events:none}
+  .btn.is-saving::after{
+    content:"";display:inline-block;width:1em;height:1em;margin-left:.5em;
+    border:2px solid currentColor;border-top-color:transparent;border-radius:50%;
+    vertical-align:-0.2em;animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
+
+<script>
+(function(){
+  var form = document.querySelector('.form-save');
+  if (!form) return;
+  form.addEventListener('submit', function(){
+    var btn = form.querySelector('button[type="submit"]');
+    if (!btn) return;
+    btn.dataset.originalLabel = btn.textContent;
+    btn.textContent = 'Saving';
+    btn.classList.add('is-saving');
+    btn.disabled = true;
+  });
+})();
+</script>
 
 <?php require __DIR__ . '/footer.php'; ?>
