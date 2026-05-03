@@ -126,7 +126,7 @@ function paypal_create_order(int $amountCents, string $description, string $refe
 }
 
 function paypal_capture_order(string $orderId): array {
-    return paypal_request('POST', '/v2/checkout/orders/' . urlencode($orderId) . '/capture', []);
+    return paypal_request('POST', '/v2/checkout/orders/' . urlencode($orderId) . '/capture', null);
 }
 
 function paypal_get_order(string $orderId): array {
