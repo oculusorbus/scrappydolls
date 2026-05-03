@@ -5,6 +5,7 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS product_images;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS products;
@@ -60,7 +61,7 @@ CREATE TABLE product_images (
 -- ---------------------------------------------------------------
 CREATE TABLE orders (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  product_id INT UNSIGNED NOT NULL,
+  product_id INT UNSIGNED NULL,
   paypal_order_id VARCHAR(64) NOT NULL UNIQUE,
   paypal_capture_id VARCHAR(64) DEFAULT NULL,
   amount_cents INT UNSIGNED NOT NULL,
@@ -77,4 +78,21 @@ CREATE TABLE orders (
   FOREIGN KEY (product_id) REFERENCES products(id),
   INDEX idx_status (status),
   INDEX idx_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------
+-- order_items: line items for cart-based multi-doll orders
+-- ---------------------------------------------------------------
+CREATE TABLE order_items (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  order_id INT UNSIGNED NOT NULL,
+  product_id INT UNSIGNED NOT NULL,
+  title_snapshot VARCHAR(255) NOT NULL,
+  amount_cents INT UNSIGNED NOT NULL,
+  currency CHAR(3) NOT NULL DEFAULT 'USD',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id),
+  INDEX idx_order (order_id),
+  INDEX idx_product (product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
