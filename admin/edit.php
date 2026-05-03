@@ -88,7 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!$errors) {
                 flash('success', $id ? 'Doll updated.' : 'Doll created.');
-                redirect('/admin/edit.php?id=' . $productId);
+                // Edits go back to the list (where the change is visible).
+                // New dolls stay on the edit page so the next step (adding
+                // images, marking available) is one click away.
+                redirect($id ? '/admin/products.php' : '/admin/edit.php?id=' . $productId);
             }
         }
 
@@ -301,21 +304,15 @@ require __DIR__ . '/header.php';
     })
     .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, body: j }; }); })
     .then(function(res){
-      clearSaving();
       if (!res.ok || res.body.error) {
+        clearSaving();
         showStatus(res.body.error || 'Save failed.', 'err');
         return;
       }
+      // Server set the success flash; navigate to the list so the change
+      // is visible in the row (consistent with the multipart save path).
       showStatus('Saved ✓', 'ok');
-      // If the slug changed, reflect it in the URL bar without a reload so a
-      // subsequent click on "View on site →" goes to the right place.
-      if (res.body.slug) {
-        var slugInput = form.querySelector('[name="slug"]');
-        if (slugInput) slugInput.value = res.body.slug;
-        var viewLink = document.querySelector('a[href^="/shop/product.php?slug="]');
-        if (viewLink) viewLink.href = '/shop/product.php?slug=' + encodeURIComponent(res.body.slug);
-      }
-      setTimeout(function(){ showStatus('', null); }, 4000);
+      window.location.href = res.body.redirect || '/admin/products.php';
     })
     .catch(function(err){
       clearSaving();

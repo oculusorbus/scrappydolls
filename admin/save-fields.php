@@ -41,4 +41,5 @@ try {
     json_response(['error' => 'Could not save changes.'], 500);
 }
 
-json_response(['ok' => true, 'slug' => $slug]);
+flash('success', 'Doll updated.');
+json_response(['ok' => true, 'slug' => $slug, 'redirect' => '/admin/products.php']);
