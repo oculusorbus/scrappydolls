@@ -10,9 +10,9 @@ declare(strict_types=1);
 const CART_SESSION_KEY = 'cart_product_ids';
 const CART_MAX_ITEMS = 25;
 
-// Flat-rate shipping: $8 first doll, $3 each additional.
-const SHIPPING_FIRST_CENTS      = 800;
-const SHIPPING_ADDITIONAL_CENTS = 300;
+// Flat-rate shipping: $7.99 first doll, $2.99 each additional.
+const SHIPPING_FIRST_CENTS      = 799;
+const SHIPPING_ADDITIONAL_CENTS = 299;
 
 function shipping_cents_for_count(int $count): int {
     if ($count <= 0) return 0;

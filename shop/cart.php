@@ -95,7 +95,7 @@ require __DIR__ . '/header.php';
             <div><dt>Shipping</dt><dd data-cart-shipping><?= fmt_price($shippingCents) ?></dd></div>
             <div class="cart-summary-grand"><dt>Total</dt><dd data-cart-total><?= fmt_price($grandTotal) ?></dd></div>
           </dl>
-          <p class="cart-shipping-note">Flat-rate shipping: $8 first doll, $3 each additional.</p>
+          <p class="cart-shipping-note">Flat-rate shipping: $7.99 first doll, $2.99 each additional.</p>
 
           <?php if (paypal_is_configured()): ?>
             <div id="paypal-button-container"></div>
