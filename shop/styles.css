@@ -37,26 +37,26 @@ header.site .wrap{display:flex;align-items:center;justify-content:space-between;
   font-family:var(--font-display);
   color:var(--ink);text-decoration:none;
   display:inline-flex;flex-direction:column;
-  line-height:1.05;gap:.1rem;
+  line-height:1;gap:.15rem;
 }
 .brand-name{
   font-weight:600;
-  font-variation-settings:"opsz" 36,"SOFT" 80;
-  font-size:1.4rem;letter-spacing:-.02em;
+  font-variation-settings:"opsz" 72,"SOFT" 80;
+  font-size:1.95rem;letter-spacing:-.025em;line-height:.95;
 }
 .brand-name em{font-style:italic;color:var(--rose);font-weight:400}
 .brand-by{
   font-style:italic;
   font-variation-settings:"opsz" 36,"SOFT" 100;
   font-weight:400;
-  font-size:.78rem;color:var(--ink-soft);
-  letter-spacing:.005em;
+  font-size:.8rem;color:var(--ink-soft);
+  letter-spacing:.005em;margin-top:.1rem;
 }
 .brand-artist{
   font-family:var(--font-sans);
-  font-size:.62rem;letter-spacing:.18em;
+  font-size:.6rem;letter-spacing:.2em;
   text-transform:uppercase;color:var(--ink-muted);
-  font-weight:600;margin-top:.05rem;
+  font-weight:600;
 }
 nav.primary{display:flex;align-items:center;gap:1.5rem}
 nav.primary a{
