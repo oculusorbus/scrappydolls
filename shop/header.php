@@ -40,8 +40,10 @@ $pageUrl   = $pageUrl   ?? url($_SERVER['REQUEST_URI'] ?? '/shop/');
   <div class="wrap">
     <div class="brand">
       <a class="brand-name" href="/">scrappy<em>dolls</em></a>
-      <a class="brand-by" href="https://www.facebook.com/kandakayartist/" target="_blank" rel="noopener">from Art Safari Studio</a>
-      <span class="brand-artist">Handmade by Kanda Kay</span>
+      <a class="brand-attribution" href="https://www.facebook.com/kandakayartist/" target="_blank" rel="noopener" aria-label="From Art Safari Studio, handmade by Kanda Kay — visit on Facebook">
+        <span class="brand-by">from Art Safari Studio</span>
+        <span class="brand-artist">Handmade by Kanda Kay</span>
+      </a>
     </div>
     <nav class="primary" aria-label="Primary">
       <a href="/">Home</a>

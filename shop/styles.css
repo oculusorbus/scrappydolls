@@ -48,21 +48,27 @@ header.site .wrap{display:flex;align-items:center;justify-content:space-between;
 }
 .brand-name:hover{color:var(--rose-dark)}
 .brand-name em{font-style:italic;color:var(--rose);font-weight:400}
+.brand-attribution{
+  display:inline-flex;flex-direction:column;
+  gap:.05rem;margin-top:.15rem;
+  text-decoration:none;color:inherit;
+}
+.brand-attribution .brand-by,
+.brand-attribution .brand-artist{transition:color .2s ease}
+.brand-attribution:hover .brand-by,
+.brand-attribution:hover .brand-artist{color:var(--rose)}
 .brand-by{
   font-style:italic;
   font-variation-settings:"opsz" 36,"SOFT" 100;
   font-weight:400;
   font-size:.86rem;color:var(--ink-soft);
-  letter-spacing:.05em;margin-top:.15rem;
-  text-decoration:none;
-  transition:color .2s ease;
+  letter-spacing:.05em;
 }
-.brand-by:hover{color:var(--rose)}
 .brand-artist{
   font-family:var(--font-sans);
   font-size:.62rem;letter-spacing:.27em;
   text-transform:uppercase;color:var(--ink-muted);
-  font-weight:600;margin-top:.05rem;
+  font-weight:600;
 }
 nav.primary{display:flex;align-items:center;gap:1.5rem}
 nav.primary a{

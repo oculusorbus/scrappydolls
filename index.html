@@ -315,6 +315,22 @@
       color: var(--rose);
       font-weight: 400;
     }
+    .brand-attribution {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 0.05rem;
+      margin-top: 0.15rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-attribution .brand-by,
+    .brand-attribution .brand-artist {
+      transition: color 0.2s ease;
+    }
+    .brand-attribution:hover .brand-by,
+    .brand-attribution:hover .brand-artist {
+      color: var(--rose);
+    }
     .brand-by {
       font-style: italic;
       font-variation-settings: "opsz" 36, "SOFT" 100;
@@ -322,11 +338,7 @@
       font-size: 0.86rem;
       color: var(--ink-soft);
       letter-spacing: 0.05em;
-      margin-top: 0.15rem;
-      text-decoration: none;
-      transition: color 0.2s ease;
     }
-    .brand-by:hover { color: var(--rose); }
     .brand-artist {
       font-family: var(--font-sans);
       font-size: 0.62rem;
@@ -334,7 +346,6 @@
       text-transform: uppercase;
       color: var(--ink-muted);
       font-weight: 600;
-      margin-top: 0.05rem;
     }
     nav.primary {
       display: flex;
@@ -1027,8 +1038,10 @@
     <div class="wrap">
       <div class="brand">
         <a class="brand-name" href="/">scrappy<em>dolls</em></a>
-        <a class="brand-by" href="https://www.facebook.com/kandakayartist/" target="_blank" rel="noopener">from Art Safari Studio</a>
-        <span class="brand-artist">Handmade by Kanda Kay</span>
+        <a class="brand-attribution" href="https://www.facebook.com/kandakayartist/" target="_blank" rel="noopener" aria-label="From Art Safari Studio, handmade by Kanda Kay — visit on Facebook">
+          <span class="brand-by">from Art Safari Studio</span>
+          <span class="brand-artist">Handmade by Kanda Kay</span>
+        </a>
       </div>
       <nav class="primary" aria-label="Primary">
         <a href="/shop/">Shop</a>
@@ -1307,11 +1320,11 @@
       <div class="row">
         <div>
           <p class="sig">Scrappy Dolls</p>
-          <p style="margin: 0;">Handmade cloth dolls by <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Kanda Kay</a>.</p>
+          <p style="margin: 0;"><a href="https://www.facebook.com/kandakayartist/" rel="noopener">from Art Safari Studio · Handmade by Kanda Kay</a></p>
         </div>
         <div style="text-align: right;">
           <p style="margin: 0 0 0.5rem;"><a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a></p>
-          <p class="legal">&copy; <span id="y"></span> Scrappy Dolls. Made by hand in San Antonio, Texas.</p>
+          <p class="legal">&copy; <span id="y"></span> Scrappy Dolls · San Antonio, Texas.</p>
         </div>
       </div>
     </div>
