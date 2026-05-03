@@ -113,9 +113,11 @@ require __DIR__ . '/header.php';
                   <a class="cart-suggestion-title" href="<?= h($s['product_url']) ?>"><?= h($s['title']) ?></a>
                   <span class="cart-suggestion-price"><?= h($s['price']) ?></span>
                 </div>
-                <button type="button" class="btn btn-ghost cart-add-btn" data-product-id="<?= (int)$s['id'] ?>" style="width:100%;justify-content:center">
-                  <span class="cart-add-label">+ Add to cart</span>
-                </button>
+                <form method="POST" action="/api/cart-add-form.php" class="cart-add-form">
+                  <input type="hidden" name="product_id" value="<?= (int)$s['id'] ?>">
+                  <input type="hidden" name="return_url" value="/shop/cart.php">
+                  <button type="submit" class="btn btn-ghost" style="width:100%;justify-content:center">+ Add to cart</button>
+                </form>
               </div>
             <?php endforeach; ?>
           </div>

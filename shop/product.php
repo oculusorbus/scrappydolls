@@ -68,17 +68,18 @@ require __DIR__ . '/header.php';
           <?php if (paypal_is_configured()): ?>
             <?php $inCart = cart_has((int)$product['id']); ?>
             <div class="buy-card">
-              <button type="button"
-                      class="btn btn-primary cart-add-btn"
-                      data-product-id="<?= (int)$product['id'] ?>"
-                      <?= $inCart ? 'data-in-cart="1"' : '' ?>
-                      style="width:100%;justify-content:center">
-                <span class="cart-add-label"><?= $inCart ? 'In your cart' : 'Add to cart' ?></span>
-              </button>
-              <a class="btn btn-ghost" href="/shop/cart.php" style="width:100%;justify-content:center;margin-top:.65rem">
-                View cart <span aria-hidden="true">→</span>
-              </a>
-              <div id="cart-error" class="flash flash-error" style="display:none;margin-top:1rem"></div>
+              <?php if ($inCart): ?>
+                <a class="btn btn-primary" href="/shop/cart.php" style="width:100%;justify-content:center">In your cart — view cart →</a>
+              <?php else: ?>
+                <form method="POST" action="/api/cart-add-form.php" style="margin:0">
+                  <input type="hidden" name="product_id" value="<?= (int)$product['id'] ?>">
+                  <input type="hidden" name="return_url" value="/shop/cart.php">
+                  <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Add to cart</button>
+                </form>
+                <a class="btn btn-ghost" href="/shop/cart.php" style="width:100%;justify-content:center;margin-top:.65rem">
+                  View cart <span aria-hidden="true">→</span>
+                </a>
+              <?php endif; ?>
               <p class="note">Pay with PayPal or any major credit card at checkout. Each Scrappy Doll is one of a kind — adding her to your cart doesn't reserve her until you check out.</p>
             </div>
           <?php else: ?>

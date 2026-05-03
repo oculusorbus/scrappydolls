@@ -51,41 +51,22 @@
     }, 1400);
   }
 
-  document.addEventListener('click', function (e) {
-    var addBtn = e.target.closest('[data-cart-add], .cart-add-btn');
-    if (addBtn) {
-      e.preventDefault();
-      var pid = parseInt(addBtn.getAttribute('data-cart-add') || addBtn.getAttribute('data-product-id') || '0', 10);
-      if (!pid) return;
-      addBtn.disabled = true;
-      // If we're adding from a suggestion card, ask the server for a fresh
-      // replacement excluding everything currently visible in the strip.
-      var sugForAdd = addBtn.closest('.cart-suggestion');
-      var payload = { action: 'add', product_id: pid };
-      if (sugForAdd) {
-        payload.exclude_ids = collectVisibleSuggestionIds();
+  // Disable submit buttons on cart-add forms so a fast double-click can't
+  // submit the same form twice. The form still submits normally — we just
+  // visually freeze the button until navigation happens.
+  document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (form && form.classList && form.classList.contains('cart-add-form')) {
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        btn.textContent = 'Adding…';
       }
-      postCart(payload)
-        .then(function (data) {
-          setCartCount(data.count);
-          // From a cart-page suggestion card: fade out the card and reload.
-          // The session-backed suggestion strip keeps the rest of the
-          // lineup stable across the reload, so the buyer doesn't lose
-          // sight of dolls they were eyeing.
-          if (sugForAdd) {
-            sugForAdd.classList.add('is-added');
-            setTimeout(function () { window.location.reload(); }, 350);
-            return;
-          }
-          // Anywhere else (product detail, listing): take the buyer straight
-          // to the cart so they see what's in it and can check out.
-          flashAdded(addBtn);
-          window.location.href = '/shop/cart.php';
-        })
-        .catch(function (err) { showError(err.message); addBtn.disabled = false; });
-      return;
     }
+  });
 
+  document.addEventListener('click', function (e) {
     var refreshBtn = e.target.closest('[data-cart-refresh-suggestions]');
     if (refreshBtn) {
       e.preventDefault();
