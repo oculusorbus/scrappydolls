@@ -28,7 +28,7 @@ if ($items) {
     }
 }
 
-$suggestions = $items ? cart_suggestions(4) : [];
+$suggestions = $items ? cart_suggestions(5) : [];
 $suggestionThumbs = [];
 if ($suggestions) {
     $sids = array_map(fn($i) => (int)$i['id'], $suggestions);
