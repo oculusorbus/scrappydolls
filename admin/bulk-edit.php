@@ -10,11 +10,12 @@ if (!preg_match('#^/admin/#', $returnUrl)) {
     $returnUrl = '/admin/products.php';
 }
 
-$ids      = $_POST['ids']    ?? [];
-$titles   = $_POST['title']  ?? [];
-$slugs    = $_POST['slug']   ?? [];
-$prices   = $_POST['price']  ?? [];
-$statuses = $_POST['status'] ?? [];
+$ids      = $_POST['ids']     ?? [];
+$titles   = $_POST['title']   ?? [];
+$slugs    = $_POST['slug']    ?? [];
+$prices   = $_POST['price']   ?? [];
+$statuses = $_POST['status']  ?? [];
+$featured = $_POST['featured'] ?? []; // checkboxes — only present rows that are checked
 
 if (!is_array($ids) || !$ids) {
     flash('info', 'No rows to save.');
@@ -29,7 +30,7 @@ if (!$idList) {
     redirect($returnUrl);
 }
 $placeholders = implode(',', array_fill(0, count($idList), '?'));
-$sel = $pdo->prepare("SELECT id, slug, title, price_cents, status FROM products WHERE id IN ($placeholders)");
+$sel = $pdo->prepare("SELECT id, slug, title, price_cents, status, featured FROM products WHERE id IN ($placeholders)");
 $sel->execute($idList);
 $current = [];
 foreach ($sel->fetchAll() as $row) $current[(int)$row['id']] = $row;
@@ -68,17 +69,20 @@ try {
             $newSlug = unique_slug($newSlug, $id);
         }
 
+        $newFeatured = !empty($featured[$id]) ? 1 : 0;
+
         // Detect any actual change
         $diff = ($newTitle !== $row['title'])
              || ($newSlug  !== $row['slug'])
              || ($newPriceC !== (int)$row['price_cents'])
-             || ($newStatus !== $row['status']);
+             || ($newStatus !== $row['status'])
+             || ($newFeatured !== (int)$row['featured']);
         if (!$diff) continue;
 
         $statusToSold = ($newStatus === 'sold' && $row['status'] !== 'sold');
 
         $sql = 'UPDATE products
-                SET title = :t, slug = :slug, price_cents = :p, status = :s'
+                SET title = :t, slug = :slug, price_cents = :p, status = :s, featured = :f'
              . ($statusToSold ? ', sold_at = NOW()' : '')
              . ' WHERE id = :id';
         $upd = $pdo->prepare($sql);
@@ -87,6 +91,7 @@ try {
             ':slug' => $newSlug,
             ':p'    => $newPriceC,
             ':s'    => $newStatus,
+            ':f'    => $newFeatured,
             ':id'   => $id,
         ]);
         $changed++;

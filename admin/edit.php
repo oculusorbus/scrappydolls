@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $description = trim((string)($_POST['description'] ?? ''));
         $price = (string)($_POST['price'] ?? '');
         $status = (string)($_POST['status'] ?? 'draft');
+        $featured = !empty($_POST['featured']) ? 1 : 0;
 
         if ($title === '') $errors[] = 'Title is required.';
         if (!preg_match('/^\d+(\.\d{1,2})?$/', $price)) $errors[] = 'Price must look like 125 or 125.00.';
@@ -38,17 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$errors) {
             if ($id) {
-                $up = db()->prepare('UPDATE products SET slug=:slug,title=:t,description=:d,price_cents=:p,status=:s WHERE id=:id');
+                $up = db()->prepare('UPDATE products SET slug=:slug,title=:t,description=:d,price_cents=:p,status=:s,featured=:f WHERE id=:id');
                 $up->execute([
                     ':slug' => $slug, ':t' => $title, ':d' => $description,
-                    ':p' => $priceCents, ':s' => $status, ':id' => $id,
+                    ':p' => $priceCents, ':s' => $status, ':f' => $featured, ':id' => $id,
                 ]);
                 $productId = $id;
             } else {
-                $ins = db()->prepare('INSERT INTO products (slug,title,description,price_cents,status) VALUES (:slug,:t,:d,:p,:s)');
+                $ins = db()->prepare('INSERT INTO products (slug,title,description,price_cents,status,featured) VALUES (:slug,:t,:d,:p,:s,:f)');
                 $ins->execute([
                     ':slug' => $slug, ':t' => $title, ':d' => $description,
-                    ':p' => $priceCents, ':s' => $status,
+                    ':p' => $priceCents, ':s' => $status, ':f' => $featured,
                 ]);
                 $productId = (int)db()->lastInsertId();
             }
@@ -128,6 +129,11 @@ require __DIR__ . '/header.php';
         <option value="available"  <?= $cur==='available'?'selected':'' ?>>Available (on site)</option>
         <option value="sold"       <?= $cur==='sold'?'selected':'' ?>>Sold</option>
       </select>
+      <?php $isFeatured = !empty($_POST['featured']) || (!isset($_POST['featured']) && !empty($product['featured'])); ?>
+      <label style="display:flex;align-items:center;gap:.5rem;margin-top:.6rem;font-size:.92rem;color:var(--ink);text-transform:none;letter-spacing:0;font-weight:500">
+        <input type="checkbox" name="featured" value="1" <?= $isFeatured ? 'checked' : '' ?>>
+        ★ Featured (prioritized on the landing page)
+      </label>
     </div>
   </div>
 

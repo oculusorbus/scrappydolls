@@ -99,6 +99,42 @@ function json_response($data, int $status = 200): void {
     exit;
 }
 
+/**
+ * Pull dolls for landing-page surfaces in priority order:
+ *   1) featured + available  (random within bucket)
+ *   2) other available       (random within bucket)
+ *   3) sold                  (random within bucket — only used to fill
+ *      remaining slots if available stock is exhausted)
+ *
+ * Drafts are never surfaced. Returns up to $count rows including a
+ * `thumb` filename when the doll has at least one image.
+ */
+function landing_dolls(int $count): array {
+    $count = max(0, $count);
+    if ($count === 0) return [];
+    $stmt = db()->prepare("
+        SELECT
+            p.id, p.slug, p.title, p.price_cents, p.status, p.featured,
+            (SELECT filename FROM product_images
+              WHERE product_id = p.id
+              ORDER BY sort_order ASC, id ASC
+              LIMIT 1) AS thumb
+        FROM products p
+        WHERE p.status IN ('available', 'sold')
+        ORDER BY
+          CASE
+            WHEN p.featured = 1 AND p.status = 'available' THEN 1
+            WHEN p.status = 'available' THEN 2
+            ELSE 3
+          END,
+          RAND()
+        LIMIT :n
+    ");
+    $stmt->bindValue(':n', $count, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
 function get_request_headers(): array {
     if (function_exists('getallheaders')) {
         $hdrs = getallheaders();

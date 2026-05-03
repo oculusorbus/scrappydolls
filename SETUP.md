@@ -37,8 +37,9 @@ Self-contained PHP/MySQL e-commerce for Kanda's dolls, with a public shop, an ad
 4. Run the migrations in order (numbered files in `sql/migrations/`):
    ```bash
    mysql -u <user> -p scrappydolls < sql/migrations/002_add_analytics.sql
+   mysql -u <user> -p scrappydolls < sql/migrations/003_add_featured.sql
    ```
-   Migrations are additive — safe to run on an already-populated DB. If you set up before this migration existed, run it now to enable Reports.
+   Migrations are additive — safe to run on an already-populated DB. If you set up before a migration existed, run it now: 002 enables Reports, 003 enables the Featured flag for landing-page prioritization.
 
 ## Step 2 — Config
 
@@ -172,7 +173,7 @@ If the EU/UK ever becomes a meaningful audience, you'll likely want to add a coo
 
 | Path | Purpose |
 |---|---|
-| `index.html` | Existing marketing landing page (unchanged by this work) |
+| `index.php` | Marketing landing page — pulls live store dolls into the carousel + roster (Featured first, then random Available, then Sold to fill remaining slots) |
 | `shop/index.php` | Public shop listing |
 | `shop/product.php?slug=...` | Single doll page with PayPal Smart Buttons |
 | `shop/success.php` | Post-payment thank-you |

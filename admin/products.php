@@ -11,14 +11,16 @@ $params = [];
 if (in_array($filter, ['draft', 'available', 'sold'], true)) {
     $where = 'WHERE p.status = :s';
     $params[':s'] = $filter;
+} elseif ($filter === 'featured') {
+    $where = 'WHERE p.featured = 1';
 }
 
 $sql = "
-  SELECT p.id, p.slug, p.title, p.price_cents, p.status, p.updated_at,
+  SELECT p.id, p.slug, p.title, p.price_cents, p.status, p.featured, p.updated_at,
     (SELECT filename FROM product_images WHERE product_id = p.id ORDER BY sort_order ASC, id ASC LIMIT 1) AS thumb
   FROM products p
   $where
-  ORDER BY p.updated_at DESC
+  ORDER BY p.featured DESC, p.updated_at DESC
 ";
 $stmt = db()->prepare($sql);
 $stmt->execute($params);
@@ -43,6 +45,7 @@ $enterEditUrl = '/admin/products.php?mode=edit' . ($filter !== 'all' ? '&status=
 
 <div style="margin-bottom:1.5rem">
   <a class="btn btn-sm <?= $filter==='all' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php">All</a>
+  <a class="btn btn-sm <?= $filter==='featured' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php?status=featured">★ Featured</a>
   <a class="btn btn-sm <?= $filter==='available' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php?status=available">Available</a>
   <a class="btn btn-sm <?= $filter==='draft' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php?status=draft">Drafts</a>
   <a class="btn btn-sm <?= $filter==='sold' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php?status=sold">Sold</a>
@@ -79,6 +82,7 @@ $enterEditUrl = '/admin/products.php?mode=edit' . ($filter !== 'all' ? '&status=
           <th>Title</th>
           <th>Price</th>
           <th>Status</th>
+          <th title="Featured on landing page" style="width:3rem;text-align:center">★</th>
           <th><?= $editMode ? 'Slug' : 'Updated' ?></th>
           <th></th>
         </tr>
@@ -117,6 +121,11 @@ $enterEditUrl = '/admin/products.php?mode=edit' . ($filter !== 'all' ? '&status=
                   <?php endforeach; ?>
                 </select>
               </td>
+              <td style="width:3rem;text-align:center">
+                <input type="checkbox" name="featured[<?= $id ?>]" value="1"
+                       class="cell-input featured-cb" data-orig="<?= (int)$r['featured'] ?>"
+                       <?= (int)$r['featured']===1 ? 'checked' : '' ?>>
+              </td>
               <td style="width:14rem">
                 <input type="text" name="slug[<?= $id ?>]" value="<?= h($r['slug']) ?>"
                        class="cell-input slug" data-orig="<?= h($r['slug']) ?>" maxlength="255">
@@ -131,6 +140,7 @@ $enterEditUrl = '/admin/products.php?mode=edit' . ($filter !== 'all' ? '&status=
               </td>
               <td><?= fmt_price((int)$r['price_cents']) ?></td>
               <td><span class="badge badge-<?= h($r['status']) ?>"><?= h($r['status']) ?></span></td>
+              <td style="text-align:center"><?= !empty($r['featured']) ? '<span title="Featured" style="color:var(--rose);font-size:1.1rem">★</span>' : '<span style="color:var(--rule);font-size:1rem">☆</span>' ?></td>
               <td style="color:var(--ink-muted);font-size:.85rem"><?= h(date('M j, Y', strtotime($r['updated_at']))) ?></td>
               <td class="actions">
                 <a class="btn btn-sm btn-ghost" href="/shop/product.php?slug=<?= h(urlencode($r['slug'])) ?>" target="_blank" rel="noopener">View</a>
@@ -156,18 +166,21 @@ $enterEditUrl = '/admin/products.php?mode=edit' . ($filter !== 'all' ? '&status=
     (function(){
       var form = document.getElementById('bulkEditForm');
       var dirty = document.getElementById('dirtyCount');
+      function isDirty(el) {
+        if (el.type === 'checkbox') {
+          return (el.checked ? '1' : '0') !== el.dataset.orig;
+        }
+        return el.value !== el.dataset.orig;
+      }
       function recount() {
         var n = 0;
         form.querySelectorAll('.cell-input').forEach(function(el){
-          if (el.value !== el.dataset.orig) {
+          if (isDirty(el)) {
             el.closest('tr').classList.add('row-dirty');
             n++;
           } else {
-            // Only un-dirty if every input in row is clean
             var row = el.closest('tr');
-            var anyDirty = Array.prototype.some.call(row.querySelectorAll('.cell-input'), function(i){
-              return i.value !== i.dataset.orig;
-            });
+            var anyDirty = Array.prototype.some.call(row.querySelectorAll('.cell-input'), isDirty);
             if (!anyDirty) row.classList.remove('row-dirty');
           }
         });

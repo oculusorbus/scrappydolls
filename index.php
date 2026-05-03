@@ -1,3 +1,21 @@
+<?php
+require_once __DIR__ . '/lib/bootstrap.php';
+
+// Pull a pool of dolls in priority order (featured-available > available > sold).
+// Carousel uses 12, roster uses 9 — drawn from one query so featured/available
+// dolls take precedence in both surfaces.
+$_pool = landing_dolls(24);
+
+// Distribute across two surfaces. If there aren't enough unique dolls for
+// non-overlapping sets, allow overlap so neither surface is empty.
+if (count($_pool) >= 21) {
+    $carouselDolls = array_slice($_pool, 0, 12);
+    $rosterDolls   = array_slice($_pool, 12, 9);
+} else {
+    $carouselDolls = array_slice($_pool, 0, min(12, count($_pool)));
+    $rosterDolls   = array_slice($_pool, 0, min(9,  count($_pool)));
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -647,13 +665,34 @@
       animation: marquee 60s linear infinite;
     }
     .marquee:hover .marquee-track { animation-play-state: paused; }
+    .marquee-item {
+      position: relative;
+      flex-shrink: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease;
+    }
+    .marquee-item:hover { transform: translateY(-4px); }
     .marquee-track img {
       height: 16rem;
       width: auto;
       border-radius: var(--radius);
       object-fit: cover;
       flex-shrink: 0;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      display: block;
+    }
+    .marquee-sold {
+      position: absolute;
+      top: 0.6rem; right: 0.6rem;
+      background: rgba(26, 19, 24, 0.85);
+      color: var(--paper);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.55rem;
+      border-radius: 999px;
     }
     @keyframes marquee {
       from { transform: translateX(0); }
@@ -733,6 +772,103 @@
     @media (max-width: 30rem) {
       .gallery { grid-template-columns: 1fr; }
       .gallery figure:nth-child(n) { grid-column: span 1; grid-row: span 1; }
+    }
+
+    /* === ROSTER (live shop preview on landing) === */
+    .roster {
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: repeat(6, 1fr);
+      grid-auto-rows: 13rem;
+    }
+    .roster-card {
+      position: relative;
+      display: block;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--paper-3);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.3s ease;
+    }
+    .roster-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      color: inherit;
+    }
+    .roster-card img,
+    .roster-placeholder {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 0.6s cubic-bezier(0.2,0.8,0.2,1);
+    }
+    .roster-placeholder { background: var(--paper-3); }
+    .roster-card:hover img { transform: scale(1.04); }
+    .roster-meta {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 1.5rem 1rem 0.85rem;
+      background: linear-gradient(to top, rgba(26,19,24,0.85), rgba(26,19,24,0));
+      color: var(--paper);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 0.75rem;
+    }
+    .roster-title {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 1rem;
+      line-height: 1.15;
+      letter-spacing: -0.005em;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .roster-price {
+      background: rgba(255,255,255,0.95);
+      color: var(--rose-dark);
+      font-weight: 600;
+      font-size: 0.82rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+    .roster-tag.sold {
+      background: rgba(255,255,255,0.95);
+      color: var(--ink);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.6rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+    /* Asymmetric layout — same shape as the old .gallery */
+    .roster .roster-card:nth-child(1) { grid-column: span 3; grid-row: span 2; }
+    .roster .roster-card:nth-child(2) { grid-column: span 3; grid-row: span 1; }
+    .roster .roster-card:nth-child(3) { grid-column: span 2; grid-row: span 1; }
+    .roster .roster-card:nth-child(4) { grid-column: span 1; grid-row: span 1; }
+    .roster .roster-card:nth-child(5) { grid-column: span 2; grid-row: span 2; }
+    .roster .roster-card:nth-child(6) { grid-column: span 2; grid-row: span 1; }
+    .roster .roster-card:nth-child(7) { grid-column: span 2; grid-row: span 1; }
+    .roster .roster-card:nth-child(8) { grid-column: span 2; grid-row: span 1; }
+    .roster .roster-card:nth-child(9) { grid-column: span 2; grid-row: span 1; }
+    @media (max-width: 60rem) {
+      .roster { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 11rem; }
+      .roster .roster-card:nth-child(n) { grid-column: span 1; grid-row: span 1; }
+      .roster .roster-card:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+    }
+    @media (max-width: 30rem) {
+      .roster { grid-template-columns: 1fr; }
+      .roster .roster-card:nth-child(n) { grid-column: span 1; grid-row: span 1; }
     }
 
     /* === LIGHTBOX === */
@@ -1143,63 +1279,68 @@
     </section>
 
     <!-- MARQUEE -->
-    <section class="marquee" aria-hidden="true">
+    <?php if ($carouselDolls): ?>
+    <section class="marquee" aria-label="Recent dolls scrolling">
       <div class="marquee-track">
-        <img src="images/doll-yellow-yarn.jpg" alt="">
-        <img src="images/doll-rainbow-hair.jpg" alt="">
-        <img src="images/doll-feature-horns.jpg" alt="">
-        <img src="images/doll-patriotic.jpg" alt="">
-        <img src="images/doll-route-66.jpg" alt="">
-        <img src="images/doll-orange-dress.jpg" alt="">
+        <?php foreach ($carouselDolls as $d): if (empty($d['thumb'])) continue; ?>
+          <a class="marquee-item" href="/shop/product.php?slug=<?= h(urlencode($d['slug'])) ?>" title="<?= h($d['title']) ?><?= $d['status']==='sold' ? ' — sold' : ' · ' . fmt_price((int)$d['price_cents']) ?>">
+            <img src="<?= h(asset_url($d['thumb'])) ?>" alt="<?= h($d['title']) ?>" loading="lazy">
+            <?php if ($d['status'] === 'sold'): ?><span class="marquee-sold">Sold</span><?php endif; ?>
+          </a>
+        <?php endforeach; ?>
         <!-- Duplicates for seamless loop -->
-        <img src="images/doll-yellow-yarn.jpg" alt="">
-        <img src="images/doll-rainbow-hair.jpg" alt="">
-        <img src="images/doll-feature-horns.jpg" alt="">
-        <img src="images/doll-patriotic.jpg" alt="">
-        <img src="images/doll-route-66.jpg" alt="">
-        <img src="images/doll-orange-dress.jpg" alt="">
+        <?php foreach ($carouselDolls as $d): if (empty($d['thumb'])) continue; ?>
+          <a class="marquee-item" href="/shop/product.php?slug=<?= h(urlencode($d['slug'])) ?>" aria-hidden="true" tabindex="-1">
+            <img src="<?= h(asset_url($d['thumb'])) ?>" alt="" loading="lazy">
+            <?php if ($d['status'] === 'sold'): ?><span class="marquee-sold">Sold</span><?php endif; ?>
+          </a>
+        <?php endforeach; ?>
       </div>
     </section>
+    <?php endif; ?>
 
-    <!-- GALLERY -->
+    <!-- ROSTER (live store dolls) -->
     <section id="gallery">
       <div class="wrap">
         <div class="gallery-head reveal">
           <div>
-            <p class="eyebrow">Recent Work</p>
+            <p class="eyebrow">Available Now</p>
             <h2 class="h-display">A roster of <em style="color: var(--rose); font-style: italic; font-weight: 400;">characters</em>.</h2>
           </div>
-          <p>A look at recent Scrappy Dolls. New work appears first on Facebook — follow along to see them as they're finished.</p>
+          <p>A live look at the studio. Click any doll to take her home.</p>
         </div>
-        <div class="gallery">
-          <figure>
-            <img src="images/doll-collection.jpg" alt="A wall display of dozens of handmade Scrappy Dolls by Kanda Kay, each one one-of-a-kind" loading="lazy" width="1200" height="1200">
-          </figure>
-          <figure>
-            <img src="images/doll-yellow-yarn.jpg" alt="Scrappy Doll with yellow yarn hair, a burlap face, brass button accents, and a patterned orange and red dress" loading="lazy" width="1200" height="1200">
-          </figure>
-          <figure>
-            <img src="images/doll-rainbow-hair.jpg" alt="Scrappy Doll with multicolored yarn hair, an embroidered smile, and a vibrant patchwork dress with lace trim" loading="lazy" width="1200" height="1200">
-          </figure>
-          <figure>
-            <img src="images/doll-route-66.jpg" alt="Scrappy Doll wearing a Route 66 Motel Court t-shirt, with black yarn pigtails tied with red ribbon" loading="lazy" width="1200" height="1200">
-          </figure>
-          <figure>
-            <img src="images/doll-patriotic.jpg" alt="Patriotic Scrappy Doll in red, white, and blue with curly brown hair, a star headband, and beaded jewelry" loading="lazy" width="1200" height="1200">
-          </figure>
-          <figure>
-            <img src="images/doll-orange-dress.jpg" alt="Scrappy Doll with black curly yarn hair and an orange and blue speckled dress with lace trim" loading="lazy" width="1200" height="1200">
-          </figure>
-          <figure>
-            <img src="images/doll-owl.jpg" alt="Handmade owl Scrappy Doll in blue tweed fabric with burlap eyes and a felt beak" loading="lazy" width="1200" height="1200">
-          </figure>
-          <figure>
-            <img src="images/doll-mouse-pair.jpg" alt="A pair of mouse-eared Scrappy Dolls — one in plaid fabric, one in green floral fabric" loading="lazy" width="1200" height="1200">
-          </figure>
-          <figure>
-            <img src="images/doll-dog-pair.jpg" alt="Two handmade Scrappy Dog Dolls — a brown puppy and a tan terrier with button eyes" loading="lazy" width="1200" height="1200">
-          </figure>
-        </div>
+
+        <?php if ($rosterDolls): ?>
+          <div class="roster">
+            <?php foreach ($rosterDolls as $d): ?>
+              <a class="roster-card" href="/shop/product.php?slug=<?= h(urlencode($d['slug'])) ?>">
+                <?php if ($d['thumb']): ?>
+                  <img src="<?= h(asset_url($d['thumb'])) ?>" alt="<?= h($d['title']) ?>" loading="lazy">
+                <?php else: ?>
+                  <div class="roster-placeholder"></div>
+                <?php endif; ?>
+                <div class="roster-meta">
+                  <span class="roster-title"><?= h($d['title']) ?></span>
+                  <?php if ($d['status'] === 'sold'): ?>
+                    <span class="roster-tag sold">Sold</span>
+                  <?php else: ?>
+                    <span class="roster-price"><?= fmt_price((int)$d['price_cents']) ?></span>
+                  <?php endif; ?>
+                </div>
+              </a>
+            <?php endforeach; ?>
+          </div>
+          <div style="text-align:center;margin-top:2.5rem">
+            <a class="btn btn-primary" href="/shop/">
+              Browse the full shop <span class="arrow" aria-hidden="true">→</span>
+            </a>
+          </div>
+        <?php else: ?>
+          <div class="empty-shop" style="background:var(--paper-2);border:1px dashed var(--rule);border-radius:var(--radius);padding:4rem 2rem;text-align:center;color:var(--ink-soft)">
+            <h3 style="font-family:var(--font-display);font-size:1.5rem;margin:0 0 .5rem;color:var(--ink)">Fresh dolls are on the table</h3>
+            <p>New work appears first on Facebook — <a href="https://www.facebook.com/kandakayartist/" rel="noopener">follow along</a> to see them as they're finished.</p>
+          </div>
+        <?php endif; ?>
       </div>
     </section>
 
