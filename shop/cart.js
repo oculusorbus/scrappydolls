@@ -89,15 +89,20 @@
           if (row) row.remove();
           // If the cart is empty, reload so the "empty cart" view renders.
           if (data.count === 0) window.location.reload();
-          else updateCartTotal(data.total_cents);
+          else updateCartTotals(data);
         })
         .catch(function (err) { showError(err.message); rmBtn.disabled = false; });
     }
   });
 
-  function updateCartTotal(cents) {
-    var t = document.querySelector('[data-cart-total]');
-    if (!t) return;
-    t.textContent = '$' + (cents / 100).toFixed(2);
+  function fmtCents(c) { return '$' + (c / 100).toFixed(2); }
+
+  function updateCartTotals(data) {
+    var sub  = document.querySelector('[data-cart-subtotal]');
+    var ship = document.querySelector('[data-cart-shipping]');
+    var tot  = document.querySelector('[data-cart-total]');
+    if (sub  && typeof data.subtotal_cents === 'number')    sub.textContent  = fmtCents(data.subtotal_cents);
+    if (ship && typeof data.shipping_cents === 'number')    ship.textContent = fmtCents(data.shipping_cents);
+    if (tot  && typeof data.grand_total_cents === 'number') tot.textContent  = fmtCents(data.grand_total_cents);
   }
 })();

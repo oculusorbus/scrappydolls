@@ -10,6 +10,23 @@ declare(strict_types=1);
 const CART_SESSION_KEY = 'cart_product_ids';
 const CART_MAX_ITEMS = 25;
 
+// Flat-rate shipping: $8 first doll, $3 each additional.
+const SHIPPING_FIRST_CENTS      = 800;
+const SHIPPING_ADDITIONAL_CENTS = 300;
+
+function shipping_cents_for_count(int $count): int {
+    if ($count <= 0) return 0;
+    return SHIPPING_FIRST_CENTS + (max(0, $count - 1) * SHIPPING_ADDITIONAL_CENTS);
+}
+
+function cart_shipping_cents(): int {
+    return shipping_cents_for_count(cart_count());
+}
+
+function cart_grand_total_cents(): int {
+    return cart_total_cents() + cart_shipping_cents();
+}
+
 function cart_ids(): array {
     $ids = $_SESSION[CART_SESSION_KEY] ?? [];
     return is_array($ids) ? array_values(array_unique(array_map('intval', $ids))) : [];

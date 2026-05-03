@@ -347,6 +347,11 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
 }
 .cart-summary-rows dt,.cart-summary-rows dd{margin:0;color:var(--ink-soft);font-size:.92rem}
 .cart-summary-rows dd{font-weight:500;color:var(--ink)}
+.cart-summary-grand{padding-top:.4rem;border-bottom:0 !important}
+.cart-summary-grand dt,.cart-summary-grand dd{
+  font-family:var(--font-display);font-size:1.15rem;color:var(--ink);font-weight:500;
+}
+.cart-shipping-note{font-size:.78rem;color:var(--ink-muted);margin:.4rem 0 1rem;text-align:center}
 .cart-summary .note{font-size:.8rem;color:var(--ink-muted);margin-top:1rem}
 
 /* === Cart suggestions === */

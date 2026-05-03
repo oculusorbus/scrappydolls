@@ -84,8 +84,10 @@ try {
     $orderData = paypal_get_order($orderId);
     $payer    = paypal_extract_payer($orderData);
     $shipping = paypal_extract_shipping($orderData);
-    $totalCents = 0;
-    foreach ($cartIds as $id) $totalCents += (int)$byId[$id]['price_cents'];
+    $itemsTotal = 0;
+    foreach ($cartIds as $id) $itemsTotal += (int)$byId[$id]['price_cents'];
+    $shippingCents = shipping_cents_for_count(count($cartIds));
+    $totalCents = $itemsTotal + $shippingCents;
     $currency = $orderData['purchase_units'][0]['amount']['currency_code'] ?? 'USD';
 
     $pdo = db();
