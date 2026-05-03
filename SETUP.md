@@ -38,8 +38,9 @@ Self-contained PHP/MySQL e-commerce for Kanda's dolls, with a public shop, an ad
    ```bash
    mysql -u <user> -p scrappydolls < sql/migrations/002_add_analytics.sql
    mysql -u <user> -p scrappydolls < sql/migrations/003_add_featured.sql
+   mysql -u <user> -p scrappydolls < sql/migrations/004_renumber_scrappy_dolls.sql
    ```
-   Migrations are additive — safe to run on an already-populated DB. If you set up before a migration existed, run it now: 002 enables Reports, 003 enables the Featured flag for landing-page prioritization.
+   Migrations are additive — safe to run on an already-populated DB. If you set up before a migration existed, run it now: 002 enables Reports, 003 enables the Featured flag, 004 bumps existing "Scrappy Doll #N" titles by +100 to align with the catalog protocol (#1→#101, #99→#199, etc.). 004 is idempotent — re-running it does nothing once numbers are at 101+.
 
 ## Step 2 — Config
 

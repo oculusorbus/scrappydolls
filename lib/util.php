@@ -31,8 +31,17 @@ function unique_slug(string $base, ?int $excludeId = null): string {
 }
 
 /**
+ * Stepdad's catalog protocol: Scrappy Doll numbers start at 101 (no
+ * doll labeled below #101 should ever go up). Auto-applied by the
+ * enumeration helper below for the "Scrappy Doll" base title.
+ */
+const SCRAPPY_DOLL_MIN_NUMBER = 101;
+
+/**
  * Find the next free enumeration number for a base title — e.g. given
- * "Scrappy Doll" and existing rows titled "Scrappy Doll #3" / "#7", returns 8.
+ * "Scrappy Doll" and existing rows titled "Scrappy Doll #103" / "#107",
+ * returns 108. For the canonical "Scrappy Doll" base title we floor at
+ * SCRAPPY_DOLL_MIN_NUMBER (101) so a fresh catalog auto-starts at 101.
  */
 function next_enumeration_number(string $baseTitle): int {
     $like = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $baseTitle) . ' #%';
@@ -44,7 +53,14 @@ function next_enumeration_number(string $baseTitle): int {
             $max = max($max, (int)$m[1]);
         }
     }
-    return $max + 1;
+    $next = $max + 1;
+
+    // Apply the protocol floor only for the canonical "Scrappy Doll" base.
+    // Other base titles (e.g. "Memory Doll", "Pet Portrait") number from 1.
+    if (strcasecmp(trim($baseTitle), 'Scrappy Doll') === 0 && $next < SCRAPPY_DOLL_MIN_NUMBER) {
+        $next = SCRAPPY_DOLL_MIN_NUMBER;
+    }
+    return $next;
 }
 
 function fmt_price(int $cents): string {
