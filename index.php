@@ -1586,6 +1586,10 @@ if (count($_pool) >= 21) {
           <p>Most Scrappy Dolls stand around 12 inches tall — about a foot — with natural variation depending on the fabric and the character that emerges. <a href="#size">See the size comparison →</a></p>
         </details>
         <details class="faq">
+          <summary>How much is shipping?</summary>
+          <p>Flat-rate domestic shipping: <strong>$8 for the first doll</strong> and <strong>$3 for each additional doll</strong> in the same order. Calculated automatically at checkout — bundling is the cheapest way to bring more than one home.</p>
+        </details>
+        <details class="faq">
           <summary>How do I care for a Scrappy Doll?</summary>
           <p>Spot clean only, with a damp cloth and mild soap if needed. Treat your Scrappy Doll as a display piece — hand-washing, soaking, or laundering will loosen the adhesives and undermine the fabric construction, and can cause the doll to fall apart.</p>
         </details>

@@ -37,11 +37,22 @@ function _mail_format_shipping(?string $shipJson): string {
               . ($a['country_code'] ?? '')) . "\n\n";
 }
 
+function _mail_order_breakdown(array $order, array $items): array {
+    $itemsTotal = 0;
+    foreach ($items as $it) $itemsTotal += (int)$it['amount_cents'];
+    $orderTotal = (int)$order['amount_cents'];
+    return [
+        'items_total'   => $itemsTotal,
+        'shipping'      => max(0, $orderTotal - $itemsTotal),
+        'order_total'   => $orderTotal,
+    ];
+}
+
 function mail_admin_new_order_multi(array $order, array $items): void {
     $cfg = config('mail');
     $to = $cfg['admin_email'] ?? null;
     if (!$to) return;
-    $total = fmt_price((int)$order['amount_cents']);
+    $b = _mail_order_breakdown($order, $items);
     $cust = $order['customer_name'] ?: ($order['customer_email'] ?: 'unknown buyer');
     $lines = '';
     foreach ($items as $it) {
@@ -49,17 +60,21 @@ function mail_admin_new_order_multi(array $order, array $items): void {
                . '  — ' . fmt_price((int)$it['amount_cents']) . "\n";
     }
     $count = count($items);
+    $totalsBlock = "Subtotal: " . fmt_price($b['items_total']) . "\n"
+                 . ($b['shipping'] > 0 ? "Shipping: " . fmt_price($b['shipping']) . "\n" : '')
+                 . "Total: " . fmt_price($b['order_total']) . "\n";
     $body = "You sold $count " . ($count === 1 ? 'doll' : 'dolls') . "!\n\n"
           . "Items:\n$lines\n"
-          . "Total: $total\n"
+          . $totalsBlock . "\n"
           . "Buyer: $cust\n"
           . ($order['customer_email'] ? "Email: {$order['customer_email']}\n" : '')
           . "PayPal Order: {$order['paypal_order_id']}\n\n"
           . _mail_format_shipping($order['shipping_address'] ?? null)
           . "Manage in admin: " . url('admin/order.php?id=' . (int)$order['id']) . "\n";
+    $totalStr = fmt_price($b['order_total']);
     $subject = $count === 1
-        ? "New order — " . ($items[0]['title_snapshot'] ?? 'doll') . " ($total)"
-        : "New order — $count dolls ($total)";
+        ? "New order — " . ($items[0]['title_snapshot'] ?? 'doll') . " ($totalStr)"
+        : "New order — $count dolls ($totalStr)";
     send_mail($to, $subject, $body, $order['customer_email'] ?: null);
 }
 
@@ -68,7 +83,7 @@ function mail_customer_receipt_multi(array $order, array $items): void {
     if (!$email) return;
     $cfg = config('mail');
     $replyTo = $cfg['admin_email'] ?? null;
-    $total = fmt_price((int)$order['amount_cents']);
+    $b = _mail_order_breakdown($order, $items);
     $count = count($items);
     $lines = '';
     foreach ($items as $it) {
@@ -78,9 +93,12 @@ function mail_customer_receipt_multi(array $order, array $items): void {
     $intro = $count === 1
         ? "Thank you for your order!\n\n"
         : "Thank you for your order of $count dolls!\n\n";
+    $totalsBlock = "Subtotal: " . fmt_price($b['items_total']) . "\n"
+                 . ($b['shipping'] > 0 ? "Shipping: " . fmt_price($b['shipping']) . "\n" : '')
+                 . "Total: " . fmt_price($b['order_total']) . "\n";
     $body = $intro
           . $lines . "\n"
-          . "Total: $total\n\n"
+          . $totalsBlock . "\n"
           . ($count === 1 ? "Your doll" : "Your dolls") . " will be hand-packed and shipped within a few days. "
           . "You'll get a separate note from PayPal with your payment receipt.\n\n"
           . "If you have questions, just reply to this email.\n\n"

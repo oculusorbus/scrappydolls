@@ -17,6 +17,7 @@ try {
     $referenceId = 'cart-' . substr(tracking_session_hash(), 0, 24);
     $resp = paypal_create_cart_order(
         $items,
+        cart_shipping_cents(),
         $referenceId,
         url('shop/success.php'),
         url('shop/cart.php')

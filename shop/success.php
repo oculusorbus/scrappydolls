@@ -34,7 +34,12 @@ require __DIR__ . '/header.php';
     <p class="eyebrow" style="justify-content:center">Thank you</p>
     <h1><?= count($items) > 1 ? 'Your dolls are on their way.' : 'Your doll is on her way.' ?></h1>
     <p>Kanda will hand-pack and ship within a few days. You'll get a separate email from PayPal with your payment receipt.</p>
-    <?php if ($items): ?>
+    <?php if ($items):
+      $itemsTotal = 0;
+      foreach ($items as $it) $itemsTotal += (int)$it['amount_cents'];
+      $orderTotal  = (int)($order['amount_cents'] ?? $itemsTotal);
+      $shippingPaid = max(0, $orderTotal - $itemsTotal);
+    ?>
       <ul style="list-style:none;padding:0;margin:1.5rem 0 0;text-align:left;display:inline-block">
         <?php foreach ($items as $it): ?>
           <li style="padding:.4rem 0;border-bottom:1px dashed var(--rule-soft);min-width:18rem;display:flex;justify-content:space-between;gap:1rem">
@@ -42,6 +47,14 @@ require __DIR__ . '/header.php';
             <span style="color:var(--ink-soft)"><?= fmt_price((int)$it['amount_cents']) ?></span>
           </li>
         <?php endforeach; ?>
+        <?php if ($shippingPaid > 0): ?>
+          <li style="padding:.4rem 0;border-bottom:1px dashed var(--rule-soft);min-width:18rem;display:flex;justify-content:space-between;gap:1rem;color:var(--ink-soft)">
+            <span>Shipping</span><span><?= fmt_price($shippingPaid) ?></span>
+          </li>
+        <?php endif; ?>
+        <li style="padding:.5rem 0 0;min-width:18rem;display:flex;justify-content:space-between;gap:1rem;font-weight:600">
+          <span>Total</span><span><?= fmt_price($orderTotal) ?></span>
+        </li>
       </ul>
     <?php endif; ?>
     <?php if ($order): ?>

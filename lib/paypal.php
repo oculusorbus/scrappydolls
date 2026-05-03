@@ -141,13 +141,13 @@ function paypal_get_order(string $orderId): array {
  * $items: list of ['id' => int, 'title' => string, 'price_cents' => int]
  * $referenceId: identifier for this whole cart order (e.g. "cart-<sessionhash>")
  */
-function paypal_create_cart_order(array $items, string $referenceId, ?string $returnUrl = null, ?string $cancelUrl = null): array {
+function paypal_create_cart_order(array $items, int $shippingCents, string $referenceId, ?string $returnUrl = null, ?string $cancelUrl = null): array {
     $currency = paypal_currency();
-    $totalCents = 0;
+    $itemTotalCents = 0;
     $ppItems = [];
     foreach ($items as $it) {
         $cents = (int)$it['price_cents'];
-        $totalCents += $cents;
+        $itemTotalCents += $cents;
         $ppItems[] = [
             'name'        => substr((string)$it['title'], 0, 127),
             'quantity'    => '1',
@@ -159,17 +159,22 @@ function paypal_create_cart_order(array $items, string $referenceId, ?string $re
             'category'    => 'PHYSICAL_GOODS',
         ];
     }
-    $totalValue = number_format($totalCents / 100, 2, '.', '');
+    $grandCents = $itemTotalCents + max(0, $shippingCents);
+    $fmt = fn(int $c) => number_format($c / 100, 2, '.', '');
+    $breakdown = [
+        'item_total' => ['currency_code' => $currency, 'value' => $fmt($itemTotalCents)],
+    ];
+    if ($shippingCents > 0) {
+        $breakdown['shipping'] = ['currency_code' => $currency, 'value' => $fmt($shippingCents)];
+    }
     $body = [
         'intent'         => 'AUTHORIZE',
         'purchase_units' => [[
             'reference_id' => substr($referenceId, 0, 256),
             'amount'       => [
                 'currency_code' => $currency,
-                'value'         => $totalValue,
-                'breakdown'     => [
-                    'item_total' => ['currency_code' => $currency, 'value' => $totalValue],
-                ],
+                'value'         => $fmt($grandCents),
+                'breakdown'     => $breakdown,
             ],
             'items' => $ppItems,
         ]],

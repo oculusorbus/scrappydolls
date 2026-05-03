@@ -36,8 +36,10 @@ switch ($action) {
 }
 
 json_response([
-    'ok'           => true,
-    'count'        => cart_count(),
-    'total_cents'  => cart_total_cents(),
-    'product_ids'  => cart_ids(),
+    'ok'                 => true,
+    'count'              => cart_count(),
+    'subtotal_cents'     => cart_total_cents(),
+    'shipping_cents'     => cart_shipping_cents(),
+    'grand_total_cents'  => cart_grand_total_cents(),
+    'product_ids'        => cart_ids(),
 ]);

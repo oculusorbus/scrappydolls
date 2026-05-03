@@ -6,8 +6,10 @@ $pageTitle = 'Your cart';
 $pageDesc  = 'Review the dolls in your cart and check out securely.';
 
 $items = cart_items();
-$totalCents = 0;
-foreach ($items as $it) $totalCents += (int)$it['price_cents'];
+$itemsTotal = 0;
+foreach ($items as $it) $itemsTotal += (int)$it['price_cents'];
+$shippingCents = shipping_cents_for_count(count($items));
+$grandTotal    = $itemsTotal + $shippingCents;
 
 $thumbsByProduct = [];
 if ($items) {
@@ -89,9 +91,11 @@ require __DIR__ . '/header.php';
           <h2 class="cart-summary-title">Order summary</h2>
           <dl class="cart-summary-rows">
             <div><dt>Items</dt><dd><?= count($items) ?></dd></div>
-            <div><dt>Subtotal</dt><dd data-cart-total><?= fmt_price($totalCents) ?></dd></div>
-            <div><dt>Shipping</dt><dd>Calculated at checkout</dd></div>
+            <div><dt>Subtotal</dt><dd data-cart-subtotal><?= fmt_price($itemsTotal) ?></dd></div>
+            <div><dt>Shipping</dt><dd data-cart-shipping><?= fmt_price($shippingCents) ?></dd></div>
+            <div class="cart-summary-grand"><dt>Total</dt><dd data-cart-total><?= fmt_price($grandTotal) ?></dd></div>
           </dl>
+          <p class="cart-shipping-note">Flat-rate shipping: $8 first doll, $3 each additional.</p>
 
           <?php if (paypal_is_configured()): ?>
             <div id="paypal-button-container"></div>
