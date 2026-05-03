@@ -294,7 +294,6 @@
     .brand {
       font-family: var(--font-display);
       color: var(--ink);
-      text-decoration: none;
       display: inline-flex;
       flex-direction: column;
       line-height: 1;
@@ -306,7 +305,11 @@
       font-size: 1.95rem;
       letter-spacing: -0.025em;
       line-height: 0.95;
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease;
     }
+    .brand-name:hover { color: var(--rose-dark); }
     .brand-name em {
       font-style: italic;
       color: var(--rose);
@@ -320,7 +323,10 @@
       color: var(--ink-soft);
       letter-spacing: 0.05em;
       margin-top: 0.15rem;
+      text-decoration: none;
+      transition: color 0.2s ease;
     }
+    .brand-by:hover { color: var(--rose); }
     .brand-artist {
       font-family: var(--font-sans);
       font-size: 0.62rem;
@@ -1019,11 +1025,11 @@
 
   <header class="site">
     <div class="wrap">
-      <a class="brand" href="/" aria-label="Scrappy Dolls from Art Safari Studio, handmade by Kanda Kay">
-        <span class="brand-name">scrappy<em>dolls</em></span>
-        <span class="brand-by">from Art Safari Studio</span>
+      <div class="brand">
+        <a class="brand-name" href="/">scrappy<em>dolls</em></a>
+        <a class="brand-by" href="https://www.facebook.com/kandakayartist/" target="_blank" rel="noopener">from Art Safari Studio</a>
         <span class="brand-artist">Handmade by Kanda Kay</span>
-      </a>
+      </div>
       <nav class="primary" aria-label="Primary">
         <a href="/shop/">Shop</a>
         <a href="#about">About</a>

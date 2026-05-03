@@ -35,7 +35,7 @@ header.site{
 header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:1rem;padding-bottom:1rem}
 .brand{
   font-family:var(--font-display);
-  color:var(--ink);text-decoration:none;
+  color:var(--ink);
   display:inline-flex;flex-direction:column;
   line-height:1;gap:.15rem;
 }
@@ -43,7 +43,10 @@ header.site .wrap{display:flex;align-items:center;justify-content:space-between;
   font-weight:600;
   font-variation-settings:"opsz" 72,"SOFT" 80;
   font-size:1.95rem;letter-spacing:-.025em;line-height:.95;
+  color:inherit;text-decoration:none;
+  transition:color .2s ease;
 }
+.brand-name:hover{color:var(--rose-dark)}
 .brand-name em{font-style:italic;color:var(--rose);font-weight:400}
 .brand-by{
   font-style:italic;
@@ -51,7 +54,10 @@ header.site .wrap{display:flex;align-items:center;justify-content:space-between;
   font-weight:400;
   font-size:.86rem;color:var(--ink-soft);
   letter-spacing:.05em;margin-top:.15rem;
+  text-decoration:none;
+  transition:color .2s ease;
 }
+.brand-by:hover{color:var(--rose)}
 .brand-artist{
   font-family:var(--font-sans);
   font-size:.62rem;letter-spacing:.27em;
