@@ -5,8 +5,13 @@
 -- Updates both `title` and `slug` for every row matching the bulk-import
 -- naming pattern.
 --
+-- ORDER BY DESC is REQUIRED to avoid a slug-uniqueness collision: updating
+-- low → high would try to set #1's slug to "scrappy-doll-101" while row
+-- #101 still owns that slug → "Duplicate entry" error. Processing
+-- highest-first means each old slug is freed before any lower row claims it.
+--
 -- Idempotent: the WHERE clause only matches rows whose current number is
--- below 101, so running this twice doesn't over-shift. Safe to re-run.
+-- below 101, so re-running the file is a no-op.
 --
 -- Foreign keys (orders.product_id, product_images.product_id) reference
 -- products.id, not title or slug — order history is unaffected.
@@ -16,9 +21,10 @@ SET
   slug  = CONCAT('scrappy-doll-', CAST(SUBSTRING(title, LOCATE('#', title) + 1) AS UNSIGNED) + 100),
   title = CONCAT('Scrappy Doll #', CAST(SUBSTRING(title, LOCATE('#', title) + 1) AS UNSIGNED) + 100)
 WHERE title REGEXP '^Scrappy Doll #[0-9]+$'
-  AND CAST(SUBSTRING(title, LOCATE('#', title) + 1) AS UNSIGNED) < 101;
+  AND CAST(SUBSTRING(title, LOCATE('#', title) + 1) AS UNSIGNED) < 101
+ORDER BY CAST(SUBSTRING(title, LOCATE('#', title) + 1) AS UNSIGNED) DESC;
 
--- After the update you should see:
+-- Verify after running:
 --   SELECT MIN(CAST(SUBSTRING(title, LOCATE('#', title) + 1) AS UNSIGNED)) AS min_num,
 --          MAX(CAST(SUBSTRING(title, LOCATE('#', title) + 1) AS UNSIGNED)) AS max_num,
 --          COUNT(*) AS total
