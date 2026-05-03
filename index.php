@@ -1582,6 +1582,10 @@ if (count($_pool) >= 21) {
           <p>Memory dolls — made from outgrown clothing, a wedding dress, a beloved quilt — are part of what scrappy dolls are best at. Reach out to Kanda on <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a> to talk through your fabric and what you'd like.</p>
         </details>
         <details class="faq">
+          <summary>How big are the dolls?</summary>
+          <p>Most Scrappy Dolls stand around 12 inches tall — about a foot — with natural variation depending on the fabric and the character that emerges. <a href="#size">See the size comparison →</a></p>
+        </details>
+        <details class="faq">
           <summary>How do I care for a Scrappy Doll?</summary>
           <p>Spot clean only, with a damp cloth and mild soap if needed. Treat your Scrappy Doll as a display piece — hand-washing, soaking, or laundering will loosen the adhesives and undermine the fabric construction, and can cause the doll to fall apart.</p>
         </details>
