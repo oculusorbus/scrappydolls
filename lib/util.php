@@ -30,6 +30,23 @@ function unique_slug(string $base, ?int $excludeId = null): string {
     }
 }
 
+/**
+ * Find the next free enumeration number for a base title — e.g. given
+ * "Scrappy Doll" and existing rows titled "Scrappy Doll #3" / "#7", returns 8.
+ */
+function next_enumeration_number(string $baseTitle): int {
+    $like = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $baseTitle) . ' #%';
+    $stmt = db()->prepare("SELECT title FROM products WHERE title LIKE :like ESCAPE '\\\\'");
+    $stmt->execute([':like' => $like]);
+    $max = 0;
+    foreach ($stmt->fetchAll() as $row) {
+        if (preg_match('/#(\d+)\s*$/', (string)$row['title'], $m)) {
+            $max = max($max, (int)$m[1]);
+        }
+    }
+    return $max + 1;
+}
+
 function fmt_price(int $cents): string {
     return '$' . number_format($cents / 100, 2);
 }

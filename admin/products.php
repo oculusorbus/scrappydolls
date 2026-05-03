@@ -24,7 +24,10 @@ $rows = $stmt->fetchAll();
 ?>
 <div class="page-head">
   <h1 class="page-title">Dolls</h1>
-  <a class="btn btn-primary" href="/admin/edit.php">+ Add new doll</a>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+    <a class="btn btn-ghost" href="/admin/import.php">Bulk import</a>
+    <a class="btn btn-primary" href="/admin/edit.php">+ Add new doll</a>
+  </div>
 </div>
 
 <div style="margin-bottom:1.5rem">
@@ -37,8 +40,11 @@ $rows = $stmt->fetchAll();
 <?php if (!$rows): ?>
   <div class="empty">
     <h3>No dolls yet</h3>
-    <p>Add your first doll to start selling.</p>
-    <p style="margin-top:1rem"><a class="btn btn-primary" href="/admin/edit.php">+ Add new doll</a></p>
+    <p>Add a single doll, or bulk-import a folder of photos all at once.</p>
+    <p style="margin-top:1rem">
+      <a class="btn btn-primary" href="/admin/edit.php">+ Add new doll</a>
+      <a class="btn btn-ghost" href="/admin/import.php">Bulk import</a>
+    </p>
   </div>
 <?php else: ?>
   <div class="table-wrap">
