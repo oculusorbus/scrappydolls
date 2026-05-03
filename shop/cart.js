@@ -68,11 +68,11 @@
       postCart(payload)
         .then(function (data) {
           setCartCount(data.count);
-          // From a cart-page suggestion card: insert a new row in place from
-          // the suggestion's own data, fade out the suggestion, refresh
+          // From a cart-page suggestion card: insert a new row from the
+          // server-returned item data, fade out the suggestion, refresh
           // totals, and slot a fresh suggestion in to keep the strip full.
           if (sugForAdd) {
-            insertCartRowFromSuggestion(sugForAdd, pid);
+            if (data.added_item) appendCartRow(data.added_item);
             updateCartTotals(data);
             sugForAdd.classList.add('is-added');
             setTimeout(function () {
@@ -154,36 +154,33 @@
 
   function fmtCents(c) { return '$' + (c / 100).toFixed(2); }
 
-  // Build a .cart-row from a suggestion card and append it to the cart list.
-  // Markup mirrors what shop/cart.php renders for items.
-  function insertCartRowFromSuggestion(sug, pid) {
+  // Build a .cart-row from server-returned item data and append it to the
+  // cart list. Markup mirrors what shop/cart.php renders for items.
+  // Guards against duplicate insertion (e.g. if the user double-clicks).
+  function appendCartRow(item) {
     var list = document.querySelector('.cart-list');
-    if (!list) return;
-    var titleA = sug.querySelector('.cart-suggestion-title');
-    var imgA   = sug.querySelector('.cart-suggestion-img');
-    var img    = imgA ? imgA.querySelector('img') : null;
-    var price  = sug.querySelector('.cart-suggestion-price');
-    var title  = titleA ? titleA.textContent.trim() : 'Doll';
-    var slug   = titleA ? (titleA.getAttribute('href') || '') : '';
+    if (!list || !item || !item.id) return;
+    if (list.querySelector('.cart-row[data-product-id="' + item.id + '"]')) return;
 
     var row = document.createElement('div');
     row.className = 'cart-row';
-    row.setAttribute('data-product-id', String(pid));
-    var thumbHtml = img ? '<img src="' + img.getAttribute('src') + '" alt="' + escapeAttr(title) + '">' : '';
+    row.setAttribute('data-product-id', String(item.id));
+    var thumbHtml = item.thumb_url
+      ? '<img src="' + escapeAttr(item.thumb_url) + '" alt="' + escapeAttr(item.title) + '">'
+      : '';
     row.innerHTML =
-      '<a class="cart-row-img" href="' + escapeAttr(slug) + '">' + thumbHtml + '</a>' +
+      '<a class="cart-row-img" href="' + escapeAttr(item.product_url) + '">' + thumbHtml + '</a>' +
       '<div class="cart-row-meta">' +
-        '<a class="cart-row-title" href="' + escapeAttr(slug) + '"></a>' +
+        '<a class="cart-row-title" href="' + escapeAttr(item.product_url) + '"></a>' +
         '<p class="cart-row-tag">One of a kind</p>' +
       '</div>' +
       '<div class="cart-row-side">' +
         '<span class="cart-row-price"></span>' +
-        '<button type="button" class="cart-row-remove" data-cart-remove="' + pid + '">Remove</button>' +
+        '<button type="button" class="cart-row-remove" data-cart-remove="' + item.id + '">Remove</button>' +
       '</div>';
-    // Set text via textContent to avoid double-encoding.
-    row.querySelector('.cart-row-title').textContent = title;
-    row.querySelector('.cart-row-price').textContent = price ? price.textContent.trim() : '';
-    row.querySelector('.cart-row-remove').setAttribute('aria-label', 'Remove ' + title);
+    row.querySelector('.cart-row-title').textContent = item.title;
+    row.querySelector('.cart-row-price').textContent = item.price;
+    row.querySelector('.cart-row-remove').setAttribute('aria-label', 'Remove ' + item.title);
     list.appendChild(row);
   }
 

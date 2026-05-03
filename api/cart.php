@@ -12,16 +12,35 @@ $action = (string)($body['action'] ?? '');
 $productId = (int)($body['product_id'] ?? 0);
 
 $replacementSuggestion = null;
+$addedItem = null;
 
 switch ($action) {
     case 'add':
         if (!$productId) json_response(['error' => 'Missing product_id'], 400);
-        $stmt = db()->prepare("SELECT id FROM products WHERE id = :id AND status = 'available' LIMIT 1");
+        $stmt = db()->prepare("
+            SELECT p.id, p.slug, p.title, p.price_cents,
+              (SELECT filename FROM product_images
+                 WHERE product_id = p.id
+                 ORDER BY sort_order ASC, id ASC
+                 LIMIT 1) AS thumb
+            FROM products p
+            WHERE p.id = :id AND p.status = 'available'
+            LIMIT 1");
         $stmt->execute([':id' => $productId]);
-        if (!$stmt->fetch()) json_response(['error' => 'This doll is not available'], 409);
+        $row = $stmt->fetch();
+        if (!$row) json_response(['error' => 'This doll is not available'], 409);
         if (!cart_add($productId)) {
             json_response(['error' => 'Cart is full (' . CART_MAX_ITEMS . ' max)'], 400);
         }
+        $addedItem = [
+            'id'          => (int)$row['id'],
+            'slug'        => (string)$row['slug'],
+            'title'       => (string)$row['title'],
+            'price_cents' => (int)$row['price_cents'],
+            'price'       => fmt_price((int)$row['price_cents']),
+            'thumb_url'   => $row['thumb'] ? thumb_url($row['thumb']) : null,
+            'product_url' => '/shop/product.php?slug=' . rawurlencode($row['slug']),
+        ];
         // Optional: if the client tells us which suggestions are currently on
         // screen, we return a fresh one to refill the strip after this add.
         $excludeIds = $body['exclude_ids'] ?? null;
@@ -50,5 +69,6 @@ json_response([
     'shipping_cents'     => cart_shipping_cents(),
     'grand_total_cents'  => cart_grand_total_cents(),
     'product_ids'        => cart_ids(),
+    'added_item'         => $addedItem,
     'suggestion'         => $replacementSuggestion,
 ]);
