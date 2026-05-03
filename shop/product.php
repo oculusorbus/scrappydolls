@@ -48,7 +48,7 @@ require __DIR__ . '/header.php';
           <div class="thumbs" id="thumbs">
             <?php foreach ($images as $i => $img): ?>
               <button type="button" data-src="<?= h(asset_url($img['filename'])) ?>" class="<?= $i === 0 ? 'active' : '' ?>" aria-label="Image <?= $i+1 ?>">
-                <img src="<?= h(asset_url($img['filename'])) ?>" alt="" loading="lazy">
+                <img src="<?= h(thumb_url($img['filename'])) ?>" alt="" loading="lazy">
               </button>
             <?php endforeach; ?>
           </div>

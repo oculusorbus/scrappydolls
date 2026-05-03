@@ -418,7 +418,7 @@ function delta_html(float $cur, float $prev): string {
           <?php foreach ($topProducts as $p): ?>
             <tr>
               <td class="thumb">
-                <?php if ($p['thumb']): ?><img src="<?= h(asset_url($p['thumb'])) ?>" alt=""><?php endif; ?>
+                <?php if ($p['thumb']): ?><img src="<?= h(thumb_url($p['thumb'])) ?>" alt=""><?php endif; ?>
               </td>
               <td>
                 <a href="/admin/edit.php?id=<?= (int)$p['id'] ?>"><?= h($p['title']) ?></a><br>

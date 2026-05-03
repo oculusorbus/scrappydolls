@@ -164,7 +164,7 @@ require __DIR__ . '/header.php';
     <div class="image-grid">
       <?php foreach ($images as $img): ?>
         <div class="image-tile">
-          <img src="<?= h(asset_url($img['filename'])) ?>" alt="">
+          <img src="<?= h(thumb_url($img['filename'])) ?>" alt="">
           <label class="del" title="Mark for deletion on save">
             <input type="checkbox" name="delete_images[]" value="<?= (int)$img['id'] ?>" style="display:none"
                    onchange="this.parentElement.classList.toggle('marked', this.checked)">

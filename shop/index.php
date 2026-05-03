@@ -37,7 +37,7 @@ require __DIR__ . '/header.php';
           <a class="shop-card" href="/shop/product.php?slug=<?= h(urlencode($r['slug'])) ?>">
             <div class="img">
               <?php if ($r['thumb']): ?>
-                <img src="<?= h(asset_url($r['thumb'])) ?>" alt="<?= h($r['title']) ?>" loading="lazy">
+                <img src="<?= h(thumb_url($r['thumb'])) ?>" alt="<?= h($r['title']) ?>" loading="lazy">
               <?php endif; ?>
             </div>
             <div class="meta">

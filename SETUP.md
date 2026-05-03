@@ -19,7 +19,7 @@ Self-contained PHP/MySQL e-commerce for Kanda's dolls, with a public shop, an ad
 
 ## Prerequisites on the host
 
-- **PHP 8.2+** with extensions: `pdo_mysql`, `curl`, `mbstring`, `fileinfo`, `gd` *(or `imagick`)*. Run `php -m` or check `phpinfo()`.
+- **PHP 8.2+** with extensions: `pdo_mysql`, `curl`, `mbstring`, `fileinfo`, plus `imagick` *(preferred)* or `gd` for image resizing on upload. Run `php -m` or check `phpinfo()`. Without either of those two, uploads still work but originals are saved at full resolution.
 - **MySQL or MariaDB** database, plus credentials.
 - **HTTPS** on the domain (Let's Encrypt is fine). PayPal **will refuse to fire webhooks** to non-SSL endpoints.
 - **Apache with mod_rewrite + AllowOverride All** (the included `.htaccess` files do auth gating, deny lists, and HTTPS redirect). If you're on nginx instead, port the `.htaccess` rules into your server config.
@@ -194,6 +194,7 @@ If the EU/UK ever becomes a meaningful audience, you'll likely want to add a coo
 | `lib/auth.php` | Session-based admin auth, bcrypt passwords |
 | `lib/csrf.php` | CSRF tokens on all admin POSTs |
 | `lib/upload.php` | Image upload validation, mime sniff, safe rename |
+| `lib/image.php` | Resize-on-upload (Imagick → GD fallback): 1600 px display + 400 px thumbnail, EXIF auto-orient, JPEG output |
 | `sql/schema.sql` | One-shot schema |
 | `setup.php` | First-run admin creation wizard (delete after) |
 

@@ -118,7 +118,7 @@ require __DIR__ . '/header.php';
       <div class="image-grid" style="grid-template-columns:repeat(auto-fill,minmax(7rem,1fr))">
         <?php foreach ($created as $c): ?>
           <a class="image-tile" href="/admin/edit.php?id=<?= (int)$c['id'] ?>" title="<?= h($c['title']) ?>" style="text-decoration:none">
-            <img src="<?= h(asset_url($c['thumb'])) ?>" alt="">
+            <img src="<?= h(thumb_url($c['thumb'])) ?>" alt="">
             <span style="position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font-size:.72rem;padding:.6rem .5rem .35rem;text-align:center;font-weight:600">
               <?= h($c['title']) ?>
             </span>

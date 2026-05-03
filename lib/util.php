@@ -78,6 +78,20 @@ function asset_url(string $filename): string {
     return url('uploads/' . $filename);
 }
 
+/**
+ * URL of the small thumbnail variant for a product image.
+ * Falls back to the display version if the thumb file doesn't exist
+ * (e.g. for files saved before the resize pipeline was added).
+ */
+function thumb_url(string $filename): string {
+    $thumbName = image_thumb_filename($filename);
+    $dir = realpath(__DIR__ . '/../uploads');
+    if ($dir && is_file($dir . DIRECTORY_SEPARATOR . $thumbName)) {
+        return url('uploads/' . $thumbName);
+    }
+    return url('uploads/' . $filename);
+}
+
 function json_response($data, int $status = 200): void {
     http_response_code($status);
     header('Content-Type: application/json');

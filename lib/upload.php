@@ -14,12 +14,6 @@ function handle_image_upload(int $productId, array $files, int $startSort = 0): 
     $cfg = config('uploads');
     $maxSize = (int)($cfg['max_size'] ?? 10485760);
     $allowed = $cfg['allowed_mimes'] ?? ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    $extMap = [
-        'image/jpeg' => 'jpg',
-        'image/png'  => 'png',
-        'image/webp' => 'webp',
-        'image/gif'  => 'gif',
-    ];
 
     $uploadDir = realpath(__DIR__ . '/../uploads');
     if ($uploadDir === false) {
@@ -50,14 +44,37 @@ function handle_image_upload(int $productId, array $files, int $startSort = 0): 
             $errors[] = "Unsupported image type: " . ($mime ?: 'unknown');
             continue;
         }
-        $ext = $extMap[$mime] ?? 'bin';
-        $newName = bin2hex(random_bytes(8)) . '.' . $ext;
-        $dest = $uploadDir . DIRECTORY_SEPARATOR . $newName;
-        if (!move_uploaded_file($file['tmp_name'], $dest)) {
+
+        // Move into a scratch path inside /uploads — required by PHP for uploaded files.
+        $scratch = $uploadDir . DIRECTORY_SEPARATOR . '_tmp_' . bin2hex(random_bytes(8));
+        if (!move_uploaded_file($file['tmp_name'], $scratch)) {
             $errors[] = "Failed to save " . ($file['name'] ?? '?');
             continue;
         }
-        @chmod($dest, 0644);
+
+        // All output is JPEG, regardless of source format.
+        $newName   = bin2hex(random_bytes(8)) . '.jpg';
+        $thumbName = image_thumb_filename($newName);
+        $displayPath = $uploadDir . DIRECTORY_SEPARATOR . $newName;
+        $thumbPath   = $uploadDir . DIRECTORY_SEPARATOR . $thumbName;
+
+        $okDisplay = image_resize($scratch, $displayPath, IMAGE_DISPLAY_LONG_EDGE, IMAGE_DISPLAY_QUALITY);
+        $okThumb   = image_resize($scratch, $thumbPath,   IMAGE_THUMB_LONG_EDGE,   IMAGE_THUMB_QUALITY);
+
+        @unlink($scratch); // discard original
+
+        if (!$okDisplay) {
+            $errors[] = "Couldn't process image: " . ($file['name'] ?? '?');
+            @unlink($displayPath);
+            @unlink($thumbPath);
+            continue;
+        }
+        if (!$okThumb) {
+            error_log("Thumb generation failed for $newName — display fallback will be used");
+        }
+
+        @chmod($displayPath, 0644);
+        if ($okThumb) @chmod($thumbPath, 0644);
 
         $stmt = db()->prepare(
             'INSERT INTO product_images (product_id, filename, sort_order) VALUES (:pid, :fn, :so)'
@@ -97,6 +114,10 @@ function normalize_files_array(array $field): array {
 
 function delete_image_file(string $filename): void {
     $safe = basename($filename);
-    $path = realpath(__DIR__ . '/../uploads') . DIRECTORY_SEPARATOR . $safe;
-    if (is_file($path)) @unlink($path);
+    $dir = realpath(__DIR__ . '/../uploads');
+    if (!$dir) return;
+    $main  = $dir . DIRECTORY_SEPARATOR . $safe;
+    $thumb = $dir . DIRECTORY_SEPARATOR . image_thumb_filename($safe);
+    if (is_file($main))  @unlink($main);
+    if (is_file($thumb)) @unlink($thumb);
 }

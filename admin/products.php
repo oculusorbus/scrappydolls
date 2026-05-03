@@ -64,7 +64,7 @@ $rows = $stmt->fetchAll();
           <tr>
             <td class="thumb">
               <?php if ($r['thumb']): ?>
-                <img src="<?= h(asset_url($r['thumb'])) ?>" alt="">
+                <img src="<?= h(thumb_url($r['thumb'])) ?>" alt="">
               <?php else: ?>
                 <div style="width:3rem;height:3rem;background:var(--paper-3);border-radius:6px;border:1px solid var(--rule)"></div>
               <?php endif; ?>

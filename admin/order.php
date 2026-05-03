@@ -55,7 +55,7 @@ require __DIR__ . '/header.php';
       <h3>Doll</h3>
       <div style="display:flex;gap:1rem;align-items:center">
         <?php if ($order['thumb']): ?>
-          <img src="<?= h(asset_url($order['thumb'])) ?>" alt="" style="width:5rem;height:5rem;object-fit:cover;object-position:center top;border-radius:8px;border:1px solid var(--rule)">
+          <img src="<?= h(thumb_url($order['thumb'])) ?>" alt="" style="width:5rem;height:5rem;object-fit:cover;object-position:center top;border-radius:8px;border:1px solid var(--rule)">
         <?php endif; ?>
         <div>
           <strong style="font-size:1.1rem"><?= h($order['product_title']) ?></strong><br>
