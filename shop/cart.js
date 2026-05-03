@@ -61,18 +61,20 @@
       postCart({ action: 'add', product_id: pid })
         .then(function (data) {
           setCartCount(data.count);
-          flashAdded(addBtn);
-          // If button is in a suggestion card on the cart page, fade it out
-          // then reload so the new row, subtotal, and fresh suggestions all
-          // refresh together.
+          // From a cart-page suggestion card: fade it out and reload so the
+          // new row, subtotal, and fresh suggestions all refresh together.
           var sug = addBtn.closest('.cart-suggestion');
           if (sug) {
             sug.classList.add('is-added');
             setTimeout(function () { window.location.reload(); }, 500);
+            return;
           }
+          // Anywhere else (product detail, listing): take the buyer straight
+          // to the cart so they see what's in it and can check out.
+          flashAdded(addBtn);
+          window.location.href = '/shop/cart.php';
         })
-        .catch(function (err) { showError(err.message); })
-        .finally(function () { addBtn.disabled = false; });
+        .catch(function (err) { showError(err.message); addBtn.disabled = false; });
       return;
     }
 
