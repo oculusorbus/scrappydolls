@@ -204,6 +204,7 @@ require __DIR__ . '/header.php';
     <?php if ($product): ?>
       <button type="button" class="btn btn-danger" onclick="document.getElementById('delform').submit()">Delete doll</button>
     <?php endif; ?>
+    <span id="save-status" class="save-status" aria-live="polite"></span>
     <button type="submit" class="btn btn-primary"><?= $product ? 'Save changes' : 'Create doll' ?></button>
   </div>
 </form>
@@ -226,19 +227,100 @@ require __DIR__ . '/header.php';
     vertical-align:-0.2em;animation:spin .7s linear infinite;
   }
   @keyframes spin{to{transform:rotate(360deg)}}
+  .save-status{margin-right:.75rem;font-size:.9rem;color:var(--ink-muted);min-height:1em}
+  .save-status.is-ok{color:var(--green,#2e7d4f)}
+  .save-status.is-err{color:var(--red,#b13e54)}
 </style>
 
 <script>
 (function(){
   var form = document.querySelector('.form-save');
   if (!form) return;
-  form.addEventListener('submit', function(){
-    var btn = form.querySelector('button[type="submit"]');
+  var btn = form.querySelector('button[type="submit"]');
+  var status = document.getElementById('save-status');
+  var productId = <?= $product ? (int)$product['id'] : 0 ?>;
+
+  function setSaving(label){
     if (!btn) return;
-    btn.dataset.originalLabel = btn.textContent;
-    btn.textContent = 'Saving';
+    btn.dataset.originalLabel = btn.dataset.originalLabel || btn.textContent;
+    btn.textContent = label || 'Saving';
     btn.classList.add('is-saving');
     btn.disabled = true;
+  }
+  function clearSaving(){
+    if (!btn) return;
+    btn.textContent = btn.dataset.originalLabel || 'Save';
+    btn.classList.remove('is-saving');
+    btn.disabled = false;
+  }
+  function showStatus(msg, kind){
+    if (!status) return;
+    status.textContent = msg;
+    status.classList.remove('is-ok','is-err');
+    if (kind === 'ok') status.classList.add('is-ok');
+    if (kind === 'err') status.classList.add('is-err');
+  }
+
+  // Decide whether this submit needs the slow multipart path (new doll, image
+  // add, or image delete) or can take the fast JSON-only path.
+  function needsMultipart(){
+    if (!productId) return true; // new doll → must use multipart create
+    var fileInput = form.querySelector('input[type="file"]');
+    if (fileInput && fileInput.files && fileInput.files.length > 0) return true;
+    var pendingDeletes = form.querySelectorAll('input[name="delete_images[]"]:checked').length;
+    if (pendingDeletes > 0) return true;
+    return false;
+  }
+
+  form.addEventListener('submit', function(e){
+    if (needsMultipart()) {
+      // Let the browser do its normal multipart submit; just show the spinner.
+      setSaving('Saving');
+      return;
+    }
+    e.preventDefault();
+    setSaving('Saving');
+    showStatus('', null);
+
+    var data = new URLSearchParams();
+    data.append('id', String(productId));
+    data.append('csrf_token', form.querySelector('input[name="csrf_token"]').value);
+    data.append('title', form.querySelector('[name="title"]').value);
+    data.append('slug', form.querySelector('[name="slug"]').value);
+    data.append('description', form.querySelector('[name="description"]').value);
+    data.append('price', form.querySelector('[name="price"]').value);
+    data.append('status', form.querySelector('[name="status"]').value);
+    var feat = form.querySelector('[name="featured"]');
+    if (feat && feat.checked) data.append('featured', '1');
+
+    fetch('/admin/save-fields.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: data.toString(),
+      credentials: 'same-origin',
+    })
+    .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, body: j }; }); })
+    .then(function(res){
+      clearSaving();
+      if (!res.ok || res.body.error) {
+        showStatus(res.body.error || 'Save failed.', 'err');
+        return;
+      }
+      showStatus('Saved ✓', 'ok');
+      // If the slug changed, reflect it in the URL bar without a reload so a
+      // subsequent click on "View on site →" goes to the right place.
+      if (res.body.slug) {
+        var slugInput = form.querySelector('[name="slug"]');
+        if (slugInput) slugInput.value = res.body.slug;
+        var viewLink = document.querySelector('a[href^="/shop/product.php?slug="]');
+        if (viewLink) viewLink.href = '/shop/product.php?slug=' + encodeURIComponent(res.body.slug);
+      }
+      setTimeout(function(){ showStatus('', null); }, 4000);
+    })
+    .catch(function(err){
+      clearSaving();
+      showStatus('Network error — please try again.', 'err');
+    });
   });
 })();
 </script>
