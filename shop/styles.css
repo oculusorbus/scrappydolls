@@ -49,14 +49,14 @@ header.site .wrap{display:flex;align-items:center;justify-content:space-between;
   font-style:italic;
   font-variation-settings:"opsz" 36,"SOFT" 100;
   font-weight:400;
-  font-size:.8rem;color:var(--ink-soft);
-  letter-spacing:.005em;margin-top:.1rem;
+  font-size:.86rem;color:var(--ink-soft);
+  letter-spacing:.05em;margin-top:.15rem;
 }
 .brand-artist{
   font-family:var(--font-sans);
-  font-size:.6rem;letter-spacing:.2em;
+  font-size:.62rem;letter-spacing:.27em;
   text-transform:uppercase;color:var(--ink-muted);
-  font-weight:600;
+  font-weight:600;margin-top:.05rem;
 }
 nav.primary{display:flex;align-items:center;gap:1.5rem}
 nav.primary a{
