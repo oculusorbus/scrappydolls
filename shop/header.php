@@ -38,7 +38,11 @@ $pageUrl   = $pageUrl   ?? url($_SERVER['REQUEST_URI'] ?? '/shop/');
 <body>
 <header class="site">
   <div class="wrap">
-    <a class="brand" href="/">scrappy<em>dolls</em></a>
+    <a class="brand" href="/" aria-label="Scrappy Dolls by Art Safari Studio, handmade by Kanda Kay">
+      <span class="brand-name">scrappy<em>dolls</em></span>
+      <span class="brand-by">by Art Safari Studio</span>
+      <span class="brand-artist">Handmade by Kanda Kay</span>
+    </a>
     <nav class="primary" aria-label="Primary">
       <a href="/">Home</a>
       <a href="/shop/" class="<?= ($_SERVER['REQUEST_URI'] === '/shop/' || $_SERVER['REQUEST_URI'] === '/shop/index.php') ? 'is-current' : '' ?>">Shop</a>
