@@ -13,7 +13,8 @@ $productId = (int)($_POST['product_id'] ?? 0);
 $returnUrl = (string)($_POST['return_url'] ?? '/shop/cart.php');
 
 // Only allow same-origin path-only return URLs to prevent open-redirect.
-if (!preg_match('#^/[A-Za-z0-9/_.?&=%#-]*$#', $returnUrl)) {
+// Use ~ as the regex delimiter so # is just a literal inside the class.
+if (!preg_match('~^/[A-Za-z0-9/_.?&=%#-]*$~', $returnUrl)) {
     $returnUrl = '/shop/cart.php';
 }
 
