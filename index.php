@@ -1348,7 +1348,7 @@ if (count($_pool) >= 21) {
             <p class="eyebrow">Meet Kanda</p>
             <h2 class="h-display">A lifetime of <em style="color: var(--rose); font-style: italic; font-weight: 400;">making</em>.</h2>
             <p class="lede" style="margin-top: 1.5rem;">Kanda grew up in a family of painters, photographers, musicians, and seamstresses — making was simply the language spoken at home.</p>
-            <p style="margin-top: 1.25rem; color: var(--ink-soft);">She studied art education at the University of Kansas and, after graduating, opened her own weaving shop. While homeschooling her three children, she kept creative work at the center of family life — and watched that next generation grow into artists, musicians, graphic designers, and web developers in their own right.</p>
+            <p style="margin-top: 1.25rem; color: var(--ink-soft);">She studied art education at Kansas University (KU) and, after graduating, opened her own weaving shop. While homeschooling her three children, she kept creative work at the center of family life — and watched that next generation grow into artists, musicians, graphic designers, and web developers in their own right.</p>
             <p style="margin-top: 1rem; color: var(--ink-soft);">In retirement, she founded Art Safari Studio and has never stopped making. Her work there has gravitated toward combining everyday materials — quilt offcuts, vintage prints, the last good piece of a beloved shirt — into one-of-a-kind pieces. Scrappy Dolls is where that lifelong practice has landed.</p>
           </div>
         </div>
