@@ -133,6 +133,80 @@ function paypal_get_order(string $orderId): array {
     return paypal_request('GET', '/v2/checkout/orders/' . urlencode($orderId));
 }
 
+/**
+ * Cart-aware order: multiple items, single shipping address. Uses the
+ * AUTHORIZE intent so the server can void cleanly if any item sold to
+ * another buyer between approval and capture.
+ *
+ * $items: list of ['id' => int, 'title' => string, 'price_cents' => int]
+ * $referenceId: identifier for this whole cart order (e.g. "cart-<sessionhash>")
+ */
+function paypal_create_cart_order(array $items, string $referenceId, ?string $returnUrl = null, ?string $cancelUrl = null): array {
+    $currency = paypal_currency();
+    $totalCents = 0;
+    $ppItems = [];
+    foreach ($items as $it) {
+        $cents = (int)$it['price_cents'];
+        $totalCents += $cents;
+        $ppItems[] = [
+            'name'        => substr((string)$it['title'], 0, 127),
+            'quantity'    => '1',
+            'sku'         => 'doll-' . (int)$it['id'],
+            'unit_amount' => [
+                'currency_code' => $currency,
+                'value'         => number_format($cents / 100, 2, '.', ''),
+            ],
+            'category'    => 'PHYSICAL_GOODS',
+        ];
+    }
+    $totalValue = number_format($totalCents / 100, 2, '.', '');
+    $body = [
+        'intent'         => 'AUTHORIZE',
+        'purchase_units' => [[
+            'reference_id' => substr($referenceId, 0, 256),
+            'amount'       => [
+                'currency_code' => $currency,
+                'value'         => $totalValue,
+                'breakdown'     => [
+                    'item_total' => ['currency_code' => $currency, 'value' => $totalValue],
+                ],
+            ],
+            'items' => $ppItems,
+        ]],
+    ];
+    if ($returnUrl || $cancelUrl) {
+        $body['application_context'] = array_filter([
+            'return_url'          => $returnUrl,
+            'cancel_url'          => $cancelUrl,
+            'shipping_preference' => 'GET_FROM_FILE',
+            'user_action'         => 'PAY_NOW',
+            'brand_name'          => config('site_name') ?: 'Scrappy Dolls',
+        ]);
+    }
+    return paypal_request('POST', '/v2/checkout/orders', $body);
+}
+
+function paypal_authorize_order(string $orderId): array {
+    return paypal_request('POST', '/v2/checkout/orders/' . urlencode($orderId) . '/authorize', null);
+}
+
+function paypal_capture_authorization(string $authId): array {
+    return paypal_request('POST', '/v2/payments/authorizations/' . urlencode($authId) . '/capture', null);
+}
+
+function paypal_void_authorization(string $authId): void {
+    // Void returns 204 No Content on success — paypal_request handles 4xx as throw.
+    paypal_request('POST', '/v2/payments/authorizations/' . urlencode($authId) . '/void', null);
+}
+
+function paypal_extract_authorization_id(array $orderData): ?string {
+    $units = $orderData['purchase_units'] ?? [];
+    if (empty($units)) return null;
+    $auths = $units[0]['payments']['authorizations'] ?? [];
+    if (empty($auths)) return null;
+    return $auths[0]['id'] ?? null;
+}
+
 function paypal_verify_webhook(array $headers, string $rawBody): bool {
     $webhookId = config('paypal.webhook_id');
     if (!$webhookId) return false;
