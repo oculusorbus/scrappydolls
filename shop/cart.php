@@ -65,26 +65,31 @@ require __DIR__ . '/header.php';
     <?php else: ?>
 
       <div class="cart-layout">
-        <div class="cart-list">
-          <?php foreach ($items as $it):
-            $thumb = $thumbsByProduct[(int)$it['id']] ?? null;
-          ?>
-            <div class="cart-row" data-product-id="<?= (int)$it['id'] ?>">
-              <a class="cart-row-img" href="/shop/product.php?slug=<?= h(urlencode($it['slug'])) ?>">
-                <?php if ($thumb): ?>
-                  <img src="<?= h(thumb_url($thumb)) ?>" alt="<?= h($it['title']) ?>">
-                <?php endif; ?>
-              </a>
-              <div class="cart-row-meta">
-                <a class="cart-row-title" href="/shop/product.php?slug=<?= h(urlencode($it['slug'])) ?>"><?= h($it['title']) ?></a>
-                <p class="cart-row-tag">One of a kind</p>
+        <div class="cart-items-col">
+          <div class="cart-list">
+            <?php foreach ($items as $it):
+              $thumb = $thumbsByProduct[(int)$it['id']] ?? null;
+            ?>
+              <div class="cart-row" data-product-id="<?= (int)$it['id'] ?>">
+                <a class="cart-row-img" href="/shop/product.php?slug=<?= h(urlencode($it['slug'])) ?>">
+                  <?php if ($thumb): ?>
+                    <img src="<?= h(thumb_url($thumb)) ?>" alt="<?= h($it['title']) ?>">
+                  <?php endif; ?>
+                </a>
+                <div class="cart-row-meta">
+                  <a class="cart-row-title" href="/shop/product.php?slug=<?= h(urlencode($it['slug'])) ?>"><?= h($it['title']) ?></a>
+                  <p class="cart-row-tag">One of a kind</p>
+                </div>
+                <div class="cart-row-side">
+                  <span class="cart-row-price"><?= fmt_price((int)$it['price_cents']) ?></span>
+                  <button type="button" class="cart-row-remove" data-cart-remove="<?= (int)$it['id'] ?>" aria-label="Remove <?= h($it['title']) ?>">Remove</button>
+                </div>
               </div>
-              <div class="cart-row-side">
-                <span class="cart-row-price"><?= fmt_price((int)$it['price_cents']) ?></span>
-                <button type="button" class="cart-row-remove" data-cart-remove="<?= (int)$it['id'] ?>" aria-label="Remove <?= h($it['title']) ?>">Remove</button>
-              </div>
-            </div>
-          <?php endforeach; ?>
+            <?php endforeach; ?>
+          </div>
+          <div class="cart-list-actions">
+            <button type="button" class="cart-clear" data-cart-clear>Remove all items</button>
+          </div>
         </div>
 
         <aside class="cart-summary">

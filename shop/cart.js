@@ -82,6 +82,17 @@
       return;
     }
 
+    var clearBtn = e.target.closest('[data-cart-clear]');
+    if (clearBtn) {
+      e.preventDefault();
+      if (!window.confirm('Remove all dolls from your cart?')) return;
+      clearBtn.disabled = true;
+      postCart({ action: 'clear' })
+        .then(function () { window.location.reload(); })
+        .catch(function (err) { showError(err.message); clearBtn.disabled = false; });
+      return;
+    }
+
     var rmBtn = e.target.closest('[data-cart-remove]');
     if (rmBtn) {
       e.preventDefault();

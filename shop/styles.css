@@ -331,6 +331,14 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
 .cart-row-remove:hover{color:var(--rose-dark)}
 .cart-row-remove:disabled{opacity:.5;cursor:default}
 
+.cart-list-actions{display:flex;justify-content:flex-end;margin-top:.85rem}
+.cart-clear{
+  background:none;border:0;padding:0;cursor:pointer;
+  color:var(--ink-muted);font-size:.82rem;text-decoration:underline;
+}
+.cart-clear:hover{color:var(--rose-dark)}
+.cart-clear:disabled{opacity:.5;cursor:default}
+
 .cart-summary{
   background:var(--paper-2);border:1px solid var(--rule);
   border-radius:var(--radius);padding:1.5rem;
