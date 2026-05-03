@@ -24,7 +24,7 @@ if (count($_pool) >= 21) {
   <title>Scrappy Dolls — Handmade Cloth Dolls &amp; Memory Dolls by Kanda Kay</title>
   <meta name="description" content="Scrappy Dolls by artist Kanda Kay — one-of-a-kind handmade cloth dolls and custom memory dolls stitched from quilting cottons, vintage prints, and fabric remnants. OOAK art dolls, folk art tradition, and the scrappy doll community.">
   <meta name="author" content="Kanda Kay">
-  <meta name="keywords" content="scrappy dolls, handmade cloth dolls, memory dolls, custom dolls, rag dolls, OOAK art dolls, one of a kind dolls, fabric dolls, folk art dolls, scrap fabric dolls, quilting cotton dolls, artisan dolls, handmade doll artist, cloth doll artist, keepsake dolls, heirloom dolls, doll commissions, Kanda Kay, scrappy doll community, wonky dolls, textile art dolls">
+  <meta name="keywords" content="scrappy dolls, handmade cloth dolls, memory dolls, custom dolls, OOAK art dolls, one of a kind dolls, fabric dolls, folk art dolls, scrap fabric dolls, quilting cotton dolls, artisan dolls, handmade doll artist, cloth doll artist, keepsake dolls, heirloom dolls, doll commissions, Kanda Kay, scrappy doll community, wonky dolls, textile art dolls">
   <link rel="canonical" href="https://scrappydolls.com/">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta name="theme-color" content="#b13e54">
@@ -128,7 +128,7 @@ if (count($_pool) >= 21) {
         "@id": "https://scrappydolls.com/#kanda",
         "name": "Kanda Kay",
         "jobTitle": "Doll Artist",
-        "description": "Artist behind Scrappy Dolls, based in San Antonio, Texas. Each doll is hand-cut and hand-stitched from quilting cottons, vintage prints, and beloved fabric remnants.",
+        "description": "Artist behind Scrappy Dolls, based in San Antonio, Texas. Each doll is hand-cut and stitched from quilting cottons, vintage prints, and beloved fabric remnants — seams sewn by machine for strength, details finished by hand.",
         "url": "https://scrappydolls.com/",
         "homeLocation": {
           "@type": "Place",
@@ -1301,7 +1301,7 @@ if (count($_pool) >= 21) {
           <div>
             <p class="eyebrow">Handmade by Kanda Kay</p>
             <h1 class="h-display">Cloth dolls,<br>stitched <em style="color: var(--rose); font-style: italic; font-weight: 400;">one&nbsp;at&nbsp;a&nbsp;time</em>.</h1>
-            <p class="lede" style="margin-top: 1.75rem;">Scrappy Dolls is a growing collection of one-of-a-kind cloth dolls and custom memory dolls — each hand-cut and hand-sewn from quilting cottons, vintage prints, and beloved fabric remnants too lovely to throw away.</p>
+            <p class="lede" style="margin-top: 1.75rem;">Scrappy Dolls is a growing collection of one-of-a-kind cloth dolls and custom memory dolls — each hand-cut and stitched from quilting cottons, vintage prints, and beloved fabric remnants too lovely to throw away.</p>
             <div class="cta-row">
               <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">
                 Follow on Facebook <span class="arrow" aria-hidden="true">→</span>
@@ -1318,8 +1318,8 @@ if (count($_pool) >= 21) {
                 <span class="v">Every doll</span>
               </div>
               <div>
-                <span class="k">∞</span>
-                <span class="v">Stitches of love</span>
+                <span class="k" aria-hidden="true">♥</span>
+                <span class="v">Stitched with love</span>
               </div>
             </div>
           </div>
@@ -1342,7 +1342,7 @@ if (count($_pool) >= 21) {
             <p class="eyebrow">The Studio</p>
             <h2 class="h-display">Made by hand.<br>Made <em style="color: var(--rose); font-style: italic; font-weight: 400;">to keep</em>.</h2>
             <p class="pull-quote">Every Scrappy Doll begins as a pile of fabric — quilt offcuts, an old pillowcase, the last good piece of a favorite shirt.</p>
-            <p style="margin-top: 1.5rem; color: var(--ink-soft);">Kanda Kay cuts, pieces, and stitches each doll by hand, finishing with embroidered features and a name only that doll will ever wear. The result is a small, characterful keepsake — warm-feeling, hand-finished, and unmistakably one of a kind.</p>
+            <p style="margin-top: 1.5rem; color: var(--ink-soft);">Kanda Kay cuts and pieces each doll by hand, machine-stitches the seams for strength, and finishes with embroidered features and a name only that doll will ever wear. The result is a small, characterful keepsake — warm-feeling, hand-finished, and unmistakably one of a kind.</p>
           </div>
         </div>
       </div>
@@ -1366,7 +1366,7 @@ if (count($_pool) >= 21) {
           </article>
           <article class="step reveal">
             <h3>Stitch</h3>
-            <p>Each seam is sewn by hand for strength and character. Faces are embroidered with thread — not printed or stamped.</p>
+            <p>Each seam is machine-sewn for strength and hand-stitched for detail. Faces are embroidered with thread — not printed or stamped.</p>
           </article>
           <article class="step reveal">
             <h3>Finish</h3>
@@ -1501,29 +1501,8 @@ if (count($_pool) >= 21) {
           <h2 class="h-display">What are <em style="color: var(--rose); font-style: italic; font-weight: 400;">scrappy dolls</em>?</h2>
         </div>
         <div class="reveal" style="margin-top: 2rem; color: var(--ink-soft); line-height: 1.75;">
-          <p>Scrappy dolls are handmade cloth dolls stitched from leftover fabric — quilting cottons, vintage prints, worn-out clothing, and remnants too small for anything else but too beautiful to discard. The tradition runs centuries deep. Rag dolls are among the oldest children's toys in existence, with examples found in Roman-era graves dating to the first century AD. In early America, mothers and grandmothers fashioned dolls from household scraps — old dresses, flour sacks, handkerchiefs — because manufactured toys were either unavailable or unaffordable. Appalachian folk dolls, prairie dolls, and Amish faceless dolls all grew from this same impulse: take what you have and make something worth keeping.</p>
-          <p>What sets scrappy dolls apart from mass-produced toys is the material itself. Every scrap carries a history — a quilt that wore through, a child's outgrown shirt, the last cut from a bolt of fabric a grandmother picked out. The doll becomes a vessel for those stories. No two scrappy dolls look alike because no two fabric piles are the same. The wonky proportions, mismatched prints, and hand-stitched imperfections are not flaws. They are the entire point.</p>
-          <p>Today, scrappy dolls have become a movement. Online communities — Facebook groups, Pinterest boards, and craft forums — connect thousands of makers who share techniques, trade fabric, and celebrate the deliberate imperfection that makes each doll one of a kind. The craft appeals to experienced quilters looking to use their scrap stash, to parents seeking meaningful handmade gifts, and to collectors drawn to folk art with genuine provenance and personality.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- TECHNIQUES & APPEAL -->
-    <section class="alt">
-      <div class="wrap-narrow">
-        <div class="reveal">
-          <p class="eyebrow">The Craft</p>
-          <h2 class="h-display">Why scrappy dolls <em style="color: var(--rose); font-style: italic; font-weight: 400;">endure</em>.</h2>
-        </div>
-        <div class="reveal" style="margin-top: 2rem; color: var(--ink-soft); line-height: 1.75;">
-          <h3>Materials that matter</h3>
-          <p>The best scrappy dolls start with quilter's cotton — sturdy enough to handle stuffing, soft enough to hold and love. Vintage prints, ditsy florals, feedsack reproductions, bold stripes, and novelty fabrics all find their way into the mix. The fabric choices give each doll its character before a single stitch is sewn. Some makers sort scraps by color; others grab from the pile and let the combinations surprise them. Both approaches work because the aesthetic lives in the collision of patterns, not in any single fabric.</p>
-          <h3>Handwork over machine work</h3>
-          <p>Many scrappy doll makers — including Kanda Kay — work entirely by hand. Hand-cutting means every piece follows the curve of the available fabric rather than forcing a rigid pattern. Hand-stitching produces seams with character and strength that hold up to years of handling. Faces are embroidered with thread rather than printed or stamped, giving each doll an expression that could only belong to that one creation. Nothing is mass-produced. The process is slow by design.</p>
-          <h3>Sustainability built in</h3>
-          <p>Scrappy dolls are zero-waste craft at its most natural. Quilt offcuts, retired clothing, bolt ends, and fabric remnants all become raw material. Between 1900 and 1920, over five million rag dolls were produced annually in the United States, fueled in part by textile waste from cotton mills. A century later, the same logic holds: fabric that would otherwise sit in a drawer or end up in a landfill becomes a keepsake instead. Every scrappy doll is a small act of reclamation.</p>
-          <h3>The appeal of imperfection</h3>
-          <p>In a market saturated with identical plastic toys, scrappy dolls offer something manufacturers cannot replicate: genuine singularity. The slightly uneven ears, the seam that follows the fabric's grain instead of a laser-cut line, the mismatched buttons — these details are what collectors and gift-givers seek out. A scrappy doll is proof that a human hand made it, and that the person who made it cared more about soul than symmetry. That is why the scrappy doll community continues to grow, and why the best examples are kept for generations.</p>
+          <p>Scrappy dolls are handmade cloth dolls stitched from leftover fabric — quilting cottons, vintage prints, worn-out clothing, and remnants too small for anything else but too beautiful to discard. The tradition runs centuries deep. In early America, mothers and grandmothers fashioned dolls from household scraps — old dresses, flour sacks, handkerchiefs — using whatever the household could spare. Appalachian folk dolls, prairie dolls, and Amish faceless dolls all grew from this same impulse: take what you have and make something worth keeping.</p>
+          <p>What sets scrappy dolls apart is the material itself. Every scrap carries a history — a quilt that wore through, a child's outgrown shirt, the last cut from a bolt of fabric a grandmother picked out. The doll becomes a vessel for those stories. No two scrappy dolls look alike because no two fabric piles are the same. The wonky proportions, mismatched prints, and hand-stitched imperfections are not flaws. They are the entire point.</p>
         </div>
       </div>
     </section>
@@ -1545,15 +1524,11 @@ if (count($_pool) >= 21) {
         </details>
         <details class="faq">
           <summary>Can a doll be made from my own fabric?</summary>
-          <p>Memory dolls — made from a child's outgrown clothing, a wedding dress, a beloved quilt — are part of what scrappy dolls are best at. Reach out on <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a> to talk through your fabric and what you'd like.</p>
-        </details>
-        <details class="faq">
-          <summary>Are Scrappy Dolls safe for children?</summary>
-          <p>These are heirloom art pieces, not children's toys. They're often assembled with hot glue and other adhesives, and they include small parts like buttons and decorative accents that pose choking hazards. They're <strong>not for infants, toddlers, or young children</strong> who put things in their mouths or take things apart. They're meant for adults, older kids, and as keepsakes or display pieces.</p>
+          <p>Memory dolls — made from outgrown clothing, a wedding dress, a beloved quilt — are part of what scrappy dolls are best at. Reach out to Kanda on <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a> to talk through your fabric and what you'd like.</p>
         </details>
         <details class="faq">
           <summary>How do I care for a Scrappy Doll?</summary>
-          <p>Spot clean only, with a damp cloth and mild soap if needed. Treat your Scrappy Doll as a display piece, not a toy that takes a wash — hand-washing, soaking, or laundering will loosen the adhesives and undermine the fabric construction, and can cause the doll to fall apart.</p>
+          <p>Spot clean only, with a damp cloth and mild soap if needed. Treat your Scrappy Doll as a display piece — hand-washing, soaking, or laundering will loosen the adhesives and undermine the fabric construction, and can cause the doll to fall apart.</p>
         </details>
         <details class="faq">
           <summary>How long does it take to make a doll?</summary>
@@ -1569,7 +1544,7 @@ if (count($_pool) >= 21) {
           <div>
             <p class="eyebrow" style="color: var(--rose-light);">Stay close</p>
             <h2 class="h-display">See new dolls<br>as they're <em style="color: var(--rose-light); font-style: italic; font-weight: 400;">finished</em>.</h2>
-            <p style="margin-top: 1rem;">Follow Art Safari Studio on Facebook for new work, sneak peeks of what's on the table, and the stories behind the fabric.</p>
+            <p style="margin-top: 1rem;">Follow Art Safari Studio on Facebook for new work, sneak peeks of what's on the table, and the stories behind the dolls.</p>
           </div>
           <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">
             Follow on Facebook <span class="arrow" aria-hidden="true">→</span>
@@ -1722,15 +1697,7 @@ if (count($_pool) >= 21) {
         "name": "Can a doll be made from my own fabric?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Memory dolls — made from a child's outgrown clothing, a wedding dress, a beloved quilt — are part of what scrappy dolls are best at. Reach out via Facebook to talk through your fabric and what you'd like."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Are Scrappy Dolls safe for children?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "These are heirloom art pieces, not children's toys. They're often assembled with hot glue and other adhesives, and they include small parts like buttons and decorative accents that pose choking hazards. They are not for infants, toddlers, or young children who put things in their mouths or take things apart. They're meant for adults, older kids, and as keepsakes or display pieces."
+          "text": "Memory dolls — made from outgrown clothing, a wedding dress, a beloved quilt — are part of what scrappy dolls are best at. Reach out to Kanda via Facebook to talk through your fabric and what you'd like."
         }
       },
       {
@@ -1738,7 +1705,7 @@ if (count($_pool) >= 21) {
         "name": "How do I care for a Scrappy Doll?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Spot clean only, with a damp cloth and mild soap if needed. Treat your Scrappy Doll as a display piece, not a toy that takes a wash. Hand-washing, soaking, or laundering will loosen the adhesives and undermine the fabric construction, and can cause the doll to fall apart."
+          "text": "Spot clean only, with a damp cloth and mild soap if needed. Treat your Scrappy Doll as a display piece. Hand-washing, soaking, or laundering will loosen the adhesives and undermine the fabric construction, and can cause the doll to fall apart."
         }
       },
       {
