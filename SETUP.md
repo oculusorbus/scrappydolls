@@ -181,6 +181,7 @@ If the EU/UK ever becomes a meaningful audience, you'll likely want to add a coo
 | `admin/products.php` | List/manage dolls |
 | `admin/edit.php` | Add/edit doll, multi-image upload |
 | `admin/import.php` | Bulk import — one doll per image, shared price, auto-numbered titles |
+| `admin/bulk-edit.php` | Apply inline-edit changes from `/admin/products.php?mode=edit` |
 | `admin/delete.php` | Delete doll (POST only, soft-delete if orders exist) |
 | `admin/orders.php` | Order list |
 | `admin/order.php` | Single order detail, mark shipped, notes |
