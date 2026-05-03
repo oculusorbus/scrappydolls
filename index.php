@@ -1513,7 +1513,7 @@ if (count($_pool) >= 21) {
         </details>
         <details class="faq">
           <summary>Can a doll be made from my own fabric?</summary>
-          <p>Memory dolls — made from a child's outgrown clothing, a wedding dress, a beloved quilt — are part of what scrappy dolls are best at. Reach out via Facebook to talk through your fabric and what you'd like.</p>
+          <p>Memory dolls — made from a child's outgrown clothing, a wedding dress, a beloved quilt — are part of what scrappy dolls are best at. Reach out on <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a> to talk through your fabric and what you'd like.</p>
         </details>
         <details class="faq">
           <summary>Are Scrappy Dolls safe for children?</summary>
