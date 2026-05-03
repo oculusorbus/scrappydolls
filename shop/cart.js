@@ -68,11 +68,13 @@
       postCart(payload)
         .then(function (data) {
           setCartCount(data.count);
-          // From a cart-page suggestion card: insert a new row from the
-          // server-returned item data, fade out the suggestion, refresh
-          // totals, and slot a fresh suggestion in to keep the strip full.
+          // From a cart-page suggestion card: prefer in-place insertion
+          // using server-returned item data. If anything is off (e.g. the
+          // server doesn't yet send added_item), fall back to a reload so
+          // the buyer always sees the right state.
           if (sugForAdd) {
-            if (data.added_item) appendCartRow(data.added_item);
+            var inserted = data.added_item ? appendCartRow(data.added_item) : false;
+            if (!inserted) { window.location.reload(); return; }
             updateCartTotals(data);
             sugForAdd.classList.add('is-added');
             setTimeout(function () {
@@ -156,11 +158,13 @@
 
   // Build a .cart-row from server-returned item data and append it to the
   // cart list. Markup mirrors what shop/cart.php renders for items.
-  // Guards against duplicate insertion (e.g. if the user double-clicks).
+  // Returns true if a row was inserted, false if anything blocked it
+  // (no list element, missing item data, or duplicate id) so the caller
+  // can fall back to a full reload.
   function appendCartRow(item) {
     var list = document.querySelector('.cart-list');
-    if (!list || !item || !item.id) return;
-    if (list.querySelector('.cart-row[data-product-id="' + item.id + '"]')) return;
+    if (!list || !item || !item.id) return false;
+    if (list.querySelector('.cart-row[data-product-id="' + item.id + '"]')) return false;
 
     var row = document.createElement('div');
     row.className = 'cart-row';
@@ -182,6 +186,7 @@
     row.querySelector('.cart-row-price').textContent = item.price;
     row.querySelector('.cart-row-remove').setAttribute('aria-label', 'Remove ' + item.title);
     list.appendChild(row);
+    return true;
   }
 
   function escapeAttr(s) {
