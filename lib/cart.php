@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 const CART_SESSION_KEY = 'cart_product_ids';
 const CART_MAX_ITEMS = 25;
+const CART_SUGGESTION_SESSION_KEY = 'cart_suggestion_ids';
 
 // Flat-rate shipping: $7.99 first doll, $2.99 each additional.
 const SHIPPING_FIRST_CENTS      = 799;
@@ -96,6 +97,89 @@ function cart_total_cents(): int {
     $sum = 0;
     foreach (cart_items() as $item) $sum += (int)$item['price_cents'];
     return $sum;
+}
+
+/**
+ * Stable suggestion strip: persists the chosen doll IDs in the session and
+ * returns the same lineup across reloads, only swapping out IDs that are
+ * no longer eligible (sold, deleted, or now in the cart). Tops the list
+ * back up to $limit with fresh random picks when the eligible count drops
+ * (e.g. after the buyer adds one to the cart).
+ *
+ * Returns enriched rows (with thumb_url) ready to render.
+ */
+function cart_stable_suggestions(int $limit = 5): array {
+    $stored = $_SESSION[CART_SUGGESTION_SESSION_KEY] ?? [];
+    if (!is_array($stored)) $stored = [];
+    $stored = array_values(array_unique(array_map('intval', $stored)));
+
+    $cartIds = cart_ids();
+    // Drop any stored IDs that are now in the cart.
+    $stored = array_values(array_filter($stored, fn($id) => !in_array($id, $cartIds, true)));
+
+    // Validate availability against the DB and keep the original order.
+    $byId = [];
+    if ($stored) {
+        $place = implode(',', array_fill(0, count($stored), '?'));
+        $stmt = db()->prepare("
+            SELECT id, slug, title, price_cents,
+              (SELECT filename FROM product_images
+                 WHERE product_id = products.id
+                 ORDER BY sort_order ASC, id ASC
+                 LIMIT 1) AS thumb
+            FROM products
+            WHERE status = 'available' AND id IN ($place)
+        ");
+        $stmt->execute($stored);
+        foreach ($stmt->fetchAll() as $r) $byId[(int)$r['id']] = $r;
+    }
+    $rows = [];
+    foreach ($stored as $id) if (isset($byId[$id])) $rows[] = $byId[$id];
+
+    // Top up with fresh random picks if we're under the target.
+    $need = $limit - count($rows);
+    if ($need > 0) {
+        $exclude = array_unique(array_merge(
+            $cartIds,
+            array_map(fn($r) => (int)$r['id'], $rows)
+        ));
+        $sql = "SELECT id, slug, title, price_cents,
+                  (SELECT filename FROM product_images
+                     WHERE product_id = products.id
+                     ORDER BY sort_order ASC, id ASC
+                     LIMIT 1) AS thumb
+                FROM products WHERE status = 'available'";
+        $params = [];
+        if ($exclude) {
+            $place = implode(',', array_fill(0, count($exclude), '?'));
+            $sql .= " AND id NOT IN ($place)";
+            $params = $exclude;
+        }
+        $sql .= ' ORDER BY RAND() LIMIT ' . $need;
+        $stmt = db()->prepare($sql);
+        $stmt->execute($params);
+        foreach ($stmt->fetchAll() as $r) $rows[] = $r;
+    }
+
+    // Persist the final lineup.
+    $_SESSION[CART_SUGGESTION_SESSION_KEY] = array_map(fn($r) => (int)$r['id'], $rows);
+
+    // Enrich with display fields.
+    return array_map(function ($r) {
+        return [
+            'id'          => (int)$r['id'],
+            'slug'        => (string)$r['slug'],
+            'title'       => (string)$r['title'],
+            'price_cents' => (int)$r['price_cents'],
+            'price'       => fmt_price((int)$r['price_cents']),
+            'thumb_url'   => $r['thumb'] ? thumb_url($r['thumb']) : null,
+            'product_url' => '/shop/product.php?slug=' . rawurlencode($r['slug']),
+        ];
+    }, $rows);
+}
+
+function cart_reset_suggestions(): void {
+    unset($_SESSION[CART_SUGGESTION_SESSION_KEY]);
 }
 
 /**

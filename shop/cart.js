@@ -68,19 +68,13 @@
       postCart(payload)
         .then(function (data) {
           setCartCount(data.count);
-          // From a cart-page suggestion card: prefer in-place insertion
-          // using server-returned item data. If anything is off (e.g. the
-          // server doesn't yet send added_item), fall back to a reload so
-          // the buyer always sees the right state.
+          // From a cart-page suggestion card: fade out the card and reload.
+          // The session-backed suggestion strip keeps the rest of the
+          // lineup stable across the reload, so the buyer doesn't lose
+          // sight of dolls they were eyeing.
           if (sugForAdd) {
-            var inserted = data.added_item ? appendCartRow(data.added_item) : false;
-            if (!inserted) { window.location.reload(); return; }
-            updateCartTotals(data);
             sugForAdd.classList.add('is-added');
-            setTimeout(function () {
-              sugForAdd.remove();
-              if (data.suggestion) appendSuggestion(data.suggestion);
-            }, 500);
+            setTimeout(function () { window.location.reload(); }, 350);
             return;
           }
           // Anywhere else (product detail, listing): take the buyer straight
@@ -155,39 +149,6 @@
   });
 
   function fmtCents(c) { return '$' + (c / 100).toFixed(2); }
-
-  // Build a .cart-row from server-returned item data and append it to the
-  // cart list. Markup mirrors what shop/cart.php renders for items.
-  // Returns true if a row was inserted, false if anything blocked it
-  // (no list element, missing item data, or duplicate id) so the caller
-  // can fall back to a full reload.
-  function appendCartRow(item) {
-    var list = document.querySelector('.cart-list');
-    if (!list || !item || !item.id) return false;
-    if (list.querySelector('.cart-row[data-product-id="' + item.id + '"]')) return false;
-
-    var row = document.createElement('div');
-    row.className = 'cart-row';
-    row.setAttribute('data-product-id', String(item.id));
-    var thumbHtml = item.thumb_url
-      ? '<img src="' + escapeAttr(item.thumb_url) + '" alt="' + escapeAttr(item.title) + '">'
-      : '';
-    row.innerHTML =
-      '<a class="cart-row-img" href="' + escapeAttr(item.product_url) + '">' + thumbHtml + '</a>' +
-      '<div class="cart-row-meta">' +
-        '<a class="cart-row-title" href="' + escapeAttr(item.product_url) + '"></a>' +
-        '<p class="cart-row-tag">One of a kind</p>' +
-      '</div>' +
-      '<div class="cart-row-side">' +
-        '<span class="cart-row-price"></span>' +
-        '<button type="button" class="cart-row-remove" data-cart-remove="' + item.id + '">Remove</button>' +
-      '</div>';
-    row.querySelector('.cart-row-title').textContent = item.title;
-    row.querySelector('.cart-row-price').textContent = item.price;
-    row.querySelector('.cart-row-remove').setAttribute('aria-label', 'Remove ' + item.title);
-    list.appendChild(row);
-    return true;
-  }
 
   function escapeAttr(s) {
     return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

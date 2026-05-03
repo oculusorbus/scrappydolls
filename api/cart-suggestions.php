@@ -12,8 +12,9 @@ $body = json_decode($raw, true) ?: $_POST;
 $limit = (int)($body['limit'] ?? 5);
 $limit = max(1, min(12, $limit));
 
-$excludeIds = $body['exclude_ids'] ?? [];
-if (!is_array($excludeIds)) $excludeIds = [];
-
-$suggestions = cart_suggestions_with_thumbs($limit, $excludeIds);
+// Refresh-lineup: reset the persisted session strip and re-roll a fresh
+// one so the buyer gets a new lineup AND a future reload shows the same
+// lineup (stable across reloads).
+cart_reset_suggestions();
+$suggestions = cart_stable_suggestions($limit);
 json_response(['suggestions' => $suggestions]);

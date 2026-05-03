@@ -28,23 +28,7 @@ if ($items) {
     }
 }
 
-$suggestions = $items ? cart_suggestions(5) : [];
-$suggestionThumbs = [];
-if ($suggestions) {
-    $sids = array_map(fn($i) => (int)$i['id'], $suggestions);
-    $place = implode(',', array_fill(0, count($sids), '?'));
-    $st = db()->prepare("
-        SELECT product_id, filename
-        FROM product_images
-        WHERE product_id IN ($place)
-        ORDER BY product_id ASC, sort_order ASC, id ASC
-    ");
-    $st->execute($sids);
-    foreach ($st->fetchAll() as $row) {
-        $pid = (int)$row['product_id'];
-        if (!isset($suggestionThumbs[$pid])) $suggestionThumbs[$pid] = $row['filename'];
-    }
-}
+$suggestions = $items ? cart_stable_suggestions(5) : [];
 
 track_view('/shop/cart.php');
 
@@ -118,18 +102,16 @@ require __DIR__ . '/header.php';
           <h2 class="h-display cart-suggestions-title">Add a friend?</h2>
           <p class="lede" style="margin:.5rem auto 1.5rem">Each doll ships with the same care no matter how many you bring home.</p>
           <div class="cart-suggestion-grid">
-            <?php foreach ($suggestions as $s):
-              $sthumb = $suggestionThumbs[(int)$s['id']] ?? null;
-            ?>
+            <?php foreach ($suggestions as $s): ?>
               <div class="cart-suggestion">
-                <a class="cart-suggestion-img" href="/shop/product.php?slug=<?= h(urlencode($s['slug'])) ?>">
-                  <?php if ($sthumb): ?>
-                    <img src="<?= h(thumb_url($sthumb)) ?>" alt="<?= h($s['title']) ?>" loading="lazy">
+                <a class="cart-suggestion-img" href="<?= h($s['product_url']) ?>">
+                  <?php if ($s['thumb_url']): ?>
+                    <img src="<?= h($s['thumb_url']) ?>" alt="<?= h($s['title']) ?>" loading="lazy">
                   <?php endif; ?>
                 </a>
                 <div class="cart-suggestion-meta">
-                  <a class="cart-suggestion-title" href="/shop/product.php?slug=<?= h(urlencode($s['slug'])) ?>"><?= h($s['title']) ?></a>
-                  <span class="cart-suggestion-price"><?= fmt_price((int)$s['price_cents']) ?></span>
+                  <a class="cart-suggestion-title" href="<?= h($s['product_url']) ?>"><?= h($s['title']) ?></a>
+                  <span class="cart-suggestion-price"><?= h($s['price']) ?></span>
                 </div>
                 <button type="button" class="btn btn-ghost cart-add-btn" data-product-id="<?= (int)$s['id'] ?>" style="width:100%;justify-content:center">
                   <span class="cart-add-label">+ Add to cart</span>
