@@ -532,7 +532,12 @@ if (count($_pool) >= 21) {
       font-weight: 700;
     }
     @media (max-width: 52rem) {
-      .hero-image-stack { max-width: 24rem; margin: 1rem auto 2rem; }
+      .hero-image-stack { max-width: 24rem; margin: 1rem auto 2.5rem; }
+      /* Pull the badge inside the frame so overflow-x: hidden doesn't clip it */
+      .hero-image-stack .badge {
+        bottom: 1rem;
+        left: 1rem;
+      }
     }
 
     .hero-meta {
