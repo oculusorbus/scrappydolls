@@ -645,6 +645,44 @@ if (count($_pool) >= 21) {
         margin: 0 auto;
       }
     }
+    /* === SIZE === */
+    .size-grid {
+      display: grid;
+      gap: clamp(2.5rem, 6vw, 5rem);
+      grid-template-columns: 1fr 1.1fr;
+      align-items: center;
+    }
+    @media (max-width: 52rem) {
+      .size-grid { grid-template-columns: 1fr; }
+    }
+    .size-portrait {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--paper-3);
+      box-shadow: var(--shadow-lg);
+      transform: rotate(1.2deg);
+    }
+    .size-portrait::after {
+      content: "";
+      position: absolute;
+      inset: 0.6rem;
+      border: 1px dashed color-mix(in oklab, var(--paper) 70%, transparent);
+      border-radius: calc(var(--radius-lg) - 8px);
+      pointer-events: none;
+    }
+    .size-portrait img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    @media (max-width: 52rem) {
+      .size-portrait {
+        transform: rotate(0deg);
+        max-width: 26rem;
+        margin: 0 auto;
+      }
+    }
 
     .pull-quote {
       font-family: var(--font-display);
@@ -1334,7 +1372,7 @@ if (count($_pool) >= 21) {
     </section>
 
     <!-- ABOUT -->
-    <section id="about">
+    <section id="about" class="alt">
       <div class="wrap">
         <div class="about-grid">
           <div class="about-portrait reveal" role="img" aria-label="A handmade Scrappy Doll by Kanda Kay — brown curly hair, a poppy headband, and a green floral dress"></div>
@@ -1349,7 +1387,7 @@ if (count($_pool) >= 21) {
     </section>
 
     <!-- PROCESS -->
-    <section id="process" class="alt">
+    <section id="process">
       <div class="wrap">
         <div class="reveal" style="max-width: 36rem;">
           <p class="eyebrow">The Process</p>
@@ -1372,6 +1410,23 @@ if (count($_pool) >= 21) {
             <h3>Finish</h3>
             <p>Hair, jewelry, dresses, and details are added one at a time until a doll has clearly arrived as itself.</p>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIZE -->
+    <section id="size" class="alt">
+      <div class="wrap">
+        <div class="size-grid">
+          <div class="size-portrait reveal">
+            <img src="images/size.png" alt="A handmade Scrappy Doll standing beside a 12-inch wooden ruler, showing the doll is approximately one foot tall" loading="lazy" width="1000" height="1295">
+          </div>
+          <div class="reveal">
+            <p class="eyebrow">Hold one in your hands</p>
+            <h2 class="h-display">About a <em style="color: var(--rose); font-style: italic; font-weight: 400;">foot tall</em>.</h2>
+            <p style="margin-top: 1.5rem; color: var(--ink-soft);">Most Scrappy Dolls stand around 12 inches — small enough to hold, big enough to have presence on a shelf, a bookcase, or a window seat.</p>
+            <p style="margin-top: 1rem; color: var(--ink-soft);">There's natural variation: some are a little taller, some a little stouter, depending on the fabric and the personality that emerges along the way. Each one's exact size is part of who she is.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -1508,7 +1563,7 @@ if (count($_pool) >= 21) {
     </section>
 
     <!-- FAQ -->
-    <section id="faq">
+    <section id="faq" class="alt">
       <div class="wrap-narrow">
         <div class="faq-head reveal">
           <div>
