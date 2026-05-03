@@ -84,7 +84,8 @@ nav.primary .btn-mini{
 nav.primary .btn-mini:hover{background:var(--rose-dark);color:#fff}
 @media (max-width:40rem){
   nav.primary{gap:.9rem}
-  nav.primary a:not(.btn-mini):not(.is-current){display:none}
+  nav.primary a:not(.btn-mini):not(.priority):not(.is-current){display:none}
+  nav.primary a.priority{font-weight:600;color:var(--ink)}
 }
 
 /* === Buttons === */

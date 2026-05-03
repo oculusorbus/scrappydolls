@@ -47,7 +47,7 @@ $pageUrl   = $pageUrl   ?? url($_SERVER['REQUEST_URI'] ?? '/shop/');
     </div>
     <nav class="primary" aria-label="Primary">
       <a href="/">Home</a>
-      <a href="/shop/" class="<?= ($_SERVER['REQUEST_URI'] === '/shop/' || $_SERVER['REQUEST_URI'] === '/shop/index.php') ? 'is-current' : '' ?>">Shop</a>
+      <a href="/shop/" class="priority <?= ($_SERVER['REQUEST_URI'] === '/shop/' || $_SERVER['REQUEST_URI'] === '/shop/index.php') ? 'is-current' : '' ?>">Shop</a>
       <a href="/#about">About</a>
       <a class="btn-mini" href="https://www.facebook.com/kandakayartist/" rel="noopener">Follow</a>
     </nav>
