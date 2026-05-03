@@ -1537,7 +1537,7 @@ if (count($_pool) >= 21) {
           <div>
             <p class="eyebrow" style="color: var(--rose-light);">Stay close</p>
             <h2 class="h-display">See new dolls<br>as they're <em style="color: var(--rose-light); font-style: italic; font-weight: 400;">finished</em>.</h2>
-            <p style="margin-top: 1rem;">Follow Scrappy Dolls on Facebook for new work, sneak peeks of what's on the table, and the stories behind the fabric.</p>
+            <p style="margin-top: 1rem;">Follow Art Safari Studio on Facebook for new work, sneak peeks of what's on the table, and the stories behind the fabric.</p>
           </div>
           <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">
             Follow on Facebook <span class="arrow" aria-hidden="true">→</span>
