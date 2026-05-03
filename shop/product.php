@@ -70,6 +70,7 @@ require __DIR__ . '/header.php';
             <div class="buy-card">
               <?php if ($inCart): ?>
                 <a class="btn btn-primary" href="/shop/cart.php" style="width:100%;justify-content:center">In your cart — view cart →</a>
+                <a class="btn btn-ghost" href="/shop/" style="width:100%;justify-content:center;margin-top:.65rem">Keep shopping</a>
               <?php else: ?>
                 <form method="POST" action="/api/cart-add-form.php" style="margin:0">
                   <input type="hidden" name="product_id" value="<?= (int)$product['id'] ?>">
