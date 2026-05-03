@@ -1517,7 +1517,7 @@ if (count($_pool) >= 21) {
         </details>
         <details class="faq">
           <summary>Are Scrappy Dolls safe for children?</summary>
-          <p>Dolls are sewn with sturdy seams and embroidered features (no buttons or small attached parts), and stuffed with fiberfill. They make wonderful keepsakes and play companions for older babies and children.</p>
+          <p>These are heirloom art pieces, not children's toys. They're often assembled with hot glue and other adhesives, and they include small parts like buttons and decorative accents that pose choking hazards. They're <strong>not for infants, toddlers, or young children</strong> who put things in their mouths or take things apart. They're meant for adults, older kids, and as keepsakes or display pieces.</p>
         </details>
         <details class="faq">
           <summary>How do I care for a Scrappy Doll?</summary>
@@ -1675,7 +1675,7 @@ if (count($_pool) >= 21) {
         "name": "Are Scrappy Dolls safe for children?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Dolls are sewn with sturdy seams and embroidered features (no buttons or small attached parts), and stuffed with fiberfill. They make wonderful keepsakes and play companions for older babies and children."
+          "text": "These are heirloom art pieces, not children's toys. They're often assembled with hot glue and other adhesives, and they include small parts like buttons and decorative accents that pose choking hazards. They are not for infants, toddlers, or young children who put things in their mouths or take things apart. They're meant for adults, older kids, and as keepsakes or display pieces."
         }
       },
       {
