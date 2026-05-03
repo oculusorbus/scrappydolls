@@ -61,12 +61,16 @@
       postCart({ action: 'add', product_id: pid })
         .then(function (data) {
           setCartCount(data.count);
-          // From a cart-page suggestion card: fade it out and reload so the
-          // new row, subtotal, and fresh suggestions all refresh together.
+          // From a cart-page suggestion card: insert a new row in place from
+          // the suggestion's own data, fade out the suggestion, and refresh
+          // totals — without reloading, so the rest of the suggestion strip
+          // doesn't get reshuffled out from under the buyer.
           var sug = addBtn.closest('.cart-suggestion');
           if (sug) {
+            insertCartRowFromSuggestion(sug, pid);
+            updateCartTotals(data);
             sug.classList.add('is-added');
-            setTimeout(function () { window.location.reload(); }, 500);
+            setTimeout(function () { sug.remove(); }, 500);
             return;
           }
           // Anywhere else (product detail, listing): take the buyer straight
@@ -99,12 +103,51 @@
 
   function fmtCents(c) { return '$' + (c / 100).toFixed(2); }
 
+  // Build a .cart-row from a suggestion card and append it to the cart list.
+  // Markup mirrors what shop/cart.php renders for items.
+  function insertCartRowFromSuggestion(sug, pid) {
+    var list = document.querySelector('.cart-list');
+    if (!list) return;
+    var titleA = sug.querySelector('.cart-suggestion-title');
+    var imgA   = sug.querySelector('.cart-suggestion-img');
+    var img    = imgA ? imgA.querySelector('img') : null;
+    var price  = sug.querySelector('.cart-suggestion-price');
+    var title  = titleA ? titleA.textContent.trim() : 'Doll';
+    var slug   = titleA ? (titleA.getAttribute('href') || '') : '';
+
+    var row = document.createElement('div');
+    row.className = 'cart-row';
+    row.setAttribute('data-product-id', String(pid));
+    var thumbHtml = img ? '<img src="' + img.getAttribute('src') + '" alt="' + escapeAttr(title) + '">' : '';
+    row.innerHTML =
+      '<a class="cart-row-img" href="' + escapeAttr(slug) + '">' + thumbHtml + '</a>' +
+      '<div class="cart-row-meta">' +
+        '<a class="cart-row-title" href="' + escapeAttr(slug) + '"></a>' +
+        '<p class="cart-row-tag">One of a kind</p>' +
+      '</div>' +
+      '<div class="cart-row-side">' +
+        '<span class="cart-row-price"></span>' +
+        '<button type="button" class="cart-row-remove" data-cart-remove="' + pid + '">Remove</button>' +
+      '</div>';
+    // Set text via textContent to avoid double-encoding.
+    row.querySelector('.cart-row-title').textContent = title;
+    row.querySelector('.cart-row-price').textContent = price ? price.textContent.trim() : '';
+    row.querySelector('.cart-row-remove').setAttribute('aria-label', 'Remove ' + title);
+    list.appendChild(row);
+  }
+
+  function escapeAttr(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   function updateCartTotals(data) {
     var sub  = document.querySelector('[data-cart-subtotal]');
     var ship = document.querySelector('[data-cart-shipping]');
     var tot  = document.querySelector('[data-cart-total]');
+    var n    = document.querySelector('[data-cart-itemcount]');
     if (sub  && typeof data.subtotal_cents === 'number')    sub.textContent  = fmtCents(data.subtotal_cents);
     if (ship && typeof data.shipping_cents === 'number')    ship.textContent = fmtCents(data.shipping_cents);
     if (tot  && typeof data.grand_total_cents === 'number') tot.textContent  = fmtCents(data.grand_total_cents);
+    if (n    && typeof data.count === 'number')             n.textContent    = String(data.count);
   }
 })();

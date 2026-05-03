@@ -90,7 +90,7 @@ require __DIR__ . '/header.php';
         <aside class="cart-summary">
           <h2 class="cart-summary-title">Order summary</h2>
           <dl class="cart-summary-rows">
-            <div><dt>Items</dt><dd><?= count($items) ?></dd></div>
+            <div><dt>Items</dt><dd data-cart-itemcount><?= count($items) ?></dd></div>
             <div><dt>Subtotal</dt><dd data-cart-subtotal><?= fmt_price($itemsTotal) ?></dd></div>
             <div><dt>Shipping</dt><dd data-cart-shipping><?= fmt_price($shippingCents) ?></dd></div>
             <div class="cart-summary-grand"><dt>Total</dt><dd data-cart-total><?= fmt_price($grandTotal) ?></dd></div>
