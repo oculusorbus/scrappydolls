@@ -607,6 +607,45 @@ if (count($_pool) >= 21) {
       border-radius: calc(var(--radius-lg) - 8px);
       pointer-events: none;
     }
+    /* === BIO === */
+    .bio-grid {
+      display: grid;
+      gap: clamp(2.5rem, 6vw, 5rem);
+      grid-template-columns: 1.05fr 1fr;
+      align-items: center;
+    }
+    @media (max-width: 52rem) {
+      .bio-grid { grid-template-columns: 1fr; }
+    }
+    .bio-portrait {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--paper-3);
+      box-shadow: var(--shadow-lg);
+      transform: rotate(-1deg);
+    }
+    .bio-portrait::after {
+      content: "";
+      position: absolute;
+      inset: 0.6rem;
+      border: 1px dashed color-mix(in oklab, var(--paper) 70%, transparent);
+      border-radius: calc(var(--radius-lg) - 8px);
+      pointer-events: none;
+    }
+    .bio-portrait img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    @media (max-width: 52rem) {
+      .bio-portrait {
+        transform: rotate(0deg);
+        max-width: 30rem;
+        margin: 0 auto;
+      }
+    }
+
     .pull-quote {
       font-family: var(--font-display);
       font-weight: 350;
@@ -1294,6 +1333,24 @@ if (count($_pool) >= 21) {
             <h3>Finish</h3>
             <p>Hair, jewelry, dresses, and details are added one at a time until a doll has clearly arrived as itself.</p>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BIO -->
+    <section id="artist">
+      <div class="wrap">
+        <div class="bio-grid">
+          <div class="bio-portrait reveal">
+            <img src="images/kanda-kay.png" alt="Kanda Kay — artist and maker behind Scrappy Dolls" loading="lazy" width="1648" height="1366">
+          </div>
+          <div class="reveal">
+            <p class="eyebrow">Meet Kanda</p>
+            <h2 class="h-display">A lifetime of <em style="color: var(--rose); font-style: italic; font-weight: 400;">making</em>.</h2>
+            <p class="lede" style="margin-top: 1.5rem;">Kanda grew up in a family of painters, photographers, musicians, and seamstresses — making was simply the language spoken at home.</p>
+            <p style="margin-top: 1.25rem; color: var(--ink-soft);">She studied art education at the University of Kansas and, after graduating, opened her own weaving shop. While homeschooling her three children, she kept creative work at the center of family life — and watched that next generation grow into artists, musicians, graphic designers, and web developers in their own right.</p>
+            <p style="margin-top: 1rem; color: var(--ink-soft);">In retirement, she's never stopped making. Her work has gravitated toward combining everyday materials — quilt offcuts, vintage prints, the last good piece of a beloved shirt — into one-of-a-kind pieces. Scrappy Dolls is where that lifelong practice has landed.</p>
+          </div>
         </div>
       </div>
     </section>
