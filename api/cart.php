@@ -11,6 +11,8 @@ $body = json_decode($raw, true) ?: $_POST;
 $action = (string)($body['action'] ?? '');
 $productId = (int)($body['product_id'] ?? 0);
 
+$replacementSuggestion = null;
+
 switch ($action) {
     case 'add':
         if (!$productId) json_response(['error' => 'Missing product_id'], 400);
@@ -19,6 +21,12 @@ switch ($action) {
         if (!$stmt->fetch()) json_response(['error' => 'This doll is not available'], 409);
         if (!cart_add($productId)) {
             json_response(['error' => 'Cart is full (' . CART_MAX_ITEMS . ' max)'], 400);
+        }
+        // Optional: if the client tells us which suggestions are currently on
+        // screen, we return a fresh one to refill the strip after this add.
+        $excludeIds = $body['exclude_ids'] ?? null;
+        if (is_array($excludeIds)) {
+            $replacementSuggestion = cart_suggestion_one(array_map('intval', $excludeIds));
         }
         break;
 
@@ -42,4 +50,5 @@ json_response([
     'shipping_cents'     => cart_shipping_cents(),
     'grand_total_cents'  => cart_grand_total_cents(),
     'product_ids'        => cart_ids(),
+    'suggestion'         => $replacementSuggestion,
 ]);

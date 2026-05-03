@@ -58,19 +58,27 @@
       var pid = parseInt(addBtn.getAttribute('data-cart-add') || addBtn.getAttribute('data-product-id') || '0', 10);
       if (!pid) return;
       addBtn.disabled = true;
-      postCart({ action: 'add', product_id: pid })
+      // If we're adding from a suggestion card, ask the server for a fresh
+      // replacement excluding everything currently visible in the strip.
+      var sugForAdd = addBtn.closest('.cart-suggestion');
+      var payload = { action: 'add', product_id: pid };
+      if (sugForAdd) {
+        payload.exclude_ids = collectVisibleSuggestionIds();
+      }
+      postCart(payload)
         .then(function (data) {
           setCartCount(data.count);
           // From a cart-page suggestion card: insert a new row in place from
-          // the suggestion's own data, fade out the suggestion, and refresh
-          // totals — without reloading, so the rest of the suggestion strip
-          // doesn't get reshuffled out from under the buyer.
-          var sug = addBtn.closest('.cart-suggestion');
-          if (sug) {
-            insertCartRowFromSuggestion(sug, pid);
+          // the suggestion's own data, fade out the suggestion, refresh
+          // totals, and slot a fresh suggestion in to keep the strip full.
+          if (sugForAdd) {
+            insertCartRowFromSuggestion(sugForAdd, pid);
             updateCartTotals(data);
-            sug.classList.add('is-added');
-            setTimeout(function () { sug.remove(); }, 500);
+            sugForAdd.classList.add('is-added');
+            setTimeout(function () {
+              sugForAdd.remove();
+              if (data.suggestion) appendSuggestion(data.suggestion);
+            }, 500);
             return;
           }
           // Anywhere else (product detail, listing): take the buyer straight
@@ -149,6 +157,39 @@
 
   function escapeAttr(s) {
     return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function collectVisibleSuggestionIds() {
+    var ids = [];
+    document.querySelectorAll('.cart-suggestion .cart-add-btn').forEach(function (b) {
+      var id = parseInt(b.getAttribute('data-product-id') || '0', 10);
+      if (id) ids.push(id);
+    });
+    return ids;
+  }
+
+  // Build a .cart-suggestion card from server data and append it to the
+  // suggestion grid so the strip stays full after a buyer adds a friend.
+  function appendSuggestion(s) {
+    var grid = document.querySelector('.cart-suggestion-grid');
+    if (!grid || !s || !s.id) return;
+    var card = document.createElement('div');
+    card.className = 'cart-suggestion';
+    var imgHtml = s.thumb_url
+      ? '<img src="' + escapeAttr(s.thumb_url) + '" alt="' + escapeAttr(s.title) + '" loading="lazy">'
+      : '';
+    card.innerHTML =
+      '<a class="cart-suggestion-img" href="' + escapeAttr(s.product_url) + '">' + imgHtml + '</a>' +
+      '<div class="cart-suggestion-meta">' +
+        '<a class="cart-suggestion-title" href="' + escapeAttr(s.product_url) + '"></a>' +
+        '<span class="cart-suggestion-price"></span>' +
+      '</div>' +
+      '<button type="button" class="btn btn-ghost cart-add-btn" data-product-id="' + s.id + '" style="width:100%;justify-content:center">' +
+        '<span class="cart-add-label">+ Add to cart</span>' +
+      '</button>';
+    card.querySelector('.cart-suggestion-title').textContent = s.title;
+    card.querySelector('.cart-suggestion-price').textContent = s.price;
+    grid.appendChild(card);
   }
 
   function updateCartTotals(data) {

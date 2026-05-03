@@ -116,3 +116,43 @@ function cart_suggestions(int $limit = 4): array {
     $stmt->execute($params);
     return $stmt->fetchAll();
 }
+
+/**
+ * Pick one random available doll, excluding cart items + an explicit list
+ * (e.g. dolls already shown in the on-page suggestion strip). Includes a
+ * ready-to-use thumbnail URL so the client can render without a second
+ * round-trip. Returns null if no candidate exists.
+ */
+function cart_suggestion_one(array $excludeExtraIds = []): ?array {
+    $exclude = array_unique(array_merge(
+        array_map('intval', cart_ids()),
+        array_map('intval', $excludeExtraIds)
+    ));
+    $sql = "SELECT id, slug, title, price_cents,
+              (SELECT filename FROM product_images
+                 WHERE product_id = products.id
+                 ORDER BY sort_order ASC, id ASC
+                 LIMIT 1) AS thumb
+            FROM products
+            WHERE status = 'available'";
+    $params = [];
+    if ($exclude) {
+        $place = implode(',', array_fill(0, count($exclude), '?'));
+        $sql .= " AND id NOT IN ($place)";
+        $params = $exclude;
+    }
+    $sql .= ' ORDER BY RAND() LIMIT 1';
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    $row = $stmt->fetch();
+    if (!$row) return null;
+    return [
+        'id'          => (int)$row['id'],
+        'slug'        => (string)$row['slug'],
+        'title'       => (string)$row['title'],
+        'price_cents' => (int)$row['price_cents'],
+        'price'       => fmt_price((int)$row['price_cents']),
+        'thumb_url'   => $row['thumb'] ? thumb_url($row['thumb']) : null,
+        'product_url' => '/shop/product.php?slug=' . rawurlencode($row['slug']),
+    ];
+}
