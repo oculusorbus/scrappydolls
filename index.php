@@ -1345,7 +1345,7 @@ if (count($_pool) >= 21) {
             <img src="images/kanda-kay.png" alt="Kanda Kay — artist and maker behind Scrappy Dolls" loading="lazy" width="1648" height="1366">
           </div>
           <div class="reveal">
-            <p class="eyebrow">Meet Kanda</p>
+            <p class="eyebrow">Meet Kanda Kay</p>
             <h2 class="h-display">A lifetime of <em style="color: var(--rose); font-style: italic; font-weight: 400;">making</em>.</h2>
             <p class="lede" style="margin-top: 1.5rem;">Kanda grew up in a family of painters, photographers, musicians, and seamstresses — making was simply the language spoken at home.</p>
             <p style="margin-top: 1.25rem; color: var(--ink-soft);">After studying art education at <a href="https://ku.edu/" target="_blank" rel="noopener">Kansas University (KU)</a>, she opened her own weaving shop. While homeschooling her three children, she kept creative work at the center of family life — and watched that next generation grow into artists, musicians, graphic designers, and web developers in their own right.</p>
