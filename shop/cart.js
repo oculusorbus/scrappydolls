@@ -62,11 +62,13 @@
         .then(function (data) {
           setCartCount(data.count);
           flashAdded(addBtn);
-          // If button is in a suggestion card, fade it out and re-enable later.
+          // If button is in a suggestion card on the cart page, fade it out
+          // then reload so the new row, subtotal, and fresh suggestions all
+          // refresh together.
           var sug = addBtn.closest('.cart-suggestion');
           if (sug) {
             sug.classList.add('is-added');
-            setTimeout(function () { sug.remove(); }, 600);
+            setTimeout(function () { window.location.reload(); }, 500);
           }
         })
         .catch(function (err) { showError(err.message); })
