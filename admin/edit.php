@@ -17,6 +17,15 @@ if ($id) {
     $images = $istmt->fetchAll();
 }
 
+// New doll: pre-fill the title with the next number in the catalog protocol
+// (Scrappy Doll #N where N is auto-floored at 101 and increments from the
+// highest existing). Mom can override by typing — this just saves her the
+// look-up step.
+$defaultTitle = '';
+if (!$product) {
+    $defaultTitle = 'Scrappy Doll #' . next_enumeration_number('Scrappy Doll');
+}
+
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_check()) {
@@ -118,8 +127,11 @@ require __DIR__ . '/header.php';
     <div class="field">
       <label for="title">Title</label>
       <input type="text" name="title" id="title" required maxlength="255"
-             value="<?= h($_POST['title'] ?? ($product['title'] ?? '')) ?>"
+             value="<?= h($_POST['title'] ?? ($product['title'] ?? $defaultTitle)) ?>"
              placeholder="e.g. Marigold the Sunflower Doll">
+      <?php if (!$product): ?>
+        <span class="hint">Pre-filled from the catalog sequence — type to override.</span>
+      <?php endif; ?>
     </div>
     <div class="field">
       <label for="status">Status</label>
