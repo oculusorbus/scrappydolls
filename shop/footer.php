@@ -6,5 +6,6 @@
     <p class="legal">&copy; <?= (int)date('Y') ?> Scrappy Dolls.</p>
   </div>
 </footer>
+<script src="/shop/cart.js"></script>
 </body>
 </html>

@@ -50,6 +50,11 @@ $pageUrl   = $pageUrl   ?? url($_SERVER['REQUEST_URI'] ?? '/shop/');
       <a href="/shop/" class="priority <?= ($_SERVER['REQUEST_URI'] === '/shop/' || $_SERVER['REQUEST_URI'] === '/shop/index.php') ? 'is-current' : '' ?>">Shop</a>
       <a href="/#about">About</a>
       <a class="btn-mini" href="https://www.facebook.com/kandakayartist/" rel="noopener">Follow</a>
+      <?php $sd_cart_n = cart_count(); ?>
+      <a class="cart-link <?= $sd_cart_n > 0 ? 'has-items' : '' ?>" href="/shop/cart.php" aria-label="Cart (<?= $sd_cart_n ?> item<?= $sd_cart_n === 1 ? '' : 's' ?>)">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 12.3a2 2 0 0 0 2 1.7h8.2a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="9" cy="21" r="1.2"/><circle cx="18" cy="21" r="1.2"/></svg>
+        <span class="cart-count" data-cart-count><?= $sd_cart_n ?></span>
+      </a>
     </nav>
   </div>
 </header>

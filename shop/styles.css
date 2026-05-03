@@ -276,3 +276,101 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
   text-decoration:none;margin-bottom:1.5rem;
 }
 .back-link:hover{color:var(--ink)}
+
+/* === Cart link in header === */
+.cart-link{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:50%;
+  color:var(--ink-soft);text-decoration:none;
+  transition:color .2s ease, background .2s ease;
+}
+.cart-link:hover{color:var(--ink);background:color-mix(in oklab,var(--rule) 50%, transparent)}
+.cart-link .cart-count{
+  position:absolute;top:-2px;right:-4px;
+  min-width:18px;height:18px;padding:0 5px;
+  border-radius:9px;background:var(--rose);color:#fff;
+  font-size:.7rem;font-weight:700;line-height:18px;text-align:center;
+  display:none;
+}
+.cart-link.has-items{color:var(--rose-dark)}
+.cart-link.has-items .cart-count{display:inline-block}
+
+/* === Cart page === */
+.cart-layout{
+  display:grid;grid-template-columns:1fr;gap:2rem;
+  margin:2rem 0;
+}
+@media (min-width:880px){
+  .cart-layout{grid-template-columns:minmax(0, 1fr) 22rem;}
+}
+.cart-list{display:flex;flex-direction:column;gap:1rem}
+.cart-row{
+  display:grid;grid-template-columns:96px 1fr auto;gap:1rem;
+  align-items:center;
+  background:var(--paper-2);border:1px solid var(--rule);
+  border-radius:var(--radius);padding:.85rem 1rem;
+}
+.cart-row-img{
+  display:block;width:96px;height:96px;border-radius:12px;overflow:hidden;
+  background:var(--paper-3);
+}
+.cart-row-img img{width:100%;height:100%;object-fit:cover}
+.cart-row-meta{min-width:0}
+.cart-row-title{
+  display:block;font-family:var(--font-display);font-weight:500;
+  font-size:1.1rem;color:var(--ink);text-decoration:none;line-height:1.2;
+}
+.cart-row-title:hover{color:var(--rose-dark)}
+.cart-row-tag{font-size:.78rem;color:var(--ink-muted);margin:.3rem 0 0;text-transform:uppercase;letter-spacing:.06em}
+.cart-row-side{display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
+.cart-row-price{font-family:var(--font-display);font-weight:500;font-size:1.1rem}
+.cart-row-remove{
+  background:none;border:0;padding:0;cursor:pointer;
+  color:var(--ink-muted);font-size:.78rem;text-decoration:underline;
+}
+.cart-row-remove:hover{color:var(--rose-dark)}
+.cart-row-remove:disabled{opacity:.5;cursor:default}
+
+.cart-summary{
+  background:var(--paper-2);border:1px solid var(--rule);
+  border-radius:var(--radius);padding:1.5rem;
+  align-self:start;
+}
+.cart-summary-title{
+  font-family:var(--font-display);font-weight:500;font-size:1.25rem;
+  margin:0 0 1rem;
+}
+.cart-summary-rows{margin:0 0 1.25rem;padding:0;display:flex;flex-direction:column;gap:.4rem}
+.cart-summary-rows > div{
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px dashed var(--rule-soft);padding-bottom:.4rem;
+}
+.cart-summary-rows dt,.cart-summary-rows dd{margin:0;color:var(--ink-soft);font-size:.92rem}
+.cart-summary-rows dd{font-weight:500;color:var(--ink)}
+.cart-summary .note{font-size:.8rem;color:var(--ink-muted);margin-top:1rem}
+
+/* === Cart suggestions === */
+.cart-suggestions{margin:3.5rem 0 2rem;text-align:center}
+.cart-suggestions-title{font-size:1.6rem;margin:0}
+.cart-suggestion-grid{
+  display:grid;gap:1.25rem;margin-top:1.5rem;
+  grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+}
+.cart-suggestion{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:var(--radius);
+  padding:.75rem;display:flex;flex-direction:column;gap:.5rem;
+  transition:opacity .35s ease, transform .35s ease;
+}
+.cart-suggestion.is-added{opacity:0;transform:scale(.94)}
+.cart-suggestion-img{display:block;border-radius:12px;overflow:hidden;background:var(--paper-3);aspect-ratio:1/1}
+.cart-suggestion-img img{width:100%;height:100%;object-fit:cover}
+.cart-suggestion-meta{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;text-align:left}
+.cart-suggestion-title{
+  font-family:var(--font-display);font-weight:500;color:var(--ink);
+  text-decoration:none;font-size:.98rem;line-height:1.15;
+}
+.cart-suggestion-title:hover{color:var(--rose-dark)}
+.cart-suggestion-price{font-family:var(--font-display);color:var(--ink-soft);font-size:.95rem;white-space:nowrap}
+
+/* Add-to-cart "added" flash */
+.cart-add-btn.is-added{background:var(--rose-dark)}

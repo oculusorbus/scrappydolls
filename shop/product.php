@@ -66,10 +66,20 @@ require __DIR__ . '/header.php';
 
         <?php if ($product['status'] === 'available'): ?>
           <?php if (paypal_is_configured()): ?>
+            <?php $inCart = cart_has((int)$product['id']); ?>
             <div class="buy-card">
-              <div id="paypal-button-container"></div>
-              <div id="buy-error" class="flash flash-error" style="display:none;margin-top:1rem"></div>
-              <p class="note">Pay with PayPal or any major credit card. Your payment is processed securely by PayPal.</p>
+              <button type="button"
+                      class="btn btn-primary cart-add-btn"
+                      data-product-id="<?= (int)$product['id'] ?>"
+                      <?= $inCart ? 'data-in-cart="1"' : '' ?>
+                      style="width:100%;justify-content:center">
+                <span class="cart-add-label"><?= $inCart ? 'In your cart' : 'Add to cart' ?></span>
+              </button>
+              <a class="btn btn-ghost" href="/shop/cart.php" style="width:100%;justify-content:center;margin-top:.65rem">
+                View cart <span aria-hidden="true">→</span>
+              </a>
+              <div id="cart-error" class="flash flash-error" style="display:none;margin-top:1rem"></div>
+              <p class="note">Pay with PayPal or any major credit card at checkout. Each Scrappy Doll is one of a kind — adding her to your cart doesn't reserve her until you check out.</p>
             </div>
           <?php else: ?>
             <div class="buy-card">
@@ -126,63 +136,6 @@ require __DIR__ . '/header.php';
       b.classList.add('active');
       main.src = b.getAttribute('data-src');
     });
-  });
-})();
-</script>
-<?php endif; ?>
-
-<?php if ($product['status'] === 'available' && paypal_is_configured()): ?>
-<script src="https://www.paypal.com/sdk/js?client-id=<?= h(urlencode(paypal_client_id())) ?>&currency=<?= h(paypal_currency()) ?>&intent=capture&components=buttons"
-        data-namespace="paypalSDK"></script>
-<script>
-(function(){
-  var productId = <?= (int)$product['id'] ?>;
-  var slug = <?= json_encode($product['slug']) ?>;
-  var errBox = document.getElementById('buy-error');
-  function showErr(msg){
-    errBox.textContent = msg || 'Something went wrong. Please try again.';
-    errBox.style.display = 'block';
-  }
-  if (!window.paypalSDK || !window.paypalSDK.Buttons) {
-    showErr('PayPal failed to load. Refresh the page or try again later.');
-    return;
-  }
-  window.paypalSDK.Buttons({
-    style: { layout: 'vertical', shape: 'pill', label: 'paypal' },
-    createOrder: function(){
-      return fetch('/api/create-order.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: productId })
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        if (data.error) throw new Error(data.error);
-        return data.id;
-      });
-    },
-    onApprove: function(data){
-      return fetch('/api/capture-order.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: data.orderID, product_id: productId })
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(res){
-        if (res.error) throw new Error(res.error);
-        window.location.href = '/shop/success.php?order=' + encodeURIComponent(res.order_id);
-      });
-    },
-    onError: function(err){
-      console.error(err);
-      showErr('Payment could not be completed. ' + (err && err.message ? err.message : ''));
-    },
-    onCancel: function(){
-      // user cancelled — no-op
-    }
-  }).render('#paypal-button-container').catch(function(err){
-    showErr('Could not load PayPal buttons.');
-    console.error(err);
   });
 })();
 </script>
