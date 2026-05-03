@@ -1342,7 +1342,7 @@ if (count($_pool) >= 21) {
             <p class="eyebrow">The Studio</p>
             <h2 class="h-display">Made by hand.<br>Made <em style="color: var(--rose); font-style: italic; font-weight: 400;">to keep</em>.</h2>
             <p class="pull-quote">Every Scrappy Doll begins as a pile of fabric — quilt offcuts, an old pillowcase, the last good piece of a favorite shirt.</p>
-            <p style="margin-top: 1.5rem; color: var(--ink-soft);">Kanda Kay cuts, pieces, and stitches each doll by hand, finishing with embroidered features and a name only that doll will ever wear. The result is a small, sturdy companion — warm-feeling, washable, and unmistakably one of a kind.</p>
+            <p style="margin-top: 1.5rem; color: var(--ink-soft);">Kanda Kay cuts, pieces, and stitches each doll by hand, finishing with embroidered features and a name only that doll will ever wear. The result is a small, characterful keepsake — warm-feeling, hand-finished, and unmistakably one of a kind.</p>
           </div>
         </div>
       </div>
