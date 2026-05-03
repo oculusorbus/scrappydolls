@@ -132,6 +132,9 @@ require __DIR__ . '/header.php';
               </div>
             <?php endforeach; ?>
           </div>
+          <div style="text-align:center;margin-top:2rem">
+            <a class="btn btn-ghost" href="/shop/">Keep browsing all dolls <span aria-hidden="true">→</span></a>
+          </div>
         </section>
       <?php endif; ?>
 
