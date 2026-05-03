@@ -1509,7 +1509,7 @@ if (count($_pool) >= 21) {
         <!-- TODO: Confirm answers with Kanda before publishing — these are reasonable defaults, not commitments. -->
         <details class="faq">
           <summary>Are dolls available to purchase?</summary>
-          <p>New dolls are announced on the <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Scrappy Dolls Facebook page</a> as they're finished. Send a message there to ask about what's currently available.</p>
+          <p>Yes. Browse available dolls in the <a href="/shop/">shop</a> — each is one of a kind, so when she's gone, she's gone. New work is announced on <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Art Safari Studio's Facebook page</a> as it comes off the table.</p>
         </details>
         <details class="faq">
           <summary>Can a doll be made from my own fabric?</summary>
@@ -1659,7 +1659,7 @@ if (count($_pool) >= 21) {
         "name": "Are dolls available to purchase?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "New dolls are announced on the Scrappy Dolls Facebook page as they're finished. Send a message there to ask about what's currently available."
+          "text": "Yes. Browse available dolls in the shop at scrappydolls.com/shop/. Each is one of a kind, so when she's gone, she's gone. New work is announced on Art Safari Studio's Facebook page as it comes off the table."
         }
       },
       {
