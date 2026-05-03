@@ -1301,7 +1301,7 @@ if (count($_pool) >= 21) {
           <div>
             <p class="eyebrow">Handmade by Kanda Kay</p>
             <h1 class="h-display">Cloth dolls,<br>stitched <em style="color: var(--rose); font-style: italic; font-weight: 400;">one&nbsp;at&nbsp;a&nbsp;time</em>.</h1>
-            <p class="lede" style="margin-top: 1.75rem;">Scrappy Dolls is a small studio of one-of-a-kind cloth dolls and custom memory dolls — each hand-cut and hand-sewn from quilting cottons, vintage prints, and beloved fabric remnants too lovely to throw away.</p>
+            <p class="lede" style="margin-top: 1.75rem;">Scrappy Dolls is a growing collection of one-of-a-kind cloth dolls and custom memory dolls — each hand-cut and hand-sewn from quilting cottons, vintage prints, and beloved fabric remnants too lovely to throw away.</p>
             <div class="cta-row">
               <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">
                 Follow on Facebook <span class="arrow" aria-hidden="true">→</span>
