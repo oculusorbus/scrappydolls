@@ -122,9 +122,11 @@ require __DIR__ . '/header.php';
             <?php endforeach; ?>
           </div>
           <div class="cart-suggestions-actions">
-            <button type="button" class="cart-suggestions-refresh" data-cart-refresh-suggestions>
-              <span class="refresh-icon" aria-hidden="true">↻</span> Don't see a friend? Refresh lineup
-            </button>
+            <form method="POST" action="/api/cart-suggestions-refresh.php" style="margin:0">
+              <button type="submit" class="cart-suggestions-refresh">
+                <span class="refresh-icon" aria-hidden="true">↻</span> Don't see a friend? Refresh lineup
+              </button>
+            </form>
             <a class="btn btn-ghost" href="/shop/">Keep browsing all dolls <span aria-hidden="true">→</span></a>
           </div>
         </section>
