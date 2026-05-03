@@ -3,6 +3,10 @@ declare(strict_types=1);
 require_once __DIR__ . '/../lib/bootstrap.php';
 auth_require();
 
+// Image processing can be slow on shared hosts. Give each chunk room to breathe.
+@set_time_limit(120);
+@ini_set('memory_limit', '256M');
+
 $errors  = [];
 $created = [];     // [['id'=>int, 'title'=>string], ...]
 $failed  = [];     // [['file'=>string, 'error'=>string], ...]
@@ -227,10 +231,18 @@ require __DIR__ . '/header.php';
       <strong id="uploadStatusLabel">Optimizing photos…</strong>
       <span id="uploadStatusDetail"></span>
       <div style="background:rgba(0,0,0,.08);border-radius:999px;height:.5rem;margin-top:.6rem;overflow:hidden">
-        <div id="uploadStatusBar" style="background:var(--rose);height:100%;width:0;transition:width .15s ease"></div>
+        <div id="uploadStatusBar" style="background:var(--rose);height:100%;width:0;transition:width .25s ease"></div>
       </div>
+      <p style="margin:.6rem 0 0;font-size:.78rem;color:var(--ink-muted)">Stay on this page — closing it will stop the import.</p>
     </div>
   </div>
+  <style>
+    @keyframes sd-pulse {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: .55; }
+    }
+    #uploadStatusBar.pulse { animation: sd-pulse 1.1s ease-in-out infinite; }
+  </style>
 </form>
 
 <script>
@@ -312,9 +324,9 @@ require __DIR__ . '/header.php';
   /* Client-side resize + chunked upload                              */
   /* ---------------------------------------------------------------- */
 
-  var MAX_EDGE = 1800;       // browser-side downscale (server still resizes again)
+  var MAX_EDGE = 1600;       // browser-side downscale — matches server target so server has no real resize work to do
   var QUALITY  = 0.9;        // JPEG quality 0–1
-  var CHUNK    = 8;          // files per request — small enough for any host
+  var CHUNK    = 3;          // files per request — small enough that each request finishes well under shared-host time limits
 
   function setStatus(label, detail, pct) {
     statusBox.style.display = 'block';
@@ -422,9 +434,21 @@ require __DIR__ . '/header.php';
     var sentSoFar = 0;
     setStatus('Uploading…', '0 of ' + files.length, (doneSteps / totalSteps) * 100);
 
-    for (var c = 0; c < resized.length; c += CHUNK) {
+    var totalChunks = Math.ceil(resized.length / CHUNK);
+    for (var c = 0, chunkIdx = 0; c < resized.length; c += CHUNK, chunkIdx++) {
       var slice = resized.slice(c, c + CHUNK);
       var nameSlice = origNames.slice(c, c + CHUNK);
+      var rangeStart = c + 1;
+      var rangeEnd   = Math.min(c + slice.length, files.length);
+
+      // Show in-flight status BEFORE the request so the user sees activity during the wait
+      setStatus(
+        'Uploading group ' + (chunkIdx + 1) + ' of ' + totalChunks + '…',
+        'photos ' + rangeStart + '–' + rangeEnd + ' of ' + files.length + ' (each group can take 5–15s)',
+        (doneSteps / totalSteps) * 100
+      );
+      statusBar.classList.add('pulse');
+
       try {
         var res = await postChunk(slice, nameSlice, startNum + sentSoFar);
         if (res.created) allCreated = allCreated.concat(res.created);
@@ -435,8 +459,13 @@ require __DIR__ . '/header.php';
           allFailed.push({ file: nameSlice[k], error: err.message || 'Upload failed' });
         }
       }
+      statusBar.classList.remove('pulse');
       doneSteps += slice.length;
-      setStatus(null, Math.min(c + slice.length, files.length) + ' of ' + files.length, (doneSteps / totalSteps) * 100);
+      setStatus(
+        'Uploading…',
+        rangeEnd + ' of ' + files.length + ' done',
+        (doneSteps / totalSteps) * 100
+      );
     }
 
     setStatus('Done', allCreated.length + ' created, ' + allFailed.length + ' failed', 100);
