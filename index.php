@@ -722,6 +722,9 @@ if (count($_pool) >= 21) {
       gap: 1.25rem;
       width: max-content;
       animation: marquee 60s linear infinite;
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .marquee:hover .marquee-track { animation-play-state: paused; }
     .marquee-item {
@@ -731,15 +734,22 @@ if (count($_pool) >= 21) {
       overflow: hidden;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       transition: transform 0.3s ease;
+      /* iOS Safari: explicit width prevents layout-thrash during animation */
+      width: 12.8rem;
+      height: 16rem;
     }
     .marquee-item:hover { transform: translateY(-4px); }
     .marquee-track img {
-      height: 16rem;
-      width: auto;
+      width: 100%;
+      height: 100%;
       border-radius: var(--radius);
       object-fit: cover;
-      flex-shrink: 0;
+      object-position: center top;
       display: block;
+    }
+    @media (max-width: 40rem) {
+      .marquee { padding: 2.5rem 0; }
+      .marquee-item { width: 9.6rem; height: 12rem; }
     }
     .marquee-sold {
       position: absolute;
@@ -754,8 +764,8 @@ if (count($_pool) >= 21) {
       border-radius: 999px;
     }
     @keyframes marquee {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
+      from { transform: translate3d(0, 0, 0); }
+      to   { transform: translate3d(-50%, 0, 0); }
     }
     @media (prefers-reduced-motion: reduce) {
       .marquee-track { animation: none; }
@@ -1361,14 +1371,14 @@ if (count($_pool) >= 21) {
       <div class="marquee-track">
         <?php foreach ($carouselDolls as $d): if (empty($d['thumb'])) continue; ?>
           <a class="marquee-item" href="/shop/product.php?slug=<?= h(urlencode($d['slug'])) ?>" title="<?= h($d['title']) ?><?= $d['status']==='sold' ? ' — sold' : ' · ' . fmt_price((int)$d['price_cents']) ?>">
-            <img src="<?= h(asset_url($d['thumb'])) ?>" alt="<?= h($d['title']) ?>" loading="lazy">
+            <img src="<?= h(thumb_url($d['thumb'])) ?>" alt="<?= h($d['title']) ?>" width="320" height="400" decoding="async">
             <?php if ($d['status'] === 'sold'): ?><span class="marquee-sold">Sold</span><?php endif; ?>
           </a>
         <?php endforeach; ?>
         <!-- Duplicates for seamless loop -->
         <?php foreach ($carouselDolls as $d): if (empty($d['thumb'])) continue; ?>
           <a class="marquee-item" href="/shop/product.php?slug=<?= h(urlencode($d['slug'])) ?>" aria-hidden="true" tabindex="-1">
-            <img src="<?= h(asset_url($d['thumb'])) ?>" alt="" loading="lazy">
+            <img src="<?= h(thumb_url($d['thumb'])) ?>" alt="" width="320" height="400" decoding="async">
             <?php if ($d['status'] === 'sold'): ?><span class="marquee-sold">Sold</span><?php endif; ?>
           </a>
         <?php endforeach; ?>
