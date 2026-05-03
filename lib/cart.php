@@ -118,6 +118,57 @@ function cart_suggestions(int $limit = 4): array {
 }
 
 /**
+ * Return up to $limit random available-doll suggestions with a ready-to-use
+ * thumbnail URL. Excludes cart items and an optional extra list.
+ *
+ * Soft fallback: if excluding $excludeExtraIds leaves fewer than $limit
+ * candidates, retry without the extra exclusion so a "refresh lineup"
+ * action still returns a full strip when stock is thin.
+ */
+function cart_suggestions_with_thumbs(int $limit, array $excludeExtraIds = []): array {
+    $rows = _cart_suggest_query($limit, $excludeExtraIds);
+    if (count($rows) < $limit && $excludeExtraIds) {
+        // Re-query with only the cart excluded so the strip refills.
+        $rows = _cart_suggest_query($limit, []);
+    }
+    return array_map(function ($r) {
+        return [
+            'id'          => (int)$r['id'],
+            'slug'        => (string)$r['slug'],
+            'title'       => (string)$r['title'],
+            'price_cents' => (int)$r['price_cents'],
+            'price'       => fmt_price((int)$r['price_cents']),
+            'thumb_url'   => $r['thumb'] ? thumb_url($r['thumb']) : null,
+            'product_url' => '/shop/product.php?slug=' . rawurlencode($r['slug']),
+        ];
+    }, $rows);
+}
+
+function _cart_suggest_query(int $limit, array $excludeExtraIds): array {
+    $exclude = array_unique(array_merge(
+        array_map('intval', cart_ids()),
+        array_map('intval', $excludeExtraIds)
+    ));
+    $sql = "SELECT id, slug, title, price_cents,
+              (SELECT filename FROM product_images
+                 WHERE product_id = products.id
+                 ORDER BY sort_order ASC, id ASC
+                 LIMIT 1) AS thumb
+            FROM products
+            WHERE status = 'available'";
+    $params = [];
+    if ($exclude) {
+        $place = implode(',', array_fill(0, count($exclude), '?'));
+        $sql .= " AND id NOT IN ($place)";
+        $params = $exclude;
+    }
+    $sql .= ' ORDER BY RAND() LIMIT ' . max(1, $limit);
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll();
+}
+
+/**
  * Pick one random available doll, excluding cart items + an explicit list
  * (e.g. dolls already shown in the on-page suggestion strip). Includes a
  * ready-to-use thumbnail URL so the client can render without a second

@@ -90,6 +90,38 @@
       return;
     }
 
+    var refreshBtn = e.target.closest('[data-cart-refresh-suggestions]');
+    if (refreshBtn) {
+      e.preventDefault();
+      refreshBtn.disabled = true;
+      refreshBtn.classList.add('is-spinning');
+      var grid = document.querySelector('.cart-suggestion-grid');
+      if (grid) grid.classList.add('is-fading');
+      var current = collectVisibleSuggestionIds();
+      var limit = current.length || 5;
+      fetch('/api/cart-suggestions.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: limit, exclude_ids: current }),
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.error) throw new Error(data.error);
+          if (grid) {
+            grid.innerHTML = '';
+            (data.suggestions || []).forEach(appendSuggestion);
+            grid.classList.remove('is-fading');
+          }
+        })
+        .catch(function (err) { showError(err.message); })
+        .finally(function () {
+          refreshBtn.disabled = false;
+          // Let the spin finish before resetting so it animates a full turn.
+          setTimeout(function () { refreshBtn.classList.remove('is-spinning'); }, 400);
+        });
+      return;
+    }
+
     var clearBtn = e.target.closest('[data-cart-clear]');
     if (clearBtn) {
       e.preventDefault();

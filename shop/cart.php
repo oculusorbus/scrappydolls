@@ -137,7 +137,10 @@ require __DIR__ . '/header.php';
               </div>
             <?php endforeach; ?>
           </div>
-          <div style="text-align:center;margin-top:2rem">
+          <div class="cart-suggestions-actions">
+            <button type="button" class="cart-suggestions-refresh" data-cart-refresh-suggestions>
+              <span class="refresh-icon" aria-hidden="true">↻</span> Don't see a friend? Refresh lineup
+            </button>
             <a class="btn btn-ghost" href="/shop/">Keep browsing all dolls <span aria-hidden="true">→</span></a>
           </div>
         </section>
