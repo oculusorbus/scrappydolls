@@ -1,0 +1,101 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * Session-backed shopping cart. Each doll is OOAK so the cart is just an
+ * ordered list of product IDs (no quantities). Stale IDs (sold/draft/missing)
+ * are filtered out lazily on read.
+ */
+
+const CART_SESSION_KEY = 'cart_product_ids';
+const CART_MAX_ITEMS = 25;
+
+function cart_ids(): array {
+    $ids = $_SESSION[CART_SESSION_KEY] ?? [];
+    return is_array($ids) ? array_values(array_unique(array_map('intval', $ids))) : [];
+}
+
+function cart_set(array $ids): void {
+    $_SESSION[CART_SESSION_KEY] = array_values(array_unique(array_map('intval', $ids)));
+}
+
+function cart_add(int $productId): bool {
+    if ($productId <= 0) return false;
+    $ids = cart_ids();
+    if (in_array($productId, $ids, true)) return true;
+    if (count($ids) >= CART_MAX_ITEMS) return false;
+    $ids[] = $productId;
+    cart_set($ids);
+    return true;
+}
+
+function cart_remove(int $productId): void {
+    $ids = array_values(array_filter(cart_ids(), fn($id) => $id !== $productId));
+    cart_set($ids);
+}
+
+function cart_clear(): void {
+    unset($_SESSION[CART_SESSION_KEY]);
+}
+
+function cart_has(int $productId): bool {
+    return in_array($productId, cart_ids(), true);
+}
+
+/**
+ * Returns available products in the cart, in insertion order. Drops any
+ * product that is no longer available (sold, deleted, or draft) and prunes
+ * those IDs from the session so the cart stays clean.
+ */
+function cart_items(): array {
+    $ids = cart_ids();
+    if (!$ids) return [];
+    $place = implode(',', array_fill(0, count($ids), '?'));
+    $stmt = db()->prepare(
+        "SELECT id, slug, title, price_cents, status FROM products
+         WHERE id IN ($place) AND status = 'available'"
+    );
+    $stmt->execute($ids);
+    $rows = $stmt->fetchAll();
+    $byId = [];
+    foreach ($rows as $r) $byId[(int)$r['id']] = $r;
+    $out = [];
+    $kept = [];
+    foreach ($ids as $id) {
+        if (isset($byId[$id])) {
+            $out[] = $byId[$id];
+            $kept[] = $id;
+        }
+    }
+    if (count($kept) !== count($ids)) cart_set($kept);
+    return $out;
+}
+
+function cart_count(): int {
+    return count(cart_ids());
+}
+
+function cart_total_cents(): int {
+    $sum = 0;
+    foreach (cart_items() as $item) $sum += (int)$item['price_cents'];
+    return $sum;
+}
+
+/**
+ * Suggests up to $limit available dolls not currently in the cart.
+ * Random order — encourages discovery.
+ */
+function cart_suggestions(int $limit = 4): array {
+    $exclude = cart_ids();
+    $sql = "SELECT id, slug, title, price_cents FROM products WHERE status = 'available'";
+    $params = [];
+    if ($exclude) {
+        $place = implode(',', array_fill(0, count($exclude), '?'));
+        $sql .= " AND id NOT IN ($place)";
+        $params = $exclude;
+    }
+    $sql .= ' ORDER BY RAND() LIMIT ' . max(1, $limit);
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll();
+}
