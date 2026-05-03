@@ -1337,7 +1337,7 @@ if (count($_pool) >= 21) {
           </article>
           <article class="step reveal">
             <h3>Stitch</h3>
-            <p>Each seam is sewn by hand for strength and character. Faces are embroidered with thread; nothing is glued or printed.</p>
+            <p>Each seam is sewn by hand for strength and character. Faces are embroidered with thread — not printed or stamped.</p>
           </article>
           <article class="step reveal">
             <h3>Finish</h3>
@@ -1490,7 +1490,7 @@ if (count($_pool) >= 21) {
           <h3>Materials that matter</h3>
           <p>The best scrappy dolls start with quilter's cotton — sturdy enough to handle stuffing, soft enough to hold and love. Vintage prints, ditsy florals, feedsack reproductions, bold stripes, and novelty fabrics all find their way into the mix. The fabric choices give each doll its character before a single stitch is sewn. Some makers sort scraps by color; others grab from the pile and let the combinations surprise them. Both approaches work because the aesthetic lives in the collision of patterns, not in any single fabric.</p>
           <h3>Handwork over machine work</h3>
-          <p>Many scrappy doll makers — including Kanda Kay — work entirely by hand. Hand-cutting means every piece follows the curve of the available fabric rather than forcing a rigid pattern. Hand-stitching produces seams with character and strength that hold up to years of handling. Faces are embroidered with thread rather than printed or stamped, giving each doll an expression that could only belong to that one creation. Nothing is glued. Nothing is mass-produced. The process is slow by design.</p>
+          <p>Many scrappy doll makers — including Kanda Kay — work entirely by hand. Hand-cutting means every piece follows the curve of the available fabric rather than forcing a rigid pattern. Hand-stitching produces seams with character and strength that hold up to years of handling. Faces are embroidered with thread rather than printed or stamped, giving each doll an expression that could only belong to that one creation. Nothing is mass-produced. The process is slow by design.</p>
           <h3>Sustainability built in</h3>
           <p>Scrappy dolls are zero-waste craft at its most natural. Quilt offcuts, retired clothing, bolt ends, and fabric remnants all become raw material. Between 1900 and 1920, over five million rag dolls were produced annually in the United States, fueled in part by textile waste from cotton mills. A century later, the same logic holds: fabric that would otherwise sit in a drawer or end up in a landfill becomes a keepsake instead. Every scrappy doll is a small act of reclamation.</p>
           <h3>The appeal of imperfection</h3>
