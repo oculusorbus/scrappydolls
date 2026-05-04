@@ -5,30 +5,30 @@ require_once __DIR__ . '/../lib/bootstrap.php';
 $pageTitle = 'Shop available dolls';
 $pageDesc  = 'One-of-a-kind handmade cloth dolls and memory dolls by Kanda Kay. Shop the dolls available right now.';
 
-$validSorts = ['newest', 'popular', 'all', 'sold'];
-$sort = in_array($_GET['sort'] ?? '', $validSorts, true) ? $_GET['sort'] : 'newest';
+$validSorts = ['all', 'newest', 'popular', 'sold'];
+$sort = in_array($_GET['sort'] ?? '', $validSorts, true) ? $_GET['sort'] : 'all';
 
 switch ($sort) {
+    case 'newest':
+        $where = "p.status = 'available'";
+        $orderBy = 'p.featured DESC, p.created_at DESC';
+        break;
     case 'popular':
         $where = "p.status = 'available'";
         $orderBy = 'p.featured DESC, views_30d DESC, p.created_at DESC';
         break;
+    case 'sold':
+        $where = "p.status = 'sold'";
+        $orderBy = 'p.sold_at DESC, p.created_at DESC';
+        break;
     case 'all':
+    default:
         // Available first (newest within), then sold (most recently sold first).
         $where = "p.status IN ('available', 'sold')";
         $orderBy = "CASE WHEN p.status = 'available' THEN 0 ELSE 1 END,
                     p.featured DESC,
                     CASE WHEN p.status = 'sold' THEN p.sold_at END DESC,
                     p.created_at DESC";
-        break;
-    case 'sold':
-        $where = "p.status = 'sold'";
-        $orderBy = 'p.sold_at DESC, p.created_at DESC';
-        break;
-    case 'newest':
-    default:
-        $where = "p.status = 'available'";
-        $orderBy = 'p.featured DESC, p.created_at DESC';
 }
 
 $sqlWithViews = "
@@ -76,8 +76,8 @@ require __DIR__ . '/header.php';
     </div>
 
     <nav class="shop-filters" aria-label="Filter">
-      <a href="/shop/?sort=all"     class="<?= $sort === 'all'     ? 'is-active' : '' ?>">All</a>
-      <a href="/shop/"              class="<?= $sort === 'newest'  ? 'is-active' : '' ?>">Newest</a>
+      <a href="/shop/"              class="<?= $sort === 'all'     ? 'is-active' : '' ?>">All</a>
+      <a href="/shop/?sort=newest"  class="<?= $sort === 'newest'  ? 'is-active' : '' ?>">Newest</a>
       <a href="/shop/?sort=popular" class="<?= $sort === 'popular' ? 'is-active' : '' ?>">Most popular</a>
       <a href="/shop/?sort=sold"    class="<?= $sort === 'sold'    ? 'is-active' : '' ?>">Sold out</a>
     </nav>
