@@ -108,7 +108,7 @@ require __DIR__ . '/header.php';
           $tier  = $isSold ? 0 : product_popularity_tier((int)($r['views_30d'] ?? 0));
           $inCart = !$isSold && cart_has((int)$r['id']);
         ?>
-          <div class="shop-card <?= $isSold ? 'is-sold' : '' ?>">
+          <div class="shop-card <?= $isSold ? 'is-sold' : '' ?>" id="doll-<?= (int)$r['id'] ?>">
             <a class="shop-card-area" href="/shop/product.php?slug=<?= h(urlencode($r['slug'])) ?>">
               <div class="img">
                 <?php if ($r['thumb']): ?>
@@ -145,7 +145,7 @@ require __DIR__ . '/header.php';
               <?php else: ?>
                 <form class="shop-card-action cart-add-form" method="POST" action="/api/cart-add-form.php">
                   <input type="hidden" name="product_id" value="<?= (int)$r['id'] ?>">
-                  <input type="hidden" name="return_url" value="<?= h($shopReturn) ?>">
+                  <input type="hidden" name="return_url" value="<?= h($shopReturn) ?>#doll-<?= (int)$r['id'] ?>">
                   <button type="submit">+ Add to cart</button>
                 </form>
               <?php endif; ?>

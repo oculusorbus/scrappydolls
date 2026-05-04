@@ -134,6 +134,7 @@ h2.h-display{font-size:clamp(1.8rem,4vw,2.75rem)}
   border-radius:var(--radius);overflow:hidden;
   display:flex;flex-direction:column;
   transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;
+  scroll-margin-top:6rem; /* clear the sticky header on anchor scroll */
 }
 .shop-card:hover{
   transform:translateY(-4px);
