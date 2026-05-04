@@ -34,6 +34,7 @@ $pageUrl   = $pageUrl   ?? url($_SERVER['REQUEST_URI'] ?? '/shop/');
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shop/styles.css">
+<?php require __DIR__ . '/../lib/google_analytics.php'; ?>
 </head>
 <body>
 <header class="site">

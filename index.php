@@ -1306,6 +1306,7 @@ if (count($_pool) >= 21) {
       .reveal { opacity: 1; transform: none; transition: none; }
     }
   </style>
+  <?php require __DIR__ . '/lib/google_analytics.php'; ?>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
