@@ -80,9 +80,9 @@ require __DIR__ . '/header.php';
 
     <nav class="shop-filters" aria-label="Filter">
       <a href="/shop/"              class="<?= $sort === 'all'     ? 'is-active' : '' ?>">All</a>
-      <a href="/shop/?sort=newest"  class="<?= $sort === 'newest'  ? 'is-active' : '' ?>">Newest</a>
-      <a href="/shop/?sort=popular" class="<?= $sort === 'popular' ? 'is-active' : '' ?>">Most popular</a>
-      <a href="/shop/?sort=sold"    class="<?= $sort === 'sold'    ? 'is-active' : '' ?>">Sold out</a>
+      <a href="/shop/?sort=newest"  class="<?= $sort === 'newest'  ? 'is-active' : '' ?>">New</a>
+      <a href="/shop/?sort=popular" class="<?= $sort === 'popular' ? 'is-active' : '' ?>">Popular</a>
+      <a href="/shop/?sort=sold"    class="<?= $sort === 'sold'    ? 'is-active' : '' ?>">Sold</a>
     </nav>
 
     <?php if (!$rows): ?>
