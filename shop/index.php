@@ -15,7 +15,10 @@ switch ($sort) {
         break;
     case 'popular':
         $where = "p.status = 'available'";
-        $orderBy = 'p.featured DESC, views_30d DESC, p.created_at DESC';
+        // Sort by views first so the most-viewed (and most-flamed) dolls
+        // sit at the top regardless of featured status. Featured is a
+        // tiebreaker, then newest.
+        $orderBy = 'views_30d DESC, p.featured DESC, p.created_at DESC';
         break;
     case 'sold':
         $where = "p.status = 'sold'";
