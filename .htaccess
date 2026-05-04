@@ -20,6 +20,9 @@ RedirectMatch 403 ^/(config|lib|sql|vendor)(/|$)
   RewriteCond %{HTTPS} off
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+  # Serve the dynamic sitemap at the canonical /sitemap.xml URL.
+  RewriteRule ^sitemap\.xml$ /sitemap.php [L]
 </IfModule>
 
 # Sensible defaults
