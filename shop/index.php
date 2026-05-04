@@ -96,43 +96,61 @@ require __DIR__ . '/header.php';
         <?php endif; ?>
       </div>
     <?php else: ?>
+      <?php
+        // Stay on the same filter view after an inline add-to-cart.
+        $shopReturn = '/shop/' . ($sort !== 'all' ? '?sort=' . $sort : '');
+      ?>
       <div class="shop-grid">
         <?php foreach ($rows as $r):
           $isSold = ($r['status'] ?? 'available') === 'sold';
           // NEW / popularity badges only apply to currently-available dolls.
           $isNew = !$isSold && product_is_new($r['created_at'] ?? null, 14);
           $tier  = $isSold ? 0 : product_popularity_tier((int)($r['views_30d'] ?? 0));
+          $inCart = !$isSold && cart_has((int)$r['id']);
         ?>
-          <a class="shop-card <?= $isSold ? 'is-sold' : '' ?>" href="/shop/product.php?slug=<?= h(urlencode($r['slug'])) ?>">
-            <div class="img">
-              <?php if ($r['thumb']): ?>
-                <img src="<?= h(thumb_url($r['thumb'])) ?>" alt="<?= h($r['title']) ?>" loading="lazy">
-              <?php endif; ?>
-              <?php if ($isSold || $isNew || $tier > 0): ?>
-                <div class="card-badges">
-                  <?php if ($isSold): ?>
-                    <span class="card-badge badge-sold">Sold</span>
-                  <?php endif; ?>
-                  <?php if ($isNew): ?>
-                    <span class="card-badge badge-new">New</span>
-                  <?php endif; ?>
-                  <?php if ($tier > 0): ?>
-                    <span class="card-badge badge-popular tier-<?= $tier ?>" title="Popular this month">
-                      <?= popularity_flames_html($tier) ?>
-                    </span>
-                  <?php endif; ?>
-                </div>
-              <?php endif; ?>
-            </div>
-            <div class="meta">
-              <h3><?= h($r['title']) ?></h3>
-              <?php if ($isSold): ?>
-                <span class="price price-sold">Sold</span>
+          <div class="shop-card <?= $isSold ? 'is-sold' : '' ?>">
+            <a class="shop-card-area" href="/shop/product.php?slug=<?= h(urlencode($r['slug'])) ?>">
+              <div class="img">
+                <?php if ($r['thumb']): ?>
+                  <img src="<?= h(thumb_url($r['thumb'])) ?>" alt="<?= h($r['title']) ?>" loading="lazy">
+                <?php endif; ?>
+                <?php if ($isSold || $isNew || $tier > 0): ?>
+                  <div class="card-badges">
+                    <?php if ($isSold): ?>
+                      <span class="card-badge badge-sold">Sold</span>
+                    <?php endif; ?>
+                    <?php if ($isNew): ?>
+                      <span class="card-badge badge-new">New</span>
+                    <?php endif; ?>
+                    <?php if ($tier > 0): ?>
+                      <span class="card-badge badge-popular tier-<?= $tier ?>" title="Popular this month">
+                        <?= popularity_flames_html($tier) ?>
+                      </span>
+                    <?php endif; ?>
+                  </div>
+                <?php endif; ?>
+              </div>
+              <div class="meta">
+                <h3><?= h($r['title']) ?></h3>
+                <?php if ($isSold): ?>
+                  <span class="price price-sold">Sold</span>
+                <?php else: ?>
+                  <span class="price"><?= fmt_price((int)$r['price_cents']) ?></span>
+                <?php endif; ?>
+              </div>
+            </a>
+            <?php if (!$isSold): ?>
+              <?php if ($inCart): ?>
+                <a class="shop-card-action shop-card-incart" href="/shop/cart.php">In your cart →</a>
               <?php else: ?>
-                <span class="price"><?= fmt_price((int)$r['price_cents']) ?></span>
+                <form class="shop-card-action cart-add-form" method="POST" action="/api/cart-add-form.php">
+                  <input type="hidden" name="product_id" value="<?= (int)$r['id'] ?>">
+                  <input type="hidden" name="return_url" value="<?= h($shopReturn) ?>">
+                  <button type="submit">+ Add to cart</button>
+                </form>
               <?php endif; ?>
-            </div>
-          </a>
+            <?php endif; ?>
+          </div>
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
