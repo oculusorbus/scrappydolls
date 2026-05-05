@@ -20,7 +20,7 @@ $sql = "
     (SELECT filename FROM product_images WHERE product_id = p.id ORDER BY sort_order ASC, id ASC LIMIT 1) AS thumb
   FROM products p
   $where
-  ORDER BY LENGTH(p.title), p.title
+  ORDER BY p.title ASC
 ";
 $stmt = db()->prepare($sql);
 $stmt->execute($params);
