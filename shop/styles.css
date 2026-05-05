@@ -252,15 +252,18 @@ h2.h-display{font-size:clamp(1.8rem,4vw,2.75rem)}
 @media (max-width:52rem){.product{grid-template-columns:1fr}}
 .product-gallery{display:flex;flex-direction:column;gap:1rem}
 .product-gallery .main-img{
-  aspect-ratio:4/5;
-  /* Cap the image so it fits in a small-laptop viewport (e.g. 1366×768)
-     without forcing the buyer to scroll. The aspect-ratio still drives
-     the natural size; max-height kicks in only on shorter viewports. */
-  max-height:72vh;
   border-radius:var(--radius-lg);overflow:hidden;
   background:var(--paper-3);box-shadow:var(--shadow-lg);
+  display:flex;justify-content:center;align-items:center;
 }
-.product-gallery .main-img img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.product-gallery .main-img img{
+  /* Scale to the column width AND cap at 72vh so a small-laptop viewport
+     never forces vertical scrolling. The image keeps its natural aspect
+     ratio — no auto-cropping. */
+  width:auto;max-width:100%;
+  height:auto;max-height:72vh;
+  object-fit:contain;
+}
 .product-gallery .thumbs{display:grid;gap:.5rem;grid-template-columns:repeat(auto-fill,minmax(4rem,1fr))}
 .product-gallery .thumbs button{
   aspect-ratio:1;border-radius:8px;overflow:hidden;border:2px solid transparent;
