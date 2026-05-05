@@ -252,7 +252,12 @@ h2.h-display{font-size:clamp(1.8rem,4vw,2.75rem)}
 @media (max-width:52rem){.product{grid-template-columns:1fr}}
 .product-gallery{display:flex;flex-direction:column;gap:1rem}
 .product-gallery .main-img{
-  aspect-ratio:4/5;border-radius:var(--radius-lg);overflow:hidden;
+  aspect-ratio:4/5;
+  /* Cap the image so it fits in a small-laptop viewport (e.g. 1366×768)
+     without forcing the buyer to scroll. The aspect-ratio still drives
+     the natural size; max-height kicks in only on shorter viewports. */
+  max-height:72vh;
+  border-radius:var(--radius-lg);overflow:hidden;
   background:var(--paper-3);box-shadow:var(--shadow-lg);
 }
 .product-gallery .main-img img{width:100%;height:100%;object-fit:cover;object-position:center top}
