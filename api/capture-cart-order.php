@@ -12,6 +12,12 @@ $orderId = trim((string)($body['order_id'] ?? ''));
 if ($orderId === '') json_response(['error' => 'Missing order_id'], 400);
 
 try {
+    // Track auth state so the outer catch can void any orphan hold if we
+    // authorized but never finished capturing. Without this, every failed
+    // retry leaves a hold on the buyer's card.
+    $authId = null;
+    $captureCompleted = false;
+
     // Idempotency: if already captured, return success.
     $existing = db()->prepare('SELECT id FROM orders WHERE paypal_order_id = :p LIMIT 1');
     $existing->execute([':p' => $orderId]);
@@ -75,10 +81,15 @@ try {
     $captureId = $capResp['id'] ?? null;
     $capStatus = $capResp['status'] ?? '';
     if ($capStatus !== 'COMPLETED') {
-        // PayPal accepted the capture call but didn't complete (PENDING/DECLINED/etc).
-        // Don't void — capture was attempted; let webhook reconcile.
+        // Capture didn't complete (DECLINED/PENDING/etc). Void the hold so
+        // the buyer's funds aren't tied up while they retry. False-positive
+        // voiding of a transient PENDING is preferable to leaking holds.
+        try { paypal_void_authorization($authId); } catch (Throwable $vErr) {
+            error_log('Void after non-COMPLETED capture failed: ' . $vErr->getMessage());
+        }
         json_response(['error' => "Payment not completed (status: $capStatus)"], 400);
     }
+    $captureCompleted = true;
 
     // Re-fetch the order so we have the buyer/shipping data PayPal collected.
     $orderData = paypal_get_order($orderId);
@@ -185,5 +196,14 @@ try {
     json_response(['ok' => true, 'order_id' => $orderId]);
 } catch (Throwable $e) {
     error_log('capture-cart-order error: ' . $e->getMessage());
+    // If we authorized but never finished capturing, release the hold so the
+    // buyer doesn't accumulate authorizations across retries.
+    if (!empty($authId) && empty($captureCompleted)) {
+        try {
+            paypal_void_authorization($authId);
+        } catch (Throwable $vErr) {
+            error_log('Void on capture-cart-order failure failed for auth ' . $authId . ': ' . $vErr->getMessage());
+        }
+    }
     json_response(['error' => 'Could not capture payment: ' . $e->getMessage()], 500);
 }
