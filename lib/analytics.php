@@ -128,34 +128,44 @@ function track_view(string $path, ?int $productId = null): void {
     }
 }
 
+/**
+ * Record a checkout intent: one row per cart item per PayPal order.
+ *
+ * Load-bearing for capture-cart-order.php — these rows are the canonical
+ * record of what the buyer agreed to pay for. The capture endpoint reads
+ * them to lock the line items and prices, so a buyer who modifies their
+ * cart between PayPal-popup approval and the confirm-page submit can't
+ * desync the charge amount from the items shipped.
+ *
+ * Bot UAs are recorded too (no skip): the row is required for capture
+ * regardless of who is checking out, and bots essentially never reach
+ * this endpoint anyway. Errors propagate — the create-order caller is
+ * expected to abort and let the PayPal order expire unused if we can't
+ * record the intent.
+ */
 function track_order_intent(int $productId, string $paypalOrderId, int $amountCents): void {
-    if (tracking_is_bot()) return;
-    try {
-        $utm = tracking_capture_utms();
-        $stmt = db()->prepare('
-            INSERT INTO order_intents
-                (product_id, paypal_order_id, session_hash, ip_hash,
-                 utm_source, utm_medium, utm_campaign,
-                 user_agent, amount_cents)
-            VALUES
-                (:pid, :poid, :sh, :iph,
-                 :usrc, :umed, :ucamp,
-                 :ua, :amt)
-        ');
-        $stmt->execute([
-            ':pid'   => $productId,
-            ':poid'  => $paypalOrderId,
-            ':sh'    => tracking_session_hash(),
-            ':iph'   => tracking_ip_hash(),
-            ':usrc'  => $utm['utm_source']   ?? null,
-            ':umed'  => $utm['utm_medium']   ?? null,
-            ':ucamp' => $utm['utm_campaign'] ?? null,
-            ':ua'    => tracking_user_agent(),
-            ':amt'   => $amountCents,
-        ]);
-    } catch (Throwable $e) {
-        error_log('track_order_intent: ' . $e->getMessage());
-    }
+    $utm = tracking_capture_utms();
+    $stmt = db()->prepare('
+        INSERT INTO order_intents
+            (product_id, paypal_order_id, session_hash, ip_hash,
+             utm_source, utm_medium, utm_campaign,
+             user_agent, amount_cents)
+        VALUES
+            (:pid, :poid, :sh, :iph,
+             :usrc, :umed, :ucamp,
+             :ua, :amt)
+    ');
+    $stmt->execute([
+        ':pid'   => $productId,
+        ':poid'  => $paypalOrderId,
+        ':sh'    => tracking_session_hash(),
+        ':iph'   => tracking_ip_hash(),
+        ':usrc'  => $utm['utm_source']   ?? null,
+        ':umed'  => $utm['utm_medium']   ?? null,
+        ':ucamp' => $utm['utm_campaign'] ?? null,
+        ':ua'    => tracking_user_agent(),
+        ':amt'   => $amountCents,
+    ]);
 }
 
 function track_intent_captured(string $paypalOrderId): void {

@@ -90,15 +90,37 @@ try {
         json_response(['error' => 'PayPal did not return an authorization id'], 502);
     }
 
-    // Re-validate every cart item is still available. If anyone got here first,
-    // we void the auth so no money moves and ask the buyer to retry.
-    $cartIds = cart_ids();
-    if (!$cartIds) {
+    // Source of truth: the order_intents rows written when this PayPal
+    // order was created. PayPal locked the charge amount against that
+    // exact set of items, so we bill, ship, and mark sold against THAT
+    // list — never the session cart, which can drift if the buyer
+    // modifies their cart in another tab between popup approval and
+    // this confirm submit.
+    $intentStmt = db()->prepare(
+        'SELECT product_id, amount_cents
+         FROM order_intents
+         WHERE paypal_order_id = :p
+         ORDER BY id ASC'
+    );
+    $intentStmt->execute([':p' => $orderId]);
+    $intentRows = $intentStmt->fetchAll();
+    if (!$intentRows) {
         try { paypal_void_authorization($authId); } catch (Throwable $vErr) {
-            error_log('Void on empty cart failed: ' . $vErr->getMessage());
+            error_log('Void on missing order intents failed: ' . $vErr->getMessage());
         }
-        json_response(['error' => 'Your cart is empty.'], 400);
+        json_response(['error' => 'We could not find your order. Please return to the cart and try again.'], 400);
     }
+    $cartIds = [];
+    $intentPriceById = [];
+    foreach ($intentRows as $r) {
+        $pid = (int)$r['product_id'];
+        $cartIds[] = $pid;
+        $intentPriceById[$pid] = (int)$r['amount_cents'];
+    }
+
+    // Re-validate every item is still available. If a doll sold to
+    // another buyer between order creation and now, we void the auth so
+    // no money moves and surface the conflict.
     $place = implode(',', array_fill(0, count($cartIds), '?'));
     $stmt = db()->prepare(
         "SELECT id, slug, title, price_cents, status FROM products WHERE id IN ($place)"
@@ -148,8 +170,11 @@ try {
     }
     $captureCompleted = true;
 
+    // Use prices snapshotted at order-creation time (intents), not the
+    // current products.price_cents — the buyer paid the price PayPal
+    // authorized, even if admin changed the price afterward.
     $itemsTotal = 0;
-    foreach ($cartIds as $id) $itemsTotal += (int)$byId[$id]['price_cents'];
+    foreach ($cartIds as $id) $itemsTotal += $intentPriceById[$id];
     $shippingCents = shipping_cents_for_count(count($cartIds));
     $totalCents = $itemsTotal + $shippingCents;
     $currency = paypal_currency();
@@ -216,7 +241,7 @@ try {
                 ':oid'   => $newOrderId,
                 ':pid'   => (int)$p['id'],
                 ':title' => $p['title'],
-                ':amt'   => (int)$p['price_cents'],
+                ':amt'   => $intentPriceById[$id],
                 ':cur'   => $currency,
             ]);
         }
