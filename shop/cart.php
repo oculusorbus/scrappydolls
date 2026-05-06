@@ -166,24 +166,9 @@ require __DIR__ . '/header.php';
       });
     },
     onApprove: function(data){
-      return fetch('/api/capture-cart-order.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: data.orderID })
-      })
-      .then(function(r){ return r.json().then(function(j){ return { status: r.status, body: j }; }); })
-      .then(function(res){
-        if (res.body.error) {
-          // 409 = race; reload so cart updates with sold items removed.
-          if (res.status === 409) {
-            showErr(res.body.error + ' Redirecting back to your cart…');
-            setTimeout(function(){ window.location.reload(); }, 1800);
-            return;
-          }
-          throw new Error(res.body.error);
-        }
-        window.location.href = '/shop/success.php?order=' + encodeURIComponent(res.body.order_id);
-      });
+      // Hand off to the confirm page where the buyer reviews / edits shipping
+      // and contact info. Capture happens after confirm. No charge until then.
+      window.location.href = '/shop/confirm.php?order=' + encodeURIComponent(data.orderID);
     },
     onError: function(err){
       console.error(err);

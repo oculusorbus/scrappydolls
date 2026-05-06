@@ -116,13 +116,17 @@ require __DIR__ . '/header.php';
       <dl class="kv">
         <dt>Name</dt><dd><?= h($order['customer_name'] ?: '—') ?></dd>
         <dt>Email</dt><dd><?php if ($order['customer_email']): ?><a href="mailto:<?= h($order['customer_email']) ?>"><?= h($order['customer_email']) ?></a><?php else: ?>—<?php endif; ?></dd>
+        <dt>Phone</dt><dd><?php if (!empty($order['customer_phone'])): ?><a href="tel:<?= h(preg_replace('/[^0-9+]/', '', $order['customer_phone'])) ?>"><?= h($order['customer_phone']) ?></a><?php else: ?>—<?php endif; ?></dd>
       </dl>
     </div>
 
-    <?php if ($shipping): ?>
+    <?php if ($shipping): $isGift = !empty($order['is_gift']); ?>
       <?php $a = $shipping['address'] ?? $shipping; ?>
-      <div class="card" style="margin-bottom:1.25rem">
-        <h3>Ship to</h3>
+      <div class="card" style="margin-bottom:1.25rem<?= $isGift ? ';border-color:var(--rose,#b13e54)' : '' ?>">
+        <h3 style="<?= $isGift ? 'color:var(--rose,#b13e54)' : '' ?>"><?= $isGift ? 'Gift — ship to recipient' : 'Ship to' ?></h3>
+        <?php if ($isGift): ?>
+          <p style="margin:0 0 .65rem;font-size:.85rem;color:var(--ink-muted,#6b5852)">Address the package to the recipient, not the buyer.</p>
+        <?php endif; ?>
         <p style="margin:0;line-height:1.6">
           <?= h($shipping['name'] ?? ($order['customer_name'] ?? '')) ?><br>
           <?= h($a['address_line_1'] ?? '') ?><br>

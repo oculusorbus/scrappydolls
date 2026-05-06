@@ -15,7 +15,7 @@ $pending = (int)db()->query("SELECT COUNT(*) FROM orders WHERE status='paid'")->
 $revenue = (int)db()->query("SELECT COALESCE(SUM(amount_cents),0) FROM orders WHERE status IN ('paid','shipped')")->fetchColumn();
 
 $recent = db()->query("
-  SELECT o.id, o.amount_cents, o.status, o.created_at, o.customer_name,
+  SELECT o.id, o.amount_cents, o.status, o.created_at, o.customer_name, o.is_gift,
     (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) AS item_count,
     (SELECT title_snapshot FROM order_items WHERE order_id = o.id ORDER BY id ASC LIMIT 1) AS first_title
   FROM orders o
@@ -56,7 +56,12 @@ $recent = db()->query("
       ?>
         <tr>
           <td><a href="/admin/order.php?id=<?= (int)$o['id'] ?>"><?= $title ?></a></td>
-          <td><?= h($o['customer_name'] ?: '—') ?></td>
+          <td>
+            <?= h($o['customer_name'] ?: '—') ?>
+            <?php if (!empty($o['is_gift'])): ?>
+              <span style="display:inline-block;margin-left:.4rem;padding:.05rem .4rem;border-radius:4px;background:var(--rose,#b13e54);color:#fff;font-size:.7rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase">Gift</span>
+            <?php endif; ?>
+          </td>
           <td><?= fmt_price((int)$o['amount_cents']) ?></td>
           <td><span class="badge badge-<?= h($o['status']) ?>"><?= h($o['status']) ?></span></td>
           <td><?= h(date('M j, Y', strtotime($o['created_at']))) ?></td>

@@ -56,6 +56,9 @@ $rows = $stmt->fetchAll();
             <td><?= $label ?></td>
             <td>
               <?= h($o['customer_name'] ?: '—') ?>
+              <?php if (!empty($o['is_gift'])): ?>
+                <span style="display:inline-block;margin-left:.4rem;padding:.05rem .4rem;border-radius:4px;background:var(--rose,#b13e54);color:#fff;font-size:.7rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase">Gift</span>
+              <?php endif; ?>
               <?php if ($o['customer_email']): ?><br><span style="font-size:.8rem;color:var(--ink-muted)"><?= h($o['customer_email']) ?></span><?php endif; ?>
             </td>
             <td><?= fmt_price((int)$o['amount_cents']) ?></td>

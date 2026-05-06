@@ -8,8 +8,64 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $raw = file_get_contents('php://input') ?: '';
 $body = json_decode($raw, true) ?: $_POST;
+
 $orderId = trim((string)($body['order_id'] ?? ''));
 if ($orderId === '') json_response(['error' => 'Missing order_id'], 400);
+
+// ---- Validate buyer-confirmed contact + shipping ----
+// Confirmed by the buyer on /shop/confirm.php — we use these as the
+// authoritative ship-to and contact info for the order, regardless of what
+// PayPal returned.
+function _trimstr($v, int $max): string {
+    return mb_substr(trim((string)$v), 0, $max);
+}
+
+$contactEmail = _trimstr($body['email'] ?? '', 255);
+$contactPhone = _trimstr($body['phone'] ?? '', 40);
+$buyerName    = _trimstr($body['name']  ?? '', 255);
+$isGift       = !empty($body['is_gift']);
+$giftName     = _trimstr($body['gift_recipient_name'] ?? '', 255);
+
+$addr = is_array($body['address'] ?? null) ? $body['address'] : [];
+$addr1   = _trimstr($addr['address_line_1'] ?? '', 255);
+$addr2   = _trimstr($addr['address_line_2'] ?? '', 255);
+$city    = _trimstr($addr['admin_area_2']   ?? '', 120);
+$state   = _trimstr($addr['admin_area_1']   ?? '', 120);
+$postal  = _trimstr($addr['postal_code']    ?? '', 32);
+$country = strtoupper(_trimstr($addr['country_code'] ?? '', 2));
+if ($country === '') $country = 'US';
+
+$errors = [];
+if ($buyerName === '')       $errors[] = 'Your name is required.';
+if ($contactEmail === '' || !filter_var($contactEmail, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = 'A valid email is required.';
+}
+if ($contactPhone === '' || !preg_match('/[0-9]/', $contactPhone) || strlen($contactPhone) < 7) {
+    $errors[] = 'A phone number is required.';
+}
+if ($addr1 === '')   $errors[] = 'Street address is required.';
+if ($city === '')    $errors[] = 'City is required.';
+if ($postal === '')  $errors[] = 'Postal code is required.';
+if ($country === 'US' && $state === '') $errors[] = 'State is required.';
+if (!preg_match('/^[A-Z]{2}$/', $country)) $errors[] = 'Country must be a 2-letter code.';
+if ($isGift && $giftName === '') $errors[] = 'Recipient name is required for gifts.';
+
+if ($errors) {
+    json_response(['error' => implode(' ', $errors), 'fields' => $errors], 422);
+}
+
+$shipToName = $isGift ? $giftName : $buyerName;
+$shippingForDb = [
+    'name' => $shipToName,
+    'address' => [
+        'address_line_1' => $addr1,
+        'address_line_2' => $addr2,
+        'admin_area_2'   => $city,
+        'admin_area_1'   => $state,
+        'postal_code'    => $postal,
+        'country_code'   => $country,
+    ],
+];
 
 try {
     // Track auth state so the outer catch can void any orphan hold if we
@@ -91,15 +147,11 @@ try {
     }
     $captureCompleted = true;
 
-    // Re-fetch the order so we have the buyer/shipping data PayPal collected.
-    $orderData = paypal_get_order($orderId);
-    $payer    = paypal_extract_payer($orderData);
-    $shipping = paypal_extract_shipping($orderData);
     $itemsTotal = 0;
     foreach ($cartIds as $id) $itemsTotal += (int)$byId[$id]['price_cents'];
     $shippingCents = shipping_cents_for_count(count($cartIds));
     $totalCents = $itemsTotal + $shippingCents;
-    $currency = $orderData['purchase_units'][0]['amount']['currency_code'] ?? 'USD';
+    $currency = paypal_currency();
 
     $pdo = db();
     $pdo->beginTransaction();
@@ -122,10 +174,15 @@ try {
         $ins = $pdo->prepare('
             INSERT INTO orders
                 (product_id, paypal_order_id, paypal_capture_id, amount_cents, currency,
-                 customer_email, customer_name, shipping_address, status, paid_at,
+                 customer_email, customer_name, customer_phone,
+                 shipping_address, is_gift, gift_recipient_name,
+                 status, paid_at,
                  utm_source, utm_medium, utm_campaign, session_hash, referrer_host)
             VALUES
-                (NULL, :poid, :pcid, :amt, :cur, :email, :name, :ship, "paid", NOW(),
+                (NULL, :poid, :pcid, :amt, :cur,
+                 :email, :name, :phone,
+                 :ship, :gift, :grname,
+                 "paid", NOW(),
                  :usrc, :umed, :ucamp, :sh, :rh)
         ');
         $ins->execute([
@@ -133,9 +190,12 @@ try {
             ':pcid'   => $captureId,
             ':amt'    => $totalCents,
             ':cur'    => $currency,
-            ':email'  => $payer['email'],
-            ':name'   => $payer['name'],
-            ':ship'   => $shipping ? json_encode($shipping) : null,
+            ':email'  => $contactEmail,
+            ':name'   => $buyerName,
+            ':phone'  => $contactPhone,
+            ':ship'   => json_encode($shippingForDb),
+            ':gift'   => $isGift ? 1 : 0,
+            ':grname' => $isGift ? $giftName : null,
             ':usrc'   => $attr['utm_source']   ?? null,
             ':umed'   => $attr['utm_medium']   ?? null,
             ':ucamp'  => $attr['utm_campaign'] ?? null,

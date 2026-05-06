@@ -63,11 +63,18 @@ function mail_admin_new_order_multi(array $order, array $items): void {
     $totalsBlock = "Subtotal: " . fmt_price($b['items_total']) . "\n"
                  . ($b['shipping'] > 0 ? "Shipping: " . fmt_price($b['shipping']) . "\n" : '')
                  . "Total: " . fmt_price($b['order_total']) . "\n";
+    $isGift = !empty($order['is_gift']);
+    $contactBlock = "Buyer: $cust\n"
+          . ($order['customer_email'] ? "Email: {$order['customer_email']}\n" : '')
+          . (!empty($order['customer_phone']) ? "Phone: {$order['customer_phone']}\n" : '');
+    $giftBlock = $isGift
+        ? "** GIFT ORDER **\nAddress the package to: " . ($order['gift_recipient_name'] ?? '(missing recipient name)') . "\n\n"
+        : '';
     $body = "You sold $count " . ($count === 1 ? 'doll' : 'dolls') . "!\n\n"
           . "Items:\n$lines\n"
           . $totalsBlock . "\n"
-          . "Buyer: $cust\n"
-          . ($order['customer_email'] ? "Email: {$order['customer_email']}\n" : '')
+          . $giftBlock
+          . $contactBlock
           . "PayPal Order: {$order['paypal_order_id']}\n\n"
           . _mail_format_shipping($order['shipping_address'] ?? null)
           . "Manage in admin: " . url('admin/order.php?id=' . (int)$order['id']) . "\n";
