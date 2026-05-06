@@ -137,7 +137,7 @@ require __DIR__ . '/header.php';
 </section>
 
 <?php if ($items && paypal_is_configured()): ?>
-<script src="https://www.paypal.com/sdk/js?client-id=<?= h(urlencode(paypal_client_id())) ?>&currency=<?= h(paypal_currency()) ?>&intent=authorize&components=buttons&enable-funding=venmo"
+<script src="https://www.paypal.com/sdk/js?client-id=<?= h(urlencode(paypal_client_id())) ?>&currency=<?= h(paypal_currency()) ?>&intent=authorize&commit=false&components=buttons&enable-funding=venmo"
         data-namespace="paypalSDK"></script>
 <script>
 (function(){
