@@ -67,9 +67,19 @@ function mail_admin_new_order_multi(array $order, array $items): void {
     $contactBlock = "Buyer: $cust\n"
           . ($order['customer_email'] ? "Email: {$order['customer_email']}\n" : '')
           . (!empty($order['customer_phone']) ? "Phone: {$order['customer_phone']}\n" : '');
-    $giftBlock = $isGift
-        ? "** GIFT ORDER **\nAddress the package to: " . ($order['gift_recipient_name'] ?? '(missing recipient name)') . "\n\n"
-        : '';
+    if ($isGift) {
+        $giftBlock = "** GIFT ORDER **\n"
+                   . "Address the package to: " . ($order['gift_recipient_name'] ?? '(missing recipient name)') . "\n";
+        if (!empty($order['gift_message'])) {
+            $giftBlock .= "\nGift note to include with the package:\n"
+                       . "  > " . str_replace("\n", "\n  > ", $order['gift_message']) . "\n";
+        } else {
+            $giftBlock .= "No gift note from the buyer.\n";
+        }
+        $giftBlock .= "\n";
+    } else {
+        $giftBlock = '';
+    }
     $body = "You sold $count " . ($count === 1 ? 'doll' : 'dolls') . "!\n\n"
           . "Items:\n$lines\n"
           . $totalsBlock . "\n"

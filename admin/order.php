@@ -135,6 +135,18 @@ require __DIR__ . '/header.php';
           <?= h($a['country_code'] ?? '') ?>
         </p>
       </div>
+
+      <?php if ($isGift): ?>
+        <div class="card" style="margin-bottom:1.25rem;border:2px solid var(--rose,#b13e54);background:#fff7f7">
+          <h3 style="color:var(--rose,#b13e54);margin-top:0">📝 Include this note with the package</h3>
+          <?php if (!empty($order['gift_message'])): ?>
+            <blockquote style="margin:0;padding:.75rem 1rem;background:#fff;border-left:3px solid var(--rose,#b13e54);border-radius:4px;white-space:pre-wrap;font-style:italic;line-height:1.55"><?= h($order['gift_message']) ?></blockquote>
+            <p style="margin:.65rem 0 0;font-size:.85rem;color:var(--ink-muted,#6b5852)">Print or hand-write this on a card and pack it with the doll.</p>
+          <?php else: ?>
+            <p style="margin:0;font-size:.9rem;color:var(--ink-muted,#6b5852)">No note from the buyer. Pack the doll without a card.</p>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
     <?php endif; ?>
 
     <?php

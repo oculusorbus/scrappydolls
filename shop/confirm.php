@@ -252,6 +252,14 @@ require __DIR__ . '/header.php';
               </label>
             </div>
             <div class="confirm-row">
+              <label>Gift note <span style="opacity:.6">(optional — we'll include it with the package)</span>
+                <textarea name="gift_message" maxlength="500" rows="3"
+                          placeholder="A short note for your recipient — left blank, no card is included."
+                          style="font:inherit;padding:.7rem .85rem;border:1px solid var(--rule,#ead7d2);border-radius:8px;background:#fff;color:var(--ink,#2c1f1c);resize:vertical;min-height:4.5rem"
+                          autocomplete="off"></textarea>
+              </label>
+            </div>
+            <div class="confirm-row">
               <label>Street address
                 <input type="text" name="gift[address_line_1]" data-giftreq maxlength="255"
                        autocomplete="off">
@@ -345,6 +353,7 @@ require __DIR__ . '/header.php';
       phone:    val('phone'),
       is_gift:  isGift,
       gift_recipient_name: isGift ? val('gift_recipient_name') : '',
+      gift_message: isGift ? val('gift_message') : '',
       address:  isGift ? addrFromBlock('gift') : addrFromBlock('self'),
     };
 

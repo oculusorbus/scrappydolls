@@ -72,6 +72,7 @@ CREATE TABLE orders (
   shipping_address JSON DEFAULT NULL,
   is_gift TINYINT(1) NOT NULL DEFAULT 0,
   gift_recipient_name VARCHAR(255) DEFAULT NULL,
+  gift_message TEXT DEFAULT NULL,
   status ENUM('pending','paid','shipped','refunded','failed') NOT NULL DEFAULT 'pending',
   tracking_number VARCHAR(255) DEFAULT NULL,
   notes TEXT DEFAULT NULL,

@@ -25,6 +25,7 @@ $contactPhone = _trimstr($body['phone'] ?? '', 40);
 $buyerName    = _trimstr($body['name']  ?? '', 255);
 $isGift       = !empty($body['is_gift']);
 $giftName     = _trimstr($body['gift_recipient_name'] ?? '', 255);
+$giftMessage  = _trimstr($body['gift_message'] ?? '', 500);
 
 $addr = is_array($body['address'] ?? null) ? $body['address'] : [];
 $addr1   = _trimstr($addr['address_line_1'] ?? '', 255);
@@ -175,13 +176,13 @@ try {
             INSERT INTO orders
                 (product_id, paypal_order_id, paypal_capture_id, amount_cents, currency,
                  customer_email, customer_name, customer_phone,
-                 shipping_address, is_gift, gift_recipient_name,
+                 shipping_address, is_gift, gift_recipient_name, gift_message,
                  status, paid_at,
                  utm_source, utm_medium, utm_campaign, session_hash, referrer_host)
             VALUES
                 (NULL, :poid, :pcid, :amt, :cur,
                  :email, :name, :phone,
-                 :ship, :gift, :grname,
+                 :ship, :gift, :grname, :gmsg,
                  "paid", NOW(),
                  :usrc, :umed, :ucamp, :sh, :rh)
         ');
@@ -196,6 +197,7 @@ try {
             ':ship'   => json_encode($shippingForDb),
             ':gift'   => $isGift ? 1 : 0,
             ':grname' => $isGift ? $giftName : null,
+            ':gmsg'   => ($isGift && $giftMessage !== '') ? $giftMessage : null,
             ':usrc'   => $attr['utm_source']   ?? null,
             ':umed'   => $attr['utm_medium']   ?? null,
             ':ucamp'  => $attr['utm_campaign'] ?? null,
