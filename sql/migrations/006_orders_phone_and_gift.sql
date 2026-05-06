@@ -7,56 +7,18 @@
 --   3. Mark the order as a gift and redirect shipping to a different
 --      recipient name + address.
 --
--- This migration:
---   1. Adds `customer_phone` to `orders`.
---   2. Adds `is_gift` flag and `gift_recipient_name` to `orders`.
---
 -- The existing `shipping_address` JSON column remains the authoritative
 -- ship-to address. When `is_gift = 1`, the package is addressed to
 -- `gift_recipient_name` at `shipping_address`. Otherwise it's addressed to
 -- `customer_name`.
 --
--- Idempotent: column-add wrapped in conditional checks so re-running is safe.
+-- Re-running this migration will fail with "Duplicate column" — that's
+-- expected and harmless; the columns are already there.
 
-START TRANSACTION;
-
--- customer_phone
-SET @col_exists := (
-  SELECT COUNT(*) FROM information_schema.columns
-  WHERE table_schema = DATABASE()
-    AND table_name   = 'orders'
-    AND column_name  = 'customer_phone'
-);
-SET @sql := IF(@col_exists = 0,
-  'ALTER TABLE orders ADD COLUMN customer_phone VARCHAR(40) NULL AFTER customer_name',
-  'SELECT 1');
-PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
-
--- is_gift
-SET @col_exists := (
-  SELECT COUNT(*) FROM information_schema.columns
-  WHERE table_schema = DATABASE()
-    AND table_name   = 'orders'
-    AND column_name  = 'is_gift'
-);
-SET @sql := IF(@col_exists = 0,
-  'ALTER TABLE orders ADD COLUMN is_gift TINYINT(1) NOT NULL DEFAULT 0 AFTER shipping_address',
-  'SELECT 1');
-PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
-
--- gift_recipient_name
-SET @col_exists := (
-  SELECT COUNT(*) FROM information_schema.columns
-  WHERE table_schema = DATABASE()
-    AND table_name   = 'orders'
-    AND column_name  = 'gift_recipient_name'
-);
-SET @sql := IF(@col_exists = 0,
-  'ALTER TABLE orders ADD COLUMN gift_recipient_name VARCHAR(255) NULL AFTER is_gift',
-  'SELECT 1');
-PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
-
-COMMIT;
+ALTER TABLE orders
+  ADD COLUMN customer_phone      VARCHAR(40)  NULL          AFTER customer_name,
+  ADD COLUMN is_gift             TINYINT(1)   NOT NULL DEFAULT 0 AFTER shipping_address,
+  ADD COLUMN gift_recipient_name VARCHAR(255) NULL          AFTER is_gift;
 
 -- Verify after running:
 --   SHOW COLUMNS FROM orders LIKE 'customer_phone';

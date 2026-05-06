@@ -5,22 +5,11 @@
 -- in the new-order email; whoever packs the order is responsible for
 -- physically including it with the doll.
 --
--- Idempotent: column-add wrapped in a conditional check so re-running is safe.
+-- Re-running this migration will fail with "Duplicate column" — that's
+-- expected and harmless; the column is already there.
 
-START TRANSACTION;
-
-SET @col_exists := (
-  SELECT COUNT(*) FROM information_schema.columns
-  WHERE table_schema = DATABASE()
-    AND table_name   = 'orders'
-    AND column_name  = 'gift_message'
-);
-SET @sql := IF(@col_exists = 0,
-  'ALTER TABLE orders ADD COLUMN gift_message TEXT NULL AFTER gift_recipient_name',
-  'SELECT 1');
-PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
-
-COMMIT;
+ALTER TABLE orders
+  ADD COLUMN gift_message TEXT NULL AFTER gift_recipient_name;
 
 -- Verify after running:
 --   SHOW COLUMNS FROM orders LIKE 'gift_message';
