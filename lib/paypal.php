@@ -184,7 +184,7 @@ function paypal_create_cart_order(array $items, int $shippingCents, string $refe
             'return_url'          => $returnUrl,
             'cancel_url'          => $cancelUrl,
             'shipping_preference' => 'GET_FROM_FILE',
-            'user_action'         => 'PAY_NOW',
+            'user_action'         => 'CONTINUE',
             'brand_name'          => config('site_name') ?: 'Scrappy Dolls',
         ]);
     }
