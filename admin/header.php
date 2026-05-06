@@ -15,7 +15,8 @@ $title = $title ?? 'Admin';
 <title><?= h($title) ?> — Scrappy Dolls Admin</title>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="stylesheet" href="/admin/styles.css">
+<?php $sd_admin_css_v = (int)(@filemtime(__DIR__ . '/styles.css') ?: 0); ?>
+<link rel="stylesheet" href="/admin/styles.css?v=<?= $sd_admin_css_v ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
