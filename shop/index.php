@@ -113,7 +113,13 @@ require __DIR__ . '/header.php';
           $tier  = $isSold ? 0 : product_popularity_tier((int)($r['views_30d'] ?? 0));
           $inCart = !$isSold && cart_has((int)$r['id']);
         ?>
-          <div class="shop-card <?= $isSold ? 'is-sold' : '' ?>" id="doll-<?= (int)$r['id'] ?>">
+          <?php
+            // Only desaturate sold cards when they're mixed with available
+            // ones (the All view). On the Sold-only view every card is sold,
+            // so darkening adds no information and just dulls the gallery.
+            $dimSold = $isSold && $sort !== 'sold';
+          ?>
+          <div class="shop-card <?= $dimSold ? 'is-sold' : '' ?>" id="doll-<?= (int)$r['id'] ?>">
             <a class="shop-card-area" href="/shop/product.php?slug=<?= h(urlencode($r['slug'])) ?>">
               <div class="img">
                 <?php if ($r['thumb']): ?>
