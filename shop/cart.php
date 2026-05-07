@@ -37,7 +37,7 @@ track_view('/shop/cart.php');
 require __DIR__ . '/header.php';
 ?>
 
-<section>
+<section class="cart-section">
   <div class="wrap">
     <div class="shop-head">
       <p class="eyebrow">Your cart</p>

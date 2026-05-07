@@ -371,6 +371,7 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
 .cart-link.has-items .cart-count{display:inline-block}
 
 /* === Cart page === */
+section.cart-section{padding:2rem 0}
 .cart-layout{
   display:grid;grid-template-columns:1fr;gap:2rem;
   margin:2rem 0;
@@ -472,7 +473,7 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
 .cart-summary .note{font-size:.8rem;color:var(--ink-muted);margin-top:1rem}
 
 /* === Cart suggestions === */
-.cart-suggestions{margin:1.5rem 0 2rem;text-align:center}
+.cart-suggestions{text-align:center}
 .cart-suggestions-title{font-size:1.6rem;margin:0}
 .cart-suggestion-grid{
   display:grid;gap:1.25rem;margin-top:1.5rem;
