@@ -473,7 +473,7 @@ section.cart-section{padding:0}
 .cart-summary .note{font-size:.8rem;color:var(--ink-muted);margin-top:1rem}
 
 /* === Cart suggestions === */
-.cart-suggestions{text-align:center}
+.cart-suggestions{text-align:center;padding:0}
 .cart-suggestions-title{font-size:1.6rem;margin:0}
 .cart-suggestion-grid{
   display:grid;gap:1.25rem;margin-top:1.5rem;
