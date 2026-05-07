@@ -162,6 +162,12 @@ function cart_stable_suggestions(int $limit = 5): array {
     $rows = [];
     foreach ($stored as $id) if (isset($byId[$id])) $rows[] = $byId[$id];
 
+    // Trim down if the stored lineup is larger than the requested limit
+    // (e.g. we used to suggest 5 and now suggest 3).
+    if (count($rows) > $limit) {
+        $rows = array_slice($rows, 0, $limit);
+    }
+
     // Top up with fresh random picks if we're under the target.
     $need = $limit - count($rows);
     if ($need > 0) {
