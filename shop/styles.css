@@ -371,7 +371,7 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
 .cart-link.has-items .cart-count{display:inline-block}
 
 /* === Cart page === */
-section.cart-section{padding:2rem 0}
+section.cart-section{padding:0}
 .cart-layout{
   display:grid;grid-template-columns:1fr;gap:2rem;
   margin:2rem 0;
