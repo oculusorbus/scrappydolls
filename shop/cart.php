@@ -106,7 +106,6 @@ require __DIR__ . '/header.php';
             <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener" target="_blank" style="width:100%;justify-content:center">Message on Facebook →</a>
           <?php endif; ?>
         </aside>
-      </div>
 
       <?php if ($suggestions): ?>
         <section class="cart-suggestions" aria-label="You might also like">
@@ -142,6 +141,7 @@ require __DIR__ . '/header.php';
           </div>
         </section>
       <?php endif; ?>
+      </div><!-- /.cart-layout -->
 
     <?php endif; ?>
   </div>

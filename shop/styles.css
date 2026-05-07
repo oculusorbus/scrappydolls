@@ -375,8 +375,22 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
   display:grid;grid-template-columns:1fr;gap:2rem;
   margin:2rem 0;
 }
+/* Mobile (default): DOM order rules — items, summary, suggestions —
+   so the summary + checkout button sit between the cart and the
+   suggestion strip. The buyer's checkout flow stays uninterrupted. */
 @media (min-width:880px){
-  .cart-layout{grid-template-columns:minmax(0, 1fr) 22rem;}
+  /* Desktop: 2-column grid. Suggestions slot under the cart in col 1
+     (more visible above the fold), summary spans both rows in col 2. */
+  .cart-layout{
+    grid-template-columns:minmax(0, 1fr) 22rem;
+    grid-template-areas:
+      "items summary"
+      "suggestions summary";
+    align-items:start;
+  }
+  .cart-items-col{grid-area:items}
+  .cart-summary{grid-area:summary}
+  .cart-suggestions{grid-area:suggestions}
 }
 .cart-list{display:flex;flex-direction:column;gap:1rem}
 .cart-row{
@@ -455,7 +469,7 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
 .cart-summary .note{font-size:.8rem;color:var(--ink-muted);margin-top:1rem}
 
 /* === Cart suggestions === */
-.cart-suggestions{margin:3.5rem 0 2rem;text-align:center}
+.cart-suggestions{margin:1.5rem 0 2rem;text-align:center}
 .cart-suggestions-title{font-size:1.6rem;margin:0}
 .cart-suggestion-grid{
   display:grid;gap:1.25rem;margin-top:1.5rem;
