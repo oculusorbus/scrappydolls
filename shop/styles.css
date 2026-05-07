@@ -264,9 +264,14 @@ h2.h-display{font-size:clamp(1.8rem,4vw,2.75rem)}
   height:auto;max-height:72vh;
   object-fit:contain;
 }
-.product-gallery .thumbs{display:grid;gap:.5rem;grid-template-columns:repeat(auto-fill,minmax(4rem,1fr))}
+.product-gallery .thumbs{
+  display:grid;gap:.5rem;
+  /* Portrait thumbs match the source photo orientation so the whole
+     doll fits; auto-fill keeps the row tidy at any width. */
+  grid-template-columns:repeat(auto-fill,minmax(4.5rem,1fr));
+}
 .product-gallery .thumbs button{
-  aspect-ratio:1;border-radius:8px;overflow:hidden;border:2px solid transparent;
+  aspect-ratio:4/5;border-radius:8px;overflow:hidden;border:2px solid transparent;
   background:var(--paper-3);padding:0;cursor:pointer;
 }
 .product-gallery .thumbs button.active{border-color:var(--rose)}
