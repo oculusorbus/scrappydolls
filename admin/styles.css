@@ -333,11 +333,25 @@ td.actions a,td.actions button{margin-left:.4rem}
   padding:.85rem 1rem;color:var(--ink);font-weight:500;
   text-shadow:0 1px 0 rgba(255,255,255,.6);
 }
-.funnel .step.dark .row{color:#fff;text-shadow:none}
+.funnel .step.dark{
+  /* Highlight the completed-purchase row with a rose outline + soft
+     halo so it still reads as the goal-line, but text stays dark and
+     readable against the beige background outside the fill. */
+  outline:1.5px solid var(--rose);
+  outline-offset:-1.5px;
+  box-shadow:0 0 0 4px color-mix(in oklab,var(--rose) 22%, transparent);
+}
+.funnel .step.dark .row{
+  color:var(--ink);font-weight:600;
+  text-shadow:
+    0 0 6px rgba(255,255,255,.95),
+    0 0 12px rgba(255,255,255,.65),
+    0 1px 0 rgba(255,255,255,.6);
+}
 .funnel .step .label{font-size:.95rem}
 .funnel .step .count{font-family:var(--font-display);font-weight:500;font-size:1.1rem}
 .funnel .step .conv{font-size:.78rem;color:var(--ink-muted);margin-left:.5rem;font-weight:500}
-.funnel .step.dark .conv{color:rgba(255,255,255,.78)}
+.funnel .step.dark .conv{color:var(--ink-soft)}
 
 /* Bar lists (top states / channels) */
 .bar-list{display:flex;flex-direction:column;gap:.65rem;margin-top:.5rem}
