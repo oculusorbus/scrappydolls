@@ -8,8 +8,10 @@ $pageDesc  = 'Review the dolls in your cart and check out securely.';
 $items = cart_items();
 $itemsTotal = 0;
 foreach ($items as $it) $itemsTotal += (int)$it['price_cents'];
-$shippingCents = shipping_cents_for_count(count($items));
+$shippingCents = shipping_cents(count($items), $itemsTotal);
 $grandTotal    = $itemsTotal + $shippingCents;
+$freeShippingRemaining = max(0, SHIPPING_FREE_THRESHOLD_CENTS - $itemsTotal);
+$freeShippingUnlocked  = $itemsTotal >= SHIPPING_FREE_THRESHOLD_CENTS;
 
 $thumbsByProduct = [];
 if ($items) {
@@ -84,7 +86,16 @@ require __DIR__ . '/header.php';
             <div><dt>Shipping</dt><dd data-cart-shipping><?= fmt_price($shippingCents) ?></dd></div>
             <div class="cart-summary-grand"><dt>Total</dt><dd data-cart-total><?= fmt_price($grandTotal) ?></dd></div>
           </dl>
-          <p class="cart-shipping-note">Flat-rate shipping: $7.99 first doll, $2.99 each additional.</p>
+          <?php if ($freeShippingUnlocked): ?>
+            <p class="cart-shipping-note cart-shipping-unlocked">
+              <strong>You unlocked free shipping!</strong>
+            </p>
+          <?php else: ?>
+            <p class="cart-shipping-note">
+              Add <strong><?= fmt_price($freeShippingRemaining) ?> more</strong> for free shipping.<br>
+              <span class="cart-shipping-rate">Flat-rate: $7.99 first doll, $2.99 each additional under $50.</span>
+            </p>
+          <?php endif; ?>
 
           <?php if (paypal_is_configured()): ?>
             <div id="paypal-button-container"></div>

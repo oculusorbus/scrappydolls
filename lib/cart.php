@@ -12,20 +12,46 @@ const CART_MAX_ITEMS = 25;
 const CART_SUGGESTION_SESSION_KEY = 'cart_suggestion_ids';
 
 // Flat-rate shipping: $7.99 first doll, $2.99 each additional.
-const SHIPPING_FIRST_CENTS      = 799;
-const SHIPPING_ADDITIONAL_CENTS = 299;
+// Free shipping kicks in once the item subtotal hits the threshold.
+const SHIPPING_FIRST_CENTS         = 799;
+const SHIPPING_ADDITIONAL_CENTS    = 299;
+const SHIPPING_FREE_THRESHOLD_CENTS = 5000; // $50.00
 
-function shipping_cents_for_count(int $count): int {
+/**
+ * Shipping cost in cents. Subtotal-aware so free-shipping kicks in once the
+ * cart reaches the threshold.
+ */
+function shipping_cents(int $count, int $subtotalCents): int {
     if ($count <= 0) return 0;
+    if ($subtotalCents >= SHIPPING_FREE_THRESHOLD_CENTS) return 0;
     return SHIPPING_FIRST_CENTS + (max(0, $count - 1) * SHIPPING_ADDITIONAL_CENTS);
 }
 
+/**
+ * Backward-compatible wrapper. Without a subtotal we charge the full rate;
+ * callers that know the subtotal should use shipping_cents() directly so
+ * the free-shipping threshold applies.
+ */
+function shipping_cents_for_count(int $count): int {
+    return shipping_cents($count, 0);
+}
+
 function cart_shipping_cents(): int {
-    return shipping_cents_for_count(cart_count());
+    return shipping_cents(cart_count(), cart_total_cents());
 }
 
 function cart_grand_total_cents(): int {
     return cart_total_cents() + cart_shipping_cents();
+}
+
+/**
+ * How many more dollars the cart needs to qualify for free shipping.
+ * Returns 0 once the threshold is met (or cart is empty).
+ */
+function cart_free_shipping_remaining_cents(): int {
+    $subtotal = cart_total_cents();
+    if ($subtotal === 0) return SHIPPING_FREE_THRESHOLD_CENTS;
+    return max(0, SHIPPING_FREE_THRESHOLD_CENTS - $subtotal);
 }
 
 function cart_ids(): array {

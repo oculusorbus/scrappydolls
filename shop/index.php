@@ -70,6 +70,11 @@ track_view('/shop/');
 require __DIR__ . '/header.php';
 ?>
 
+<div class="shop-banner" role="note">
+  <span class="shop-banner-icon" aria-hidden="true">✦</span>
+  Free shipping on orders <strong>$50 or more</strong>.
+</div>
+
 <section>
   <div class="wrap">
     <div class="shop-head">

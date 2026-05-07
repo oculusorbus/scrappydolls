@@ -1588,7 +1588,7 @@ if (count($_pool) >= 21) {
         </details>
         <details class="faq">
           <summary>How much is shipping?</summary>
-          <p>Flat-rate domestic shipping: <strong>$7.99 for the first doll</strong> and <strong>$2.99 for each additional doll</strong> in the same order. Calculated automatically at checkout — bundling is the cheapest way to bring more than one home.</p>
+          <p><strong>Free shipping on orders $50 or more.</strong> Otherwise: $7.99 for the first doll and $2.99 each additional doll in the same order. Calculated automatically at checkout — bundling is the cheapest way to bring more than one home.</p>
         </details>
         <details class="faq">
           <summary>How do I care for a Scrappy Doll?</summary>

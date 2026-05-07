@@ -175,7 +175,7 @@ try {
     // authorized, even if admin changed the price afterward.
     $itemsTotal = 0;
     foreach ($cartIds as $id) $itemsTotal += $intentPriceById[$id];
-    $shippingCents = shipping_cents_for_count(count($cartIds));
+    $shippingCents = shipping_cents(count($cartIds), $itemsTotal);
     $totalCents = $itemsTotal + $shippingCents;
     $currency = paypal_currency();
 

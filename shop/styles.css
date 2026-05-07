@@ -404,7 +404,24 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
 .cart-summary-grand dt,.cart-summary-grand dd{
   font-family:var(--font-display);font-size:1.15rem;color:var(--ink);font-weight:500;
 }
-.cart-shipping-note{font-size:.78rem;color:var(--ink-muted);margin:.4rem 0 1rem;text-align:center}
+.cart-shipping-note{font-size:.82rem;color:var(--ink-soft);margin:.4rem 0 1rem;text-align:center;line-height:1.45}
+.cart-shipping-note strong{color:var(--ink)}
+.cart-shipping-rate{font-size:.74rem;color:var(--ink-muted)}
+.cart-shipping-unlocked{
+  background:color-mix(in oklab,var(--rose-light) 35%, transparent);
+  border:1px solid var(--rose-light);
+  border-radius:var(--radius);
+  padding:.5rem .75rem;color:var(--rose-dark);
+}
+.cart-shipping-unlocked strong{color:var(--rose-dark)}
+
+/* Shop free-shipping banner */
+.shop-banner{
+  text-align:center;background:var(--ink);color:var(--paper);
+  padding:.6rem 1rem;font-size:.88rem;letter-spacing:.02em;
+}
+.shop-banner strong{color:#fff}
+.shop-banner-icon{color:var(--rose-light);margin-right:.4rem}
 .cart-summary .note{font-size:.8rem;color:var(--ink-muted);margin-top:1rem}
 
 /* === Cart suggestions === */
