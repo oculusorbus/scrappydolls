@@ -886,7 +886,8 @@ if (count($_pool) >= 21) {
       display: grid;
       gap: 1.25rem;
       grid-template-columns: repeat(6, 1fr);
-      grid-auto-rows: 13rem;
+      grid-auto-rows: 9rem;
+      grid-auto-flow: dense; /* fill gaps so portrait/square mix tiles cleanly */
     }
     .roster-card {
       position: relative;
@@ -958,24 +959,32 @@ if (count($_pool) >= 21) {
       border-radius: 999px;
       flex-shrink: 0;
     }
-    /* Asymmetric layout — same shape as the old .gallery */
-    .roster .roster-card:nth-child(1) { grid-column: span 3; grid-row: span 2; }
-    .roster .roster-card:nth-child(2) { grid-column: span 3; grid-row: span 1; }
-    .roster .roster-card:nth-child(3) { grid-column: span 2; grid-row: span 1; }
-    .roster .roster-card:nth-child(4) { grid-column: span 1; grid-row: span 1; }
-    .roster .roster-card:nth-child(5) { grid-column: span 2; grid-row: span 2; }
-    .roster .roster-card:nth-child(6) { grid-column: span 2; grid-row: span 1; }
-    .roster .roster-card:nth-child(7) { grid-column: span 2; grid-row: span 1; }
-    .roster .roster-card:nth-child(8) { grid-column: span 2; grid-row: span 1; }
-    .roster .roster-card:nth-child(9) { grid-column: span 2; grid-row: span 1; }
+    /* Tile spans: every card is square or taller than wide. Doll photos
+       are portrait — horizontal panes crop heads. Mix of 2×3 hero,
+       2×2 squares, and 2×3 portraits keeps a "puzzle" feel without any
+       wider-than-tall pane. With grid-auto-rows of 9rem and 1.25rem
+       gap, a 2-col × 2-row tile renders roughly square on a wide
+       viewport; 2-col × 3-row tiles read as portraits. */
+    .roster .roster-card:nth-child(1) { grid-column: span 2; grid-row: span 3; } /* hero portrait */
+    .roster .roster-card:nth-child(2) { grid-column: span 2; grid-row: span 2; } /* square */
+    .roster .roster-card:nth-child(3) { grid-column: span 2; grid-row: span 2; } /* square */
+    .roster .roster-card:nth-child(4) { grid-column: span 2; grid-row: span 3; } /* portrait */
+    .roster .roster-card:nth-child(5) { grid-column: span 2; grid-row: span 2; } /* square */
+    .roster .roster-card:nth-child(6) { grid-column: span 2; grid-row: span 2; } /* square */
+    .roster .roster-card:nth-child(7) { grid-column: span 2; grid-row: span 3; } /* portrait */
+    .roster .roster-card:nth-child(8) { grid-column: span 2; grid-row: span 2; } /* square */
+    .roster .roster-card:nth-child(9) { grid-column: span 2; grid-row: span 2; } /* square */
+    /* Tablet: 2 columns, every card is a tall portrait (1 col × 2 rows). */
     @media (max-width: 60rem) {
-      .roster { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 11rem; }
-      .roster .roster-card:nth-child(n) { grid-column: span 1; grid-row: span 1; }
-      .roster .roster-card:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+      .roster { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 7rem; }
+      .roster .roster-card:nth-child(n) { grid-column: span 1; grid-row: span 2; }
+      .roster .roster-card:nth-child(1) { grid-column: span 2; grid-row: span 3; }
     }
+    /* Phone: 1 column, each card spans 2 rows so it stays taller than wide. */
     @media (max-width: 30rem) {
-      .roster { grid-template-columns: 1fr; }
-      .roster .roster-card:nth-child(n) { grid-column: span 1; grid-row: span 1; }
+      .roster { grid-template-columns: 1fr; grid-auto-rows: 8rem; }
+      .roster .roster-card:nth-child(n) { grid-column: span 1; grid-row: span 2; }
+      .roster .roster-card:nth-child(1) { grid-column: span 1; grid-row: span 3; }
     }
 
     /* === LIGHTBOX === */
