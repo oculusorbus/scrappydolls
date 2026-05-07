@@ -379,10 +379,13 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
    so the summary + checkout button sit between the cart and the
    suggestion strip. The buyer's checkout flow stays uninterrupted. */
 @media (min-width:880px){
-  /* Desktop: 2-column grid. Suggestions slot under the cart in col 1
-     (more visible above the fold), summary spans both rows in col 2. */
+  /* Desktop: 2-column grid. Cart items pin to the top of col 1; the
+     suggestion strip pins to the BOTTOM of col 1 so its bottom edge
+     aligns with the order summary's. Row 2 is 1fr — it expands to
+     fill whatever space the summary creates. */
   .cart-layout{
     grid-template-columns:minmax(0, 1fr) 22rem;
+    grid-template-rows:auto 1fr;
     grid-template-areas:
       "items summary"
       "suggestions summary";
@@ -390,7 +393,7 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
   }
   .cart-items-col{grid-area:items}
   .cart-summary{grid-area:summary}
-  .cart-suggestions{grid-area:suggestions}
+  .cart-suggestions{grid-area:suggestions; align-self:end; margin:0}
 }
 .cart-list{display:flex;flex-direction:column;gap:1rem}
 .cart-row{

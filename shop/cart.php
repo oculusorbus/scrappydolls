@@ -30,7 +30,7 @@ if ($items) {
     }
 }
 
-$suggestions = $items ? cart_stable_suggestions(5) : [];
+$suggestions = $items ? cart_stable_suggestions(3) : [];
 
 track_view('/shop/cart.php');
 
