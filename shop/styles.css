@@ -372,6 +372,10 @@ footer.site-foot .wrap{max-width:var(--max);text-align:center}
 
 /* === Cart page === */
 section.cart-section{padding:4rem 0 0} /* match shop top, no bottom */
+/* But when the cart is empty, the empty-shop block is the only content
+   in the section — add bottom padding back so it doesn't touch the
+   footer. */
+section.cart-section:has(.empty-shop){padding-bottom:4rem}
 .cart-layout{
   display:grid;grid-template-columns:1fr;gap:2rem;
   margin:2rem 0;
