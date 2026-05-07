@@ -486,7 +486,7 @@ section.cart-section{padding:4rem 0 0} /* match shop top, no bottom */
 }
 .cart-suggestion.is-added{opacity:0;transform:scale(.94)}
 .cart-suggestion-img{display:block;border-radius:12px;overflow:hidden;background:var(--paper-3);aspect-ratio:1/1}
-.cart-suggestion-img img{width:100%;height:100%;object-fit:cover}
+.cart-suggestion-img img{width:100%;height:100%;object-fit:cover;object-position:center top}
 .cart-suggestion-meta{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;text-align:left}
 .cart-suggestion-title{
   font-family:var(--font-display);font-weight:500;color:var(--ink);
