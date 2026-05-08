@@ -20,10 +20,10 @@
   <rect class="paper" width="1200" height="630"/>
 
   <!-- Decorative stitched-rule frame -->
-  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#b13e54" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.45" rx="14"/>
+  <rect x="40" y="40" width="1120" height="520" fill="none" stroke="#b13e54" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.45" rx="14"/>
 
   <!-- Stitched heart icon, scaled up (same path as favicon.svg) -->
-  <g transform="translate(540, 100) scale(2.5)">
+  <g transform="translate(540, 80) scale(2.5)">
     <path d="M32 52 C32 52, 8 36, 8 22 C8 14, 14 8, 22 8 C26 8, 30 11, 32 14 C34 11, 38 8, 42 8 C50 8, 56 14, 56 22 C56 36, 32 52, 32 52Z" class="rose"/>
     <g class="stitch">
       <line x1="21" y1="18" x2="25" y2="22"/>
@@ -43,20 +43,20 @@
 
   <!-- Wordmark: scrappy + italic dolls -->
   <g text-anchor="middle">
-    <text x="600" y="395" class="brand-name ink" font-size="116" letter-spacing="-3">
+    <text x="600" y="370" class="brand-name ink" font-size="116" letter-spacing="-3">
       scrappy<tspan class="brand-italic rose">dolls</tspan>
     </text>
 
     <!-- Tagline -->
-    <text x="600" y="455" class="tagline soft" font-size="32">
+    <text x="600" y="430" class="tagline soft" font-size="32">
       Handmade by Kanda Kay
     </text>
 
     <!-- Divider dot -->
-    <circle cx="600" cy="500" r="3" class="rose"/>
+    <circle cx="600" cy="475" r="3" class="rose"/>
 
     <!-- URL -->
-    <text x="600" y="545" class="url soft" font-size="20">
+    <text x="600" y="515" class="url soft" font-size="20">
       scrappydolls.com
     </text>
   </g>
