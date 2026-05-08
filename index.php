@@ -37,6 +37,16 @@ if (count($_pool) >= 21) {
   <!-- Preload hero image for LCP -->
   <link rel="preload" as="image" href="/images/doll-rainbow-hair.jpg" fetchpriority="high">
 
+  <?php
+    // Cache-bust the OG share image so Facebook/Twitter/etc fetch the
+    // current file whenever it's replaced (a new mtime → new URL → fresh
+    // scrape). Replace images/og-image.jpg on the server to update the
+    // social preview everywhere this site is shared.
+    $ogPath = __DIR__ . '/images/og-image.jpg';
+    $ogVer  = @filemtime($ogPath) ?: 0;
+    $ogQs   = $ogVer ? '?v=' . $ogVer : '';
+    $ogImageUrl = 'https://scrappydolls.com/images/og-image.jpg' . $ogQs;
+  ?>
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_US">
@@ -44,19 +54,19 @@ if (count($_pool) >= 21) {
   <meta property="og:description" content="Handmade cloth dolls and custom memory dolls by artist Kanda Kay — one-of-a-kind keepsakes stitched from quilting cottons, vintage prints, and fabric remnants.">
   <meta property="og:url" content="https://scrappydolls.com/">
   <meta property="og:site_name" content="Scrappy Dolls">
-  <meta property="og:image" content="https://scrappydolls.com/images/og-image.jpg">
-  <meta property="og:image:secure_url" content="https://scrappydolls.com/images/og-image.jpg">
+  <meta property="og:image" content="<?= $ogImageUrl ?>">
+  <meta property="og:image:secure_url" content="<?= $ogImageUrl ?>">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="og:image:width" content="1008">
-  <meta property="og:image:height" content="560">
-  <meta property="og:image:alt" content="A handmade Scrappy Doll by Kanda Kay — burlap face with embroidered features and yarn hair">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Scrappy Dolls — handmade cloth dolls by Kanda Kay">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Scrappy Dolls — Handmade Cloth &amp; Memory Dolls by Kanda Kay">
   <meta name="twitter:description" content="Handmade cloth dolls and custom memory dolls by artist Kanda Kay — one-of-a-kind keepsakes stitched from beloved fabric.">
-  <meta name="twitter:image" content="https://scrappydolls.com/images/og-image.jpg">
-  <meta name="twitter:image:alt" content="A handmade Scrappy Doll by Kanda Kay">
+  <meta name="twitter:image" content="<?= $ogImageUrl ?>">
+  <meta name="twitter:image:alt" content="Scrappy Dolls — handmade cloth dolls by Kanda Kay">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -3,7 +3,11 @@ declare(strict_types=1);
 require_once __DIR__ . '/../lib/bootstrap.php';
 $pageTitle = $pageTitle ?? 'Shop';
 $pageDesc  = $pageDesc  ?? 'Available one-of-a-kind handmade cloth dolls by Kanda Kay.';
-$pageImage = $pageImage ?? url('images/og-image.jpg');
+// Cache-bust the default OG image so a replaced file is re-scraped by
+// Facebook/Twitter/etc on next share. Product pages override $pageImage
+// with their own doll photo and don't need this.
+$sd_og_v = @filemtime(__DIR__ . '/../images/og-image.jpg') ?: 0;
+$pageImage = $pageImage ?? url('images/og-image.jpg' . ($sd_og_v ? '?v=' . $sd_og_v : ''));
 $pageUrl   = $pageUrl   ?? url($_SERVER['REQUEST_URI'] ?? '/shop/');
 ?>
 <!doctype html>
