@@ -150,16 +150,33 @@ require __DIR__ . '/header.php';
   </div>
 </section>
 
+<?php
+  $year       = (int)date('Y');
+  $copyright  = '© ' . $year . ' Kanda Kay · Scrappy Dolls';
+  $imageUrl   = $images ? url('uploads/' . $images[0]['filename']) : url('images/og-image.jpg');
+  $priceFloat = (float)$product['price_cents'] / 100;
+  // Single-doll shipping: free over $50 threshold, else flat $7.99 first item.
+  $shipRate   = $priceFloat >= 50.0
+      ? ['@type' => 'MonetaryAmount', 'value' => '0.00', 'currency' => 'USD']
+      : ['@type' => 'MonetaryAmount', 'value' => '7.99', 'currency' => 'USD'];
+?>
 <!-- Product schema -->
 <script type="application/ld+json">
 <?= json_encode([
-    '@context' => 'https://schema.org',
-    '@type'    => 'Product',
-    'name'     => $product['title'],
+    '@context'    => 'https://schema.org',
+    '@type'       => 'Product',
+    'name'        => $product['title'],
     'description' => $product['description'] ?: "Handmade one-of-a-kind cloth doll by Kanda Kay.",
-    'image'    => $images ? url('uploads/' . $images[0]['filename']) : url('images/og-image.jpg'),
-    'brand'    => ['@type' => 'Brand', 'name' => 'Scrappy Dolls'],
-    'offers'   => [
+    'image'       => [
+        '@type'           => 'ImageObject',
+        'url'             => $imageUrl,
+        'creator'         => ['@type' => 'Person', 'name' => 'Kanda Kay'],
+        'creditText'      => 'Kanda Kay / Scrappy Dolls',
+        'copyrightNotice' => $copyright,
+    ],
+    'copyrightNotice' => $copyright,
+    'brand'           => ['@type' => 'Brand', 'name' => 'Scrappy Dolls'],
+    'offers'          => [
         '@type'         => 'Offer',
         'url'           => $pageUrl,
         'priceCurrency' => 'USD',
@@ -169,6 +186,21 @@ require __DIR__ . '/header.php';
             : 'https://schema.org/SoldOut',
         'itemCondition' => 'https://schema.org/NewCondition',
         'seller'        => ['@type' => 'Person', 'name' => 'Kanda Kay'],
+        'shippingDetails' => [
+            '@type'                => 'OfferShippingDetails',
+            'shippingRate'         => $shipRate,
+            'shippingDestination'  => ['@type' => 'DefinedRegion', 'addressCountry' => 'US'],
+            'deliveryTime' => [
+                '@type'        => 'ShippingDeliveryTime',
+                'handlingTime' => ['@type' => 'QuantitativeValue', 'minValue' => 1, 'maxValue' => 4, 'unitCode' => 'DAY'],
+                'transitTime'  => ['@type' => 'QuantitativeValue', 'minValue' => 2, 'maxValue' => 7, 'unitCode' => 'DAY'],
+            ],
+        ],
+        'hasMerchantReturnPolicy' => [
+            '@type'                => 'MerchantReturnPolicy',
+            'applicableCountry'    => 'US',
+            'returnPolicyCategory' => 'https://schema.org/MerchantReturnNotPermitted',
+        ],
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>
 </script>
