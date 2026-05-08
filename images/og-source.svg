@@ -20,7 +20,7 @@
   <rect class="paper" width="1200" height="630"/>
 
   <!-- Decorative stitched-rule frame -->
-  <rect x="40" y="40" width="1120" height="520" fill="none" stroke="#b13e54" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.45" rx="14"/>
+  <rect x="40" y="40" width="1120" height="520" fill="none" stroke="#b13e54" stroke-width="2.5" stroke-dasharray="9 6" opacity="0.7" rx="14"/>
 
   <!-- Stitched heart icon, scaled up (same path as favicon.svg) -->
   <g transform="translate(540, 80) scale(2.5)">
