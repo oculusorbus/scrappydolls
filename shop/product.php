@@ -222,6 +222,17 @@ require __DIR__ . '/header.php';
 <?php endif; ?>
 <script>
 (function(){
+  // Windows has no native SMS handler (unless Microsoft Phone Link is set
+  // up), so the Text share button silently does nothing there. Hide it on
+  // Windows so it doesn't look broken. Mac keeps it (iPhone Continuity
+  // routes sms: URIs to Messages.app); iOS and Android keep it natively.
+  if (/Windows/i.test(navigator.userAgent)) {
+    document.querySelectorAll('.share-btn[href^="sms:"]').forEach(function(el){
+      el.style.display = 'none';
+    });
+  }
+})();
+(function(){
   var copyBtn = document.querySelector('.share-copy');
   if (!copyBtn) return;
   var label = copyBtn.querySelector('.share-copy-label');
