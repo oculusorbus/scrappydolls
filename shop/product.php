@@ -124,7 +124,7 @@ require __DIR__ . '/header.php';
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
             <span>Email</span>
           </a>
-          <a class="share-btn" href="sms:&body=<?= $smsBody ?>" aria-label="Share by text message">
+          <a class="share-btn" href="sms:?body=<?= $smsBody ?>" aria-label="Share by text message">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z"/></svg>
             <span>Text</span>
           </a>
