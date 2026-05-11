@@ -138,7 +138,7 @@ $csrfToken           = csrf_token();
           <label>Email
             <input type="email" name="email" required maxlength="255" autocomplete="email">
           </label>
-          <label>Phone <span style="opacity:.6">(optional)</span>
+          <label><span>Phone <span style="opacity:.6">(optional)</span></span>
             <input type="tel" name="phone" maxlength="40" autocomplete="tel">
           </label>
         </div>
