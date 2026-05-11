@@ -99,7 +99,9 @@ function mail_customer_receipt_multi(array $order, array $items): void {
     $email = $order['customer_email'] ?? null;
     if (!$email) return;
     $cfg = config('mail');
-    $replyTo = $cfg['admin_email'] ?? null;
+    // Prefer the public support address so customer replies land in the
+    // monitored inbox; fall back to admin if support isn't configured yet.
+    $replyTo = $cfg['support_email'] ?? $cfg['admin_email'] ?? null;
     $b = _mail_order_breakdown($order, $items);
     $count = count($items);
     $lines = '';
@@ -124,4 +126,31 @@ function mail_customer_receipt_multi(array $order, array $items): void {
         ? "Order confirmed — " . ($items[0]['title_snapshot'] ?? 'your doll')
         : "Order confirmed — $count dolls";
     send_mail($email, $subject, $body, $replyTo);
+}
+
+/**
+ * Inbound message from the public contact form. Goes to the support
+ * address; Reply-To is set to the customer's email so a one-click reply
+ * lands back in their inbox.
+ */
+function mail_contact_message(string $name, string $email, string $phone, string $subject, string $message): bool {
+    $cfg = config('mail');
+    $to = $cfg['support_email'] ?? $cfg['admin_email'] ?? null;
+    if (!$to) return false;
+
+    $cleanSubject = trim($subject);
+    if ($cleanSubject === '') $cleanSubject = 'New message';
+    $mailSubject = '[Contact form] ' . $cleanSubject;
+
+    $body = "Someone sent a message via the website contact form.\n\n"
+          . "From: $name <$email>\n"
+          . ($phone !== '' ? "Phone: $phone\n" : '')
+          . "Subject: $cleanSubject\n\n"
+          . "Message:\n"
+          . "----------------------------------------------------------\n"
+          . $message . "\n"
+          . "----------------------------------------------------------\n\n"
+          . "Reply directly to this email to respond to the customer.\n";
+
+    return send_mail($to, $mailSubject, $body, $email);
 }

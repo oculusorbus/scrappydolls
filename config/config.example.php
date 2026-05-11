@@ -51,9 +51,24 @@ return [
     // SMTP via PHPMailer (Composer) and update lib/mailer.php.
     // -----------------------------------------------------------------
     'mail' => [
-        'from_email'  => 'no-reply@scrappydolls.com',
-        'from_name'   => 'Scrappy Dolls',
-        'admin_email' => 'CHANGE_ME@example.com',  // mom's email — gets order alerts
+        'from_email'    => 'no-reply@scrappydolls.com',
+        'from_name'     => 'Scrappy Dolls',
+        'admin_email'   => 'CHANGE_ME@example.com',  // mom's email — gets order alerts
+        // Public-facing customer service address. Used as Reply-To on
+        // customer-facing emails and as the To: for contact-form submissions.
+        // Set up as a forwarding alias so it can hand off to multiple inboxes
+        // without changing what customers see.
+        'support_email' => 'hello@scrappydolls.com',
+    ],
+
+    // -----------------------------------------------------------------
+    // Cloudflare Turnstile — anti-spam for the contact form.
+    // Sign up at https://dash.cloudflare.com → Turnstile → Add site.
+    // Pick "Managed" mode. Copy the keys here.
+    // -----------------------------------------------------------------
+    'turnstile' => [
+        'site_key'   => '',  // public, rendered into the contact form
+        'secret_key' => '',  // private, used server-side to verify tokens
     ],
 
     // -----------------------------------------------------------------

@@ -31,6 +31,7 @@ require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/image.php';
 require_once __DIR__ . '/upload.php';
 require_once __DIR__ . '/paypal.php';
+require_once __DIR__ . '/turnstile.php';
 require_once __DIR__ . '/mailer.php';
 require_once __DIR__ . '/analytics.php';
 require_once __DIR__ . '/cart.php';

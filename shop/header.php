@@ -55,6 +55,7 @@ $pageUrl   = $pageUrl   ?? url($_SERVER['REQUEST_URI'] ?? '/shop/');
       <a href="/">Home</a>
       <a href="/shop/" class="priority <?= ($_SERVER['REQUEST_URI'] === '/shop/' || $_SERVER['REQUEST_URI'] === '/shop/index.php') ? 'is-current' : '' ?>">Shop</a>
       <a href="/#about">About</a>
+      <a href="/contact.php">Contact</a>
       <a class="btn-mini" href="https://www.facebook.com/kandakayartist/" rel="noopener">Follow</a>
       <?php $sd_cart_n = cart_count(); ?>
       <a class="cart-link <?= $sd_cart_n > 0 ? 'has-items' : '' ?>" href="/shop/cart.php" aria-label="Cart (<?= $sd_cart_n ?> item<?= $sd_cart_n === 1 ? '' : 's' ?>)">

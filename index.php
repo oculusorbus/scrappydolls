@@ -1345,6 +1345,7 @@ if (count($_pool) >= 21) {
         <a href="#process">Process</a>
         <a href="#gallery">Gallery</a>
         <a href="#faq">FAQ</a>
+        <a href="/contact.php">Contact</a>
         <a class="btn-mini" href="https://www.facebook.com/kandakayartist/" rel="noopener">Follow</a>
       </nav>
     </div>
