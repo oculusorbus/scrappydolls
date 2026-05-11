@@ -1343,6 +1343,7 @@ if (count($_pool) >= 21) {
         <a href="/shop/" class="priority">Shop</a>
         <a href="#about">About</a>
         <a href="#process">Process</a>
+        <a href="#artist">Meet Kanda</a>
         <a href="#gallery">Gallery</a>
         <a href="#faq">FAQ</a>
         <a href="/contact.php">Contact</a>
