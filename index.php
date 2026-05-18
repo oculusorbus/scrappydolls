@@ -1647,7 +1647,7 @@ if (count($_pool) >= 21) {
           <p style="margin: 0;"><a href="https://www.facebook.com/kandakayartist/" rel="noopener">from Art Safari Studio · Handmade by Kanda Kay</a></p>
         </div>
         <div style="text-align: right;">
-          <p style="margin: 0 0 0.5rem;"><a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a></p>
+          <p style="margin: 0 0 0.5rem;"><a href="/privacy.php">Privacy</a> · <a href="/terms.php">Terms</a> · <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a></p>
           <p class="legal">&copy; <span id="y"></span> Scrappy Dolls · San Antonio, Texas.</p>
         </div>
       </div>

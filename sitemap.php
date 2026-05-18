@@ -64,6 +64,28 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     <priority>0.9</priority>
   </url>
 
+  <!-- Contact -->
+  <url>
+    <loc><?= _xe($base . '/contact.php') ?></loc>
+    <lastmod><?= _xe($today) ?></lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- Legal -->
+  <url>
+    <loc><?= _xe($base . '/privacy.php') ?></loc>
+    <lastmod><?= _xe($today) ?></lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc><?= _xe($base . '/terms.php') ?></loc>
+    <lastmod><?= _xe($today) ?></lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+
   <!-- Each available doll -->
   <?php foreach ($products as $p):
     $url = $base . '/shop/product.php?slug=' . rawurlencode($p['slug']);
