@@ -12,7 +12,7 @@ if (!csrf_check()) {
 
 if (!turnstile_is_configured()) {
     error_log('contact-send: Turnstile not configured');
-    json_response(['error' => 'Contact form is not configured yet. Please email hello@scrappydolls.com directly.'], 503);
+    json_response(['error' => 'Contact form is not configured yet. Please reach us on Facebook at facebook.com/kandakayartist.'], 503);
 }
 
 $name    = trim((string)($_POST['name']    ?? ''));
@@ -59,7 +59,7 @@ try {
     $ok = mail_contact_message($name, $email, $phone, $subject, $message);
     if (!$ok) {
         error_log('contact-send: mail_contact_message returned false');
-        json_response(['error' => 'We couldn\'t send your message. Please try again, or email hello@scrappydolls.com directly.'], 500);
+        json_response(['error' => 'We couldn\'t send your message. Please try again, or reach us on Facebook at facebook.com/kandakayartist.'], 500);
     }
 } catch (Throwable $e) {
     error_log('contact-send error: ' . $e->getMessage());
