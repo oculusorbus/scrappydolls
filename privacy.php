@@ -110,7 +110,7 @@ $effective = 'May 18, 2026';
       <p>We retain order records for as long as needed for accounting, tax, and customer-service purposes, generally several years. Contact form submissions are kept while we work on the conversation and for a reasonable period afterward. You can ask us to delete your information by contacting us, subject to any retention we're required by law to maintain.</p>
 
       <h2>Your choices</h2>
-      <p>You can ask us what information we have about you, request a copy, ask us to correct it, or ask us to delete it. Email us at <a href="mailto:<?= h(config('mail.support_email') ?: 'hello@scrappydolls.com') ?>"><?= h(config('mail.support_email') ?: 'hello@scrappydolls.com') ?></a> and we'll respond within a reasonable time. If you're a resident of a state with specific privacy rights (such as California or Texas), you may have additional rights — we will honor them on request.</p>
+      <p>You can ask us what information we have about you, request a copy, ask us to correct it, or ask us to delete it. Send your request through the <a href="/contact.php">contact form</a> and we'll respond within a reasonable time. If you're a resident of a state with specific privacy rights (such as California or Texas), you may have additional rights — we will honor them on request.</p>
 
       <h2>Children</h2>
       <p>Scrappy Dolls are textile art pieces intended for adult collectors and display, and the site is not directed to children under 13. We do not knowingly collect information from children under 13. If you believe a child has provided us information, please contact us and we will delete it.</p>
@@ -122,7 +122,7 @@ $effective = 'May 18, 2026';
       <p>We may update this policy from time to time. The "Effective" date at the top reflects the latest version. Material changes will be flagged on this page.</p>
 
       <h2>Contact</h2>
-      <p>Questions about this policy? Email <a href="mailto:<?= h(config('mail.support_email') ?: 'hello@scrappydolls.com') ?>"><?= h(config('mail.support_email') ?: 'hello@scrappydolls.com') ?></a> or use the <a href="/contact.php">contact form</a>.</p>
+      <p>Questions about this policy? Reach us through the <a href="/contact.php">contact form</a>.</p>
     </div>
   </div>
 </section>

@@ -91,7 +91,7 @@ $effective = 'May 18, 2026';
       <p>Payments are processed by PayPal. You may pay with a PayPal account or, where supported, a credit or debit card through PayPal's guest checkout. We do not see or store your full payment details. Your order is confirmed only after PayPal successfully captures the payment.</p>
 
       <h2>Shipping</h2>
-      <p>Orders typically ship within a few business days from San Antonio, Texas, via USPS. Once a package leaves our hands, delivery times are controlled by the carrier. Title and risk of loss pass to you when the carrier accepts the package. If your order is lost or damaged in transit, contact us at <a href="mailto:<?= h(config('mail.support_email') ?: 'hello@scrappydolls.com') ?>"><?= h(config('mail.support_email') ?: 'hello@scrappydolls.com') ?></a> and we'll help you file a claim with the carrier.</p>
+      <p>Orders typically ship within a few business days from San Antonio, Texas, via USPS. Once a package leaves our hands, delivery times are controlled by the carrier. Title and risk of loss pass to you when the carrier accepts the package. If your order is lost or damaged in transit, reach us through the <a href="/contact.php">contact form</a> and we'll help you file a claim with the carrier.</p>
 
       <h2>Returns and refunds</h2>
       <p>Because dolls are one-of-a-kind handmade pieces, we generally do not accept returns for change of mind. If a doll arrives damaged or materially different from its description, contact us within 7 days of delivery and we will work with you on a refund, replacement (when possible — these are one-of-a-kind), or repair. Custom and memory dolls are made from your own materials and are non-returnable.</p>
@@ -118,7 +118,7 @@ $effective = 'May 18, 2026';
       <p>We may update these Terms from time to time. The "Effective" date at the top reflects the latest version. Continued use of the Site after a change constitutes acceptance of the updated Terms.</p>
 
       <h2>Contact</h2>
-      <p>Questions? Email <a href="mailto:<?= h(config('mail.support_email') ?: 'hello@scrappydolls.com') ?>"><?= h(config('mail.support_email') ?: 'hello@scrappydolls.com') ?></a> or use the <a href="/contact.php">contact form</a>. See also our <a href="/privacy.php">Privacy Policy</a>.</p>
+      <p>Questions? Reach us through the <a href="/contact.php">contact form</a>. See also our <a href="/privacy.php">Privacy Policy</a>.</p>
     </div>
   </div>
 </section>
