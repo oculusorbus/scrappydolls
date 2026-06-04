@@ -65,6 +65,10 @@ switch ($type) {
             $byId = [];
             foreach ($pStmt->fetchAll() as $p) $byId[(int)$p['id']] = $p;
 
+            // Coupon snapshot from order creation (if any) — the captured
+            // amount already reflects it; this records which code was used.
+            $couponIntent = coupon_intent_for_order($orderLink);
+
             $pdo = db();
             $pdo->beginTransaction();
             $upd = $pdo->prepare("UPDATE products SET status='sold', sold_at=COALESCE(sold_at, NOW()) WHERE id=:id AND status='available'");
@@ -72,15 +76,18 @@ switch ($type) {
 
             $ins = $pdo->prepare('
                 INSERT INTO orders
-                    (product_id, paypal_order_id, paypal_capture_id, amount_cents, currency,
+                    (product_id, paypal_order_id, paypal_capture_id, amount_cents,
+                     coupon_code, discount_cents, currency,
                      customer_email, customer_name, shipping_address, status, paid_at)
                 VALUES
-                    (NULL, :poid, :pcid, :amt, :cur, :email, :name, :ship, "paid", NOW())
+                    (NULL, :poid, :pcid, :amt, :ccode, :disc, :cur, :email, :name, :ship, "paid", NOW())
             ');
             $ins->execute([
                 ':poid'  => $orderLink,
                 ':pcid'  => $captureId,
                 ':amt'   => (int)round(((float)$totalAmt) * 100),
+                ':ccode' => $couponIntent ? (string)$couponIntent['code'] : null,
+                ':disc'  => $couponIntent ? (int)$couponIntent['discount_cents'] : 0,
                 ':cur'   => $currency,
                 ':email' => $payer['email'],
                 ':name'  => $payer['name'],
@@ -101,6 +108,10 @@ switch ($type) {
                     ':amt'   => (int)($p['price_cents'] ?? 0),
                     ':cur'   => $currency,
                 ]);
+            }
+            if ($couponIntent) {
+                $pdo->prepare('UPDATE coupons SET used_count = used_count + 1 WHERE id = :id')
+                    ->execute([':id' => (int)$couponIntent['coupon_id']]);
             }
             $pdo->commit();
 

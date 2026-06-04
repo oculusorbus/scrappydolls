@@ -152,12 +152,16 @@ require __DIR__ . '/header.php';
     <?php
       $itemsSubtotal = 0;
       foreach ($items as $it) $itemsSubtotal += (int)$it['amount_cents'];
-      $shippingPaid = max(0, (int)$order['amount_cents'] - $itemsSubtotal);
+      $discountPaid = (int)($order['discount_cents'] ?? 0);
+      $shippingPaid = max(0, (int)$order['amount_cents'] - ($itemsSubtotal - $discountPaid));
     ?>
     <div class="card">
       <h3>Payment</h3>
       <dl class="kv">
         <dt>Subtotal</dt><dd><?= fmt_price($itemsSubtotal) ?></dd>
+        <?php if (!empty($order['coupon_code'])): ?>
+          <dt>Coupon</dt><dd><span style="font-family:monospace"><?= h($order['coupon_code']) ?></span><?= $discountPaid > 0 ? ' (−' . fmt_price($discountPaid) . ')' : ' (free shipping)' ?></dd>
+        <?php endif; ?>
         <dt>Shipping</dt><dd><?= fmt_price($shippingPaid) ?></dd>
         <dt>Total</dt><dd><strong><?= fmt_price((int)$order['amount_cents']) ?></strong> <?= h($order['currency']) ?></dd>
         <dt>PayPal Order</dt><dd style="font-family:monospace;font-size:.82rem;word-break:break-all"><?= h($order['paypal_order_id']) ?></dd>

@@ -472,6 +472,32 @@ section.cart-section:has(.empty-shop){padding-bottom:4rem}
 }
 .cart-shipping-unlocked strong{color:var(--rose-dark)}
 
+/* Coupon box in cart summary */
+.cart-coupon{margin:.25rem 0 1rem}
+.cart-coupon-label{display:block;font-size:.82rem;color:var(--ink-soft);margin-bottom:.4rem}
+.cart-coupon-row{display:flex;gap:.5rem}
+.cart-coupon-row input{
+  flex:1;min-width:0;font:inherit;font-size:.9rem;
+  padding:.5rem .7rem;border:1px solid var(--rule);border-radius:8px;
+  background:#fff;color:var(--ink);text-transform:uppercase;
+}
+.cart-coupon-row input:focus{outline:none;border-color:var(--rose)}
+.cart-coupon-row .btn{padding:.5rem .9rem;font-size:.85rem}
+.cart-coupon-applied{
+  font-size:.85rem;color:var(--ink-soft);margin:0;
+  background:color-mix(in oklab,var(--rose-light) 35%, transparent);
+  border:1px solid var(--rose-light);border-radius:var(--radius);
+  padding:.5rem .75rem;
+}
+.cart-coupon-applied strong{color:var(--rose-dark)}
+.cart-coupon-remove{
+  background:none;border:0;padding:0;margin-left:.25rem;
+  font:inherit;font-size:.8rem;color:var(--ink-muted);
+  text-decoration:underline;cursor:pointer;
+}
+.cart-coupon-remove:hover{color:var(--rose-dark)}
+.cart-coupon-error{font-size:.82rem;color:#7a1d2c;margin:.5rem 0 0}
+
 /* Shop free-shipping banner */
 .shop-banner{
   text-align:center;background:var(--ink);color:var(--paper);

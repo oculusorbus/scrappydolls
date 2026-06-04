@@ -66,6 +66,46 @@
     }
   });
 
+  // Coupon apply (cart page). On success we reload so the server renders
+  // the applied state — discount row, shipping note, PayPal totals — in one
+  // place instead of duplicating that logic here.
+  function couponError(msg) {
+    var box = document.querySelector('[data-coupon-error]');
+    if (box) {
+      box.textContent = msg || 'Something went wrong.';
+      box.hidden = false;
+    } else {
+      showError(msg);
+    }
+  }
+
+  document.addEventListener('submit', function (e) {
+    var form = e.target.closest ? e.target.closest('[data-coupon-form]') : null;
+    if (!form) return;
+    e.preventDefault();
+    var input = form.querySelector('input[name="code"]');
+    var code = input ? String(input.value || '').trim() : '';
+    if (!code) return;
+    var btn = form.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Applying…'; }
+    postCart({ action: 'coupon_apply', code: code })
+      .then(function () { window.location.reload(); })
+      .catch(function (err) {
+        couponError(err.message);
+        if (btn) { btn.disabled = false; btn.textContent = 'Apply'; }
+      });
+  });
+
+  document.addEventListener('click', function (e) {
+    var rm = e.target.closest('[data-coupon-remove]');
+    if (!rm) return;
+    e.preventDefault();
+    rm.disabled = true;
+    postCart({ action: 'coupon_remove' })
+      .then(function () { window.location.reload(); })
+      .catch(function (err) { couponError(err.message); rm.disabled = false; });
+  });
+
   document.addEventListener('click', function (e) {
     var clearBtn = e.target.closest('[data-cart-clear]');
     if (clearBtn) {
@@ -141,9 +181,15 @@
     var ship = document.querySelector('[data-cart-shipping]');
     var tot  = document.querySelector('[data-cart-total]');
     var n    = document.querySelector('[data-cart-itemcount]');
+    var disc = document.querySelector('[data-cart-discount]');
+    var discRow = document.querySelector('[data-cart-discount-row]');
     if (sub  && typeof data.subtotal_cents === 'number')    sub.textContent  = fmtCents(data.subtotal_cents);
     if (ship && typeof data.shipping_cents === 'number')    ship.textContent = fmtCents(data.shipping_cents);
     if (tot  && typeof data.grand_total_cents === 'number') tot.textContent  = fmtCents(data.grand_total_cents);
     if (n    && typeof data.count === 'number')             n.textContent    = String(data.count);
+    if (disc && typeof data.discount_cents === 'number') {
+      disc.textContent = '−' + fmtCents(data.discount_cents);
+      if (discRow) discRow.style.display = data.discount_cents > 0 ? '' : 'none';
+    }
   }
 })();

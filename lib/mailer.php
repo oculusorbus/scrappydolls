@@ -41,11 +41,29 @@ function _mail_order_breakdown(array $order, array $items): array {
     $itemsTotal = 0;
     foreach ($items as $it) $itemsTotal += (int)$it['amount_cents'];
     $orderTotal = (int)$order['amount_cents'];
+    $discount   = (int)($order['discount_cents'] ?? 0);
     return [
         'items_total'   => $itemsTotal,
-        'shipping'      => max(0, $orderTotal - $itemsTotal),
+        'discount'      => $discount,
+        'coupon_code'   => $order['coupon_code'] ?? null,
+        'shipping'      => max(0, $orderTotal - ($itemsTotal - $discount)),
         'order_total'   => $orderTotal,
     ];
+}
+
+function _mail_totals_block(array $b): string {
+    $out = 'Subtotal: ' . fmt_price($b['items_total']) . "\n";
+    if ($b['discount'] > 0 && !empty($b['coupon_code'])) {
+        $out .= 'Discount (' . $b['coupon_code'] . '): -' . fmt_price($b['discount']) . "\n";
+    }
+    if ($b['shipping'] > 0) {
+        $out .= 'Shipping: ' . fmt_price($b['shipping']) . "\n";
+    } elseif (!empty($b['coupon_code'])) {
+        // Free-shipping coupons get a visible line so the buyer sees the perk.
+        $out .= 'Shipping: free (' . $b['coupon_code'] . ")\n";
+    }
+    $out .= 'Total: ' . fmt_price($b['order_total']) . "\n";
+    return $out;
 }
 
 function mail_admin_new_order_multi(array $order, array $items): void {
@@ -60,9 +78,7 @@ function mail_admin_new_order_multi(array $order, array $items): void {
                . '  — ' . fmt_price((int)$it['amount_cents']) . "\n";
     }
     $count = count($items);
-    $totalsBlock = "Subtotal: " . fmt_price($b['items_total']) . "\n"
-                 . ($b['shipping'] > 0 ? "Shipping: " . fmt_price($b['shipping']) . "\n" : '')
-                 . "Total: " . fmt_price($b['order_total']) . "\n";
+    $totalsBlock = _mail_totals_block($b);
     $isGift = !empty($order['is_gift']);
     $contactBlock = "Buyer: $cust\n"
           . ($order['customer_email'] ? "Email: {$order['customer_email']}\n" : '')
@@ -112,9 +128,7 @@ function mail_customer_receipt_multi(array $order, array $items): void {
     $intro = $count === 1
         ? "Thank you for your order!\n\n"
         : "Thank you for your order of $count dolls!\n\n";
-    $totalsBlock = "Subtotal: " . fmt_price($b['items_total']) . "\n"
-                 . ($b['shipping'] > 0 ? "Shipping: " . fmt_price($b['shipping']) . "\n" : '')
-                 . "Total: " . fmt_price($b['order_total']) . "\n";
+    $totalsBlock = _mail_totals_block($b);
     $body = $intro
           . $lines . "\n"
           . $totalsBlock . "\n"

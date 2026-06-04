@@ -37,11 +37,19 @@ function shipping_cents_for_count(int $count): int {
 }
 
 function cart_shipping_cents(): int {
+    $coupon = cart_coupon();
+    if ($coupon && coupon_waives_shipping($coupon)) return 0;
     return shipping_cents(cart_count(), cart_total_cents());
 }
 
+/** Item discount from the applied coupon (0 when none). */
+function cart_discount_cents(): int {
+    $coupon = cart_coupon();
+    return $coupon ? coupon_discount_cents($coupon, cart_total_cents()) : 0;
+}
+
 function cart_grand_total_cents(): int {
-    return cart_total_cents() + cart_shipping_cents();
+    return max(0, cart_total_cents() - cart_discount_cents()) + cart_shipping_cents();
 }
 
 /**

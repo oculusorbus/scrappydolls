@@ -71,10 +71,17 @@ try {
     error_log('confirm.php prefill error: ' . $e->getMessage());
 }
 
+// Totals as PayPal authorized them: prices from order_intents, coupon from
+// order_coupon_intents — both snapshotted at order-creation time, immune to
+// session drift (and this matches exactly what capture will record).
 $itemsTotal = 0;
 foreach ($items as $it) $itemsTotal += (int)$it['price_cents'];
-$shippingCents = shipping_cents_for_count(count($items));
-$grandTotal    = $itemsTotal + $shippingCents;
+$couponIntent  = coupon_intent_for_order($orderId);
+$discountCents = $couponIntent ? min((int)$couponIntent['discount_cents'], $itemsTotal) : 0;
+$shippingCents = ($couponIntent && !empty($couponIntent['free_shipping']))
+    ? 0
+    : shipping_cents(count($items), $itemsTotal);
+$grandTotal = $itemsTotal - $discountCents + $shippingCents;
 
 require __DIR__ . '/header.php';
 ?>
@@ -161,8 +168,14 @@ require __DIR__ . '/header.php';
               <dd><?= fmt_price((int)$it['price_cents']) ?></dd>
             </div>
           <?php endforeach; ?>
+          <?php if ($couponIntent && $discountCents > 0): ?>
+            <div style="display:contents">
+              <dt>Discount (<?= h($couponIntent['code']) ?>)</dt>
+              <dd>−<?= fmt_price($discountCents) ?></dd>
+            </div>
+          <?php endif; ?>
           <div style="display:contents">
-            <dt>Shipping</dt>
+            <dt>Shipping<?= ($couponIntent && !empty($couponIntent['free_shipping'])) ? ' (waived with code ' . h($couponIntent['code']) . ')' : '' ?></dt>
             <dd><?= fmt_price($shippingCents) ?></dd>
           </div>
           <div class="grand" style="display:contents">

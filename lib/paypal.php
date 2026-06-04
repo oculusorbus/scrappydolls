@@ -140,8 +140,10 @@ function paypal_get_order(string $orderId): array {
  *
  * $items: list of ['id' => int, 'title' => string, 'price_cents' => int]
  * $referenceId: identifier for this whole cart order (e.g. "cart-<sessionhash>")
+ * $discountCents: coupon discount on the item subtotal (shipping waiving is
+ *   handled by the caller passing $shippingCents = 0)
  */
-function paypal_create_cart_order(array $items, int $shippingCents, string $referenceId, ?string $returnUrl = null, ?string $cancelUrl = null): array {
+function paypal_create_cart_order(array $items, int $shippingCents, string $referenceId, ?string $returnUrl = null, ?string $cancelUrl = null, int $discountCents = 0): array {
     $currency = paypal_currency();
     $itemTotalCents = 0;
     $ppItems = [];
@@ -159,13 +161,17 @@ function paypal_create_cart_order(array $items, int $shippingCents, string $refe
             'category'    => 'PHYSICAL_GOODS',
         ];
     }
-    $grandCents = $itemTotalCents + max(0, $shippingCents);
+    $discountCents = max(0, min($discountCents, $itemTotalCents));
+    $grandCents = $itemTotalCents - $discountCents + max(0, $shippingCents);
     $fmt = fn(int $c) => number_format($c / 100, 2, '.', '');
     $breakdown = [
         'item_total' => ['currency_code' => $currency, 'value' => $fmt($itemTotalCents)],
     ];
     if ($shippingCents > 0) {
         $breakdown['shipping'] = ['currency_code' => $currency, 'value' => $fmt($shippingCents)];
+    }
+    if ($discountCents > 0) {
+        $breakdown['discount'] = ['currency_code' => $currency, 'value' => $fmt($discountCents)];
     }
     $body = [
         'intent'         => 'AUTHORIZE',

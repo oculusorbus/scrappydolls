@@ -5,9 +5,11 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS order_coupon_intents;
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS product_images;
 DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS coupons;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS admin_users;
 
@@ -57,6 +59,26 @@ CREATE TABLE product_images (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------
+-- coupons: discount codes managed in /admin/coupons.php
+-- ---------------------------------------------------------------
+CREATE TABLE coupons (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  code VARCHAR(40) NOT NULL UNIQUE,
+  note VARCHAR(255) DEFAULT NULL,
+  percent_off TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  amount_off_cents INT UNSIGNED NOT NULL DEFAULT 0,
+  free_shipping TINYINT(1) NOT NULL DEFAULT 0,
+  min_subtotal_cents INT UNSIGNED NOT NULL DEFAULT 0,
+  max_uses INT UNSIGNED DEFAULT NULL,
+  used_count INT UNSIGNED NOT NULL DEFAULT 0,
+  expires_at DATETIME DEFAULT NULL,
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_active (active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------
 -- orders: one row per completed PayPal capture
 -- ---------------------------------------------------------------
 CREATE TABLE orders (
@@ -65,6 +87,8 @@ CREATE TABLE orders (
   paypal_order_id VARCHAR(64) NOT NULL UNIQUE,
   paypal_capture_id VARCHAR(64) DEFAULT NULL,
   amount_cents INT UNSIGNED NOT NULL,
+  coupon_code VARCHAR(40) DEFAULT NULL,
+  discount_cents INT UNSIGNED NOT NULL DEFAULT 0,
   currency CHAR(3) NOT NULL DEFAULT 'USD',
   customer_email VARCHAR(255) DEFAULT NULL,
   customer_name VARCHAR(255) DEFAULT NULL,
@@ -99,4 +123,20 @@ CREATE TABLE order_items (
   FOREIGN KEY (product_id) REFERENCES products(id),
   INDEX idx_order (order_id),
   INDEX idx_product (product_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------
+-- order_coupon_intents: coupon snapshot per PayPal order creation.
+-- Mirrors order_intents — capture reads this row, never the session.
+-- ---------------------------------------------------------------
+CREATE TABLE order_coupon_intents (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  paypal_order_id VARCHAR(64) NOT NULL,
+  coupon_id INT UNSIGNED NOT NULL,
+  code VARCHAR(40) NOT NULL,
+  discount_cents INT UNSIGNED NOT NULL DEFAULT 0,
+  free_shipping TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE CASCADE,
+  INDEX idx_paypal (paypal_order_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

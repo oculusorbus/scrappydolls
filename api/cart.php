@@ -58,16 +58,32 @@ switch ($action) {
         cart_clear();
         break;
 
+    case 'coupon_apply':
+        $res = cart_coupon_apply((string)($body['code'] ?? ''));
+        if (!$res['ok']) json_response(['error' => $res['error']], 422);
+        break;
+
+    case 'coupon_remove':
+        cart_coupon_remove();
+        break;
+
     default:
         json_response(['error' => 'Unknown action'], 400);
 }
+
+$coupon = cart_coupon();
 
 json_response([
     'ok'                 => true,
     'count'              => cart_count(),
     'subtotal_cents'     => cart_total_cents(),
+    'discount_cents'     => cart_discount_cents(),
     'shipping_cents'     => cart_shipping_cents(),
     'grand_total_cents'  => cart_grand_total_cents(),
+    'coupon'             => $coupon ? [
+        'code'    => (string)$coupon['code'],
+        'summary' => coupon_summary($coupon),
+    ] : null,
     'product_ids'        => cart_ids(),
     'added_item'         => $addedItem,
     'suggestion'         => $replacementSuggestion,

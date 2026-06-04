@@ -8,8 +8,11 @@ $pageDesc  = 'Review the dolls in your cart and check out securely.';
 $items = cart_items();
 $itemsTotal = 0;
 foreach ($items as $it) $itemsTotal += (int)$it['price_cents'];
-$shippingCents = shipping_cents(count($items), $itemsTotal);
-$grandTotal    = $itemsTotal + $shippingCents;
+$coupon          = cart_coupon();
+$discountCents   = $coupon ? coupon_discount_cents($coupon, $itemsTotal) : 0;
+$couponFreeShip  = $coupon && coupon_waives_shipping($coupon);
+$shippingCents   = $couponFreeShip ? 0 : shipping_cents(count($items), $itemsTotal);
+$grandTotal      = max(0, $itemsTotal - $discountCents) + $shippingCents;
 $freeShippingRemaining = max(0, SHIPPING_FREE_THRESHOLD_CENTS - $itemsTotal);
 $freeShippingUnlocked  = $itemsTotal >= SHIPPING_FREE_THRESHOLD_CENTS;
 
@@ -83,10 +86,20 @@ require __DIR__ . '/header.php';
           <dl class="cart-summary-rows">
             <div><dt>Items</dt><dd data-cart-itemcount><?= count($items) ?></dd></div>
             <div><dt>Subtotal</dt><dd data-cart-subtotal><?= fmt_price($itemsTotal) ?></dd></div>
+            <?php if ($coupon): ?>
+              <div data-cart-discount-row<?= $discountCents > 0 ? '' : ' style="display:none"' ?>>
+                <dt>Discount (<?= h($coupon['code']) ?>)</dt>
+                <dd data-cart-discount>−<?= fmt_price($discountCents) ?></dd>
+              </div>
+            <?php endif; ?>
             <div><dt>Shipping</dt><dd data-cart-shipping><?= fmt_price($shippingCents) ?></dd></div>
             <div class="cart-summary-grand"><dt>Total</dt><dd data-cart-total><?= fmt_price($grandTotal) ?></dd></div>
           </dl>
-          <?php if ($freeShippingUnlocked): ?>
+          <?php if ($couponFreeShip): ?>
+            <p class="cart-shipping-note cart-shipping-unlocked">
+              <strong>Free shipping applied with your code!</strong>
+            </p>
+          <?php elseif ($freeShippingUnlocked): ?>
             <p class="cart-shipping-note cart-shipping-unlocked">
               <strong>You unlocked free shipping!</strong>
             </p>
@@ -96,6 +109,26 @@ require __DIR__ . '/header.php';
               <span class="cart-shipping-rate">Flat-rate: $7.99 first doll, $2.99 each additional under $50.</span>
             </p>
           <?php endif; ?>
+
+          <div class="cart-coupon">
+            <?php if ($coupon): ?>
+              <p class="cart-coupon-applied">
+                Code <strong><?= h($coupon['code']) ?></strong> applied — <?= h(coupon_summary($coupon)) ?>.
+                <button type="button" class="cart-coupon-remove" data-coupon-remove>Remove</button>
+              </p>
+            <?php else: ?>
+              <form data-coupon-form>
+                <label class="cart-coupon-label" for="coupon-code">Have a coupon code?</label>
+                <div class="cart-coupon-row">
+                  <input type="text" id="coupon-code" name="code" maxlength="40"
+                         autocomplete="off" autocapitalize="characters" spellcheck="false"
+                         placeholder="Enter code">
+                  <button type="submit" class="btn btn-ghost">Apply</button>
+                </div>
+              </form>
+            <?php endif; ?>
+            <p class="cart-coupon-error" data-coupon-error hidden></p>
+          </div>
 
           <?php if (paypal_is_configured()): ?>
             <div id="paypal-button-container"></div>

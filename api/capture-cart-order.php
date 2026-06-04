@@ -80,6 +80,7 @@ try {
     $existing->execute([':p' => $orderId]);
     if ($existing->fetch()) {
         cart_clear();
+        cart_coupon_remove();
         json_response(['ok' => true, 'order_id' => $orderId, 'duplicate' => true]);
     }
 
@@ -172,11 +173,16 @@ try {
 
     // Use prices snapshotted at order-creation time (intents), not the
     // current products.price_cents — the buyer paid the price PayPal
-    // authorized, even if admin changed the price afterward.
+    // authorized, even if admin changed the price afterward. Same for the
+    // coupon: the order_coupon_intents snapshot, never the session.
     $itemsTotal = 0;
     foreach ($cartIds as $id) $itemsTotal += $intentPriceById[$id];
-    $shippingCents = shipping_cents(count($cartIds), $itemsTotal);
-    $totalCents = $itemsTotal + $shippingCents;
+    $couponIntent  = coupon_intent_for_order($orderId);
+    $discountCents = $couponIntent ? min((int)$couponIntent['discount_cents'], $itemsTotal) : 0;
+    $shippingCents = ($couponIntent && !empty($couponIntent['free_shipping']))
+        ? 0
+        : shipping_cents(count($cartIds), $itemsTotal);
+    $totalCents = $itemsTotal - $discountCents + $shippingCents;
     $currency = paypal_currency();
 
     $pdo = db();
@@ -199,13 +205,15 @@ try {
 
         $ins = $pdo->prepare('
             INSERT INTO orders
-                (product_id, paypal_order_id, paypal_capture_id, amount_cents, currency,
+                (product_id, paypal_order_id, paypal_capture_id, amount_cents,
+                 coupon_code, discount_cents, currency,
                  customer_email, customer_name, customer_phone,
                  shipping_address, is_gift, gift_recipient_name, gift_message,
                  status, paid_at,
                  utm_source, utm_medium, utm_campaign, session_hash, referrer_host)
             VALUES
-                (NULL, :poid, :pcid, :amt, :cur,
+                (NULL, :poid, :pcid, :amt,
+                 :ccode, :disc, :cur,
                  :email, :name, :phone,
                  :ship, :gift, :grname, :gmsg,
                  "paid", NOW(),
@@ -215,6 +223,8 @@ try {
             ':poid'   => $orderId,
             ':pcid'   => $captureId,
             ':amt'    => $totalCents,
+            ':ccode'  => $couponIntent ? (string)$couponIntent['code'] : null,
+            ':disc'   => $discountCents,
             ':cur'    => $currency,
             ':email'  => $contactEmail,
             ':name'   => $buyerName,
@@ -246,6 +256,13 @@ try {
             ]);
         }
 
+        // Count the coupon use only on a completed purchase — abandoned
+        // checkouts don't burn a limited-use code.
+        if ($couponIntent) {
+            $cup = $pdo->prepare('UPDATE coupons SET used_count = used_count + 1 WHERE id = :id');
+            $cup->execute([':id' => (int)$couponIntent['coupon_id']]);
+        }
+
         $pdo->commit();
         track_intent_captured($orderId);
     } catch (Throwable $e) {
@@ -257,6 +274,7 @@ try {
     }
 
     cart_clear();
+    cart_coupon_remove();
 
     // Send notifications (best-effort; don't fail the response).
     try {

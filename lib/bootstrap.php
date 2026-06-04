@@ -35,6 +35,7 @@ require_once __DIR__ . '/turnstile.php';
 require_once __DIR__ . '/mailer.php';
 require_once __DIR__ . '/analytics.php';
 require_once __DIR__ . '/cart.php';
+require_once __DIR__ . '/coupons.php';
 
 function config(?string $key = null) {
     if ($key === null) return $GLOBALS['config'];
