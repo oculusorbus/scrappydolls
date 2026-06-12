@@ -31,6 +31,7 @@ $title = $title ?? 'Admin';
     <a href="/admin/orders.php"    class="<?= $page === 'orders'    ? 'active' : '' ?>">Orders</a>
     <a href="/admin/coupons.php"   class="<?= $page === 'coupons'   ? 'active' : '' ?>">Coupons</a>
     <a href="/admin/reports.php"   class="<?= $page === 'reports'   ? 'active' : '' ?>">Reports</a>
+    <a href="/admin/tax.php"       class="<?= $page === 'tax'       ? 'active' : '' ?>">Sales tax</a>
   </nav>
   <div class="sidebar-foot">
     <p class="who"><?= h($user['name'] ?? $user['email']) ?></p>
