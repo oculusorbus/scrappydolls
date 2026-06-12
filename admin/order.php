@@ -153,7 +153,8 @@ require __DIR__ . '/header.php';
       $itemsSubtotal = 0;
       foreach ($items as $it) $itemsSubtotal += (int)$it['amount_cents'];
       $discountPaid = (int)($order['discount_cents'] ?? 0);
-      $shippingPaid = max(0, (int)$order['amount_cents'] - ($itemsSubtotal - $discountPaid));
+      $taxPaid      = (int)($order['tax_cents'] ?? 0);
+      $shippingPaid = max(0, (int)$order['amount_cents'] - ($itemsSubtotal - $discountPaid) - $taxPaid);
     ?>
     <div class="card">
       <h3>Payment</h3>
@@ -163,6 +164,9 @@ require __DIR__ . '/header.php';
           <dt>Coupon</dt><dd><span style="font-family:monospace"><?= h($order['coupon_code']) ?></span><?= $discountPaid > 0 ? ' (−' . fmt_price($discountPaid) . ')' : ' (free shipping)' ?></dd>
         <?php endif; ?>
         <dt>Shipping</dt><dd><?= fmt_price($shippingPaid) ?></dd>
+        <?php if ($taxPaid > 0): ?>
+          <dt>Sales tax (TX)</dt><dd><?= fmt_price($taxPaid) ?></dd>
+        <?php endif; ?>
         <dt>Total</dt><dd><strong><?= fmt_price((int)$order['amount_cents']) ?></strong> <?= h($order['currency']) ?></dd>
         <dt>PayPal Order</dt><dd style="font-family:monospace;font-size:.82rem;word-break:break-all"><?= h($order['paypal_order_id']) ?></dd>
         <?php if ($order['paypal_capture_id']): ?>

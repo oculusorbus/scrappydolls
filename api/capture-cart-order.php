@@ -8,65 +8,44 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $raw = file_get_contents('php://input') ?: '';
 $body = json_decode($raw, true) ?: $_POST;
+if (!is_array($body)) $body = [];
 
 $orderId = trim((string)($body['order_id'] ?? ''));
 if ($orderId === '') json_response(['error' => 'Missing order_id'], 400);
 
-// ---- Validate buyer-confirmed contact + shipping ----
-// Confirmed by the buyer on /shop/confirm.php — we use these as the
-// authoritative ship-to and contact info for the order, regardless of what
-// PayPal returned.
-function _trimstr($v, int $max): string {
-    return mb_substr(trim((string)$v), 0, $max);
+// ---- Resolve buyer contact + ship-to ----
+// Authoritative source is the order_checkout_intents snapshot written by
+// create-cart-order.php at order-creation time — same items/coupon PayPal
+// locked the charge against. A re-POSTed body is NOT trusted when a
+// snapshot exists, so the recorded ship-to and tax always match what was
+// authorized. The body is used only as a legacy fallback for an order
+// created before this snapshot existed (e.g. in flight during a deploy).
+$snap = checkout_intent_for_order($orderId);
+if ($snap) {
+    $contactEmail = (string)$snap['customer_email'];
+    $contactPhone = (string)$snap['customer_phone'];
+    $buyerName    = (string)$snap['customer_name'];
+    $isGift       = !empty($snap['is_gift']);
+    $giftName     = (string)($snap['gift_recipient_name'] ?? '');
+    $giftMessage  = (string)($snap['gift_message'] ?? '');
+    $shippingForDb = json_decode((string)$snap['shipping_address'], true) ?: null;
+    $snapTaxCents  = (int)$snap['tax_cents'];
+} else {
+    // Legacy fallback: validate the posted form the way the old flow did.
+    $parsed = checkout_parse_submission($body);
+    if ($parsed['errors']) {
+        json_response(['error' => implode(' ', $parsed['errors']), 'fields' => $parsed['errors']], 422);
+    }
+    $d = $parsed['data'];
+    $contactEmail = $d['email'];
+    $contactPhone = $d['phone'];
+    $buyerName    = $d['name'];
+    $isGift       = !empty($d['is_gift']);
+    $giftName     = (string)($d['gift_recipient_name'] ?? '');
+    $giftMessage  = (string)($d['gift_message'] ?? '');
+    $shippingForDb = $d['shipping_address'];
+    $snapTaxCents  = 0; // old orders authorized no tax line
 }
-
-$contactEmail = _trimstr($body['email'] ?? '', 255);
-$contactPhone = _trimstr($body['phone'] ?? '', 40);
-$buyerName    = _trimstr($body['name']  ?? '', 255);
-$isGift       = !empty($body['is_gift']);
-$giftName     = _trimstr($body['gift_recipient_name'] ?? '', 255);
-$giftMessage  = _trimstr($body['gift_message'] ?? '', 500);
-
-$addr = is_array($body['address'] ?? null) ? $body['address'] : [];
-$addr1   = _trimstr($addr['address_line_1'] ?? '', 255);
-$addr2   = _trimstr($addr['address_line_2'] ?? '', 255);
-$city    = _trimstr($addr['admin_area_2']   ?? '', 120);
-$state   = _trimstr($addr['admin_area_1']   ?? '', 120);
-$postal  = _trimstr($addr['postal_code']    ?? '', 32);
-$country = strtoupper(_trimstr($addr['country_code'] ?? '', 2));
-if ($country === '') $country = 'US';
-
-$errors = [];
-if ($buyerName === '')       $errors[] = 'Your name is required.';
-if ($contactEmail === '' || !filter_var($contactEmail, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = 'A valid email is required.';
-}
-if ($contactPhone === '' || !preg_match('/[0-9]/', $contactPhone) || strlen($contactPhone) < 7) {
-    $errors[] = 'A phone number is required.';
-}
-if ($addr1 === '')   $errors[] = 'Street address is required.';
-if ($city === '')    $errors[] = 'City is required.';
-if ($postal === '')  $errors[] = 'Postal code is required.';
-if ($country === 'US' && $state === '') $errors[] = 'State is required.';
-if (!preg_match('/^[A-Z]{2}$/', $country)) $errors[] = 'Country must be a 2-letter code.';
-if ($isGift && $giftName === '') $errors[] = 'Recipient name is required for gifts.';
-
-if ($errors) {
-    json_response(['error' => implode(' ', $errors), 'fields' => $errors], 422);
-}
-
-$shipToName = $isGift ? $giftName : $buyerName;
-$shippingForDb = [
-    'name' => $shipToName,
-    'address' => [
-        'address_line_1' => $addr1,
-        'address_line_2' => $addr2,
-        'admin_area_2'   => $city,
-        'admin_area_1'   => $state,
-        'postal_code'    => $postal,
-        'country_code'   => $country,
-    ],
-];
 
 try {
     // Track auth state so the outer catch can void any orphan hold if we
@@ -81,6 +60,7 @@ try {
     if ($existing->fetch()) {
         cart_clear();
         cart_coupon_remove();
+        unset($_SESSION['paypal_login_profile']);
         json_response(['ok' => true, 'order_id' => $orderId, 'duplicate' => true]);
     }
 
@@ -95,8 +75,7 @@ try {
     // order was created. PayPal locked the charge amount against that
     // exact set of items, so we bill, ship, and mark sold against THAT
     // list — never the session cart, which can drift if the buyer
-    // modifies their cart in another tab between popup approval and
-    // this confirm submit.
+    // modifies their cart in another tab between approval and this submit.
     $intentStmt = db()->prepare(
         'SELECT product_id, amount_cents
          FROM order_intents
@@ -173,8 +152,9 @@ try {
 
     // Use prices snapshotted at order-creation time (intents), not the
     // current products.price_cents — the buyer paid the price PayPal
-    // authorized, even if admin changed the price afterward. Same for the
-    // coupon: the order_coupon_intents snapshot, never the session.
+    // authorized. Coupon from order_coupon_intents, tax from the checkout
+    // snapshot — all fixed at create time so the recorded total equals the
+    // authorized amount exactly.
     $itemsTotal = 0;
     foreach ($cartIds as $id) $itemsTotal += $intentPriceById[$id];
     $couponIntent  = coupon_intent_for_order($orderId);
@@ -182,7 +162,8 @@ try {
     $shippingCents = ($couponIntent && !empty($couponIntent['free_shipping']))
         ? 0
         : shipping_cents(count($cartIds), $itemsTotal);
-    $totalCents = $itemsTotal - $discountCents + $shippingCents;
+    $taxCents   = max(0, $snapTaxCents);
+    $totalCents = $itemsTotal - $discountCents + $shippingCents + $taxCents;
     $currency = paypal_currency();
 
     $pdo = db();
@@ -206,14 +187,14 @@ try {
         $ins = $pdo->prepare('
             INSERT INTO orders
                 (product_id, paypal_order_id, paypal_capture_id, amount_cents,
-                 coupon_code, discount_cents, currency,
+                 coupon_code, discount_cents, tax_cents, currency,
                  customer_email, customer_name, customer_phone,
                  shipping_address, is_gift, gift_recipient_name, gift_message,
                  status, paid_at,
                  utm_source, utm_medium, utm_campaign, session_hash, referrer_host)
             VALUES
                 (NULL, :poid, :pcid, :amt,
-                 :ccode, :disc, :cur,
+                 :ccode, :disc, :tax, :cur,
                  :email, :name, :phone,
                  :ship, :gift, :grname, :gmsg,
                  "paid", NOW(),
@@ -225,11 +206,12 @@ try {
             ':amt'    => $totalCents,
             ':ccode'  => $couponIntent ? (string)$couponIntent['code'] : null,
             ':disc'   => $discountCents,
+            ':tax'    => $taxCents,
             ':cur'    => $currency,
             ':email'  => $contactEmail,
             ':name'   => $buyerName,
             ':phone'  => $contactPhone,
-            ':ship'   => json_encode($shippingForDb),
+            ':ship'   => $shippingForDb ? json_encode($shippingForDb) : null,
             ':gift'   => $isGift ? 1 : 0,
             ':grname' => $isGift ? $giftName : null,
             ':gmsg'   => ($isGift && $giftMessage !== '') ? $giftMessage : null,
@@ -275,6 +257,7 @@ try {
 
     cart_clear();
     cart_coupon_remove();
+    unset($_SESSION['paypal_login_profile']);
 
     // Send notifications (best-effort; don't fail the response).
     try {

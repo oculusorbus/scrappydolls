@@ -6,7 +6,7 @@ $ref = (string)($_GET['order'] ?? '');
 $order = null;
 $items = [];
 if ($ref !== '') {
-    $stmt = db()->prepare('SELECT id, paypal_order_id, status, customer_name, amount_cents, product_id FROM orders WHERE paypal_order_id = :ref OR id = :id LIMIT 1');
+    $stmt = db()->prepare('SELECT id, paypal_order_id, status, customer_name, amount_cents, discount_cents, tax_cents, coupon_code, product_id FROM orders WHERE paypal_order_id = :ref OR id = :id LIMIT 1');
     $stmt->execute([':ref' => $ref, ':id' => (int)$ref]);
     $order = $stmt->fetch();
     if ($order) {
@@ -37,8 +37,10 @@ require __DIR__ . '/header.php';
     <?php if ($items):
       $itemsTotal = 0;
       foreach ($items as $it) $itemsTotal += (int)$it['amount_cents'];
-      $orderTotal  = (int)($order['amount_cents'] ?? $itemsTotal);
-      $shippingPaid = max(0, $orderTotal - $itemsTotal);
+      $orderTotal   = (int)($order['amount_cents'] ?? $itemsTotal);
+      $discountPaid = (int)($order['discount_cents'] ?? 0);
+      $taxPaid      = (int)($order['tax_cents'] ?? 0);
+      $shippingPaid = max(0, $orderTotal - ($itemsTotal - $discountPaid) - $taxPaid);
     ?>
       <ul style="list-style:none;padding:0;margin:1.5rem 0 0;text-align:left;display:inline-block">
         <?php foreach ($items as $it): ?>
@@ -47,9 +49,19 @@ require __DIR__ . '/header.php';
             <span style="color:var(--ink-soft)"><?= fmt_price((int)$it['amount_cents']) ?></span>
           </li>
         <?php endforeach; ?>
+        <?php if ($discountPaid > 0): ?>
+          <li style="padding:.4rem 0;border-bottom:1px dashed var(--rule-soft);min-width:18rem;display:flex;justify-content:space-between;gap:1rem;color:var(--ink-soft)">
+            <span>Discount<?= !empty($order['coupon_code']) ? ' (' . h($order['coupon_code']) . ')' : '' ?></span><span>−<?= fmt_price($discountPaid) ?></span>
+          </li>
+        <?php endif; ?>
         <?php if ($shippingPaid > 0): ?>
           <li style="padding:.4rem 0;border-bottom:1px dashed var(--rule-soft);min-width:18rem;display:flex;justify-content:space-between;gap:1rem;color:var(--ink-soft)">
             <span>Shipping</span><span><?= fmt_price($shippingPaid) ?></span>
+          </li>
+        <?php endif; ?>
+        <?php if ($taxPaid > 0): ?>
+          <li style="padding:.4rem 0;border-bottom:1px dashed var(--rule-soft);min-width:18rem;display:flex;justify-content:space-between;gap:1rem;color:var(--ink-soft)">
+            <span>Sales tax (TX)</span><span><?= fmt_price($taxPaid) ?></span>
           </li>
         <?php endif; ?>
         <li style="padding:.5rem 0 0;min-width:18rem;display:flex;justify-content:space-between;gap:1rem;font-weight:600">

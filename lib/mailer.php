@@ -42,11 +42,14 @@ function _mail_order_breakdown(array $order, array $items): array {
     foreach ($items as $it) $itemsTotal += (int)$it['amount_cents'];
     $orderTotal = (int)$order['amount_cents'];
     $discount   = (int)($order['discount_cents'] ?? 0);
+    $tax        = (int)($order['tax_cents'] ?? 0);
     return [
         'items_total'   => $itemsTotal,
         'discount'      => $discount,
         'coupon_code'   => $order['coupon_code'] ?? null,
-        'shipping'      => max(0, $orderTotal - ($itemsTotal - $discount)),
+        'tax'           => $tax,
+        // Shipping is whatever's left after items − discount + tax.
+        'shipping'      => max(0, $orderTotal - ($itemsTotal - $discount) - $tax),
         'order_total'   => $orderTotal,
     ];
 }
@@ -61,6 +64,9 @@ function _mail_totals_block(array $b): string {
     } elseif (!empty($b['coupon_code'])) {
         // Free-shipping coupons get a visible line so the buyer sees the perk.
         $out .= 'Shipping: free (' . $b['coupon_code'] . ")\n";
+    }
+    if (!empty($b['tax']) && $b['tax'] > 0) {
+        $out .= 'Sales tax (TX): ' . fmt_price($b['tax']) . "\n";
     }
     $out .= 'Total: ' . fmt_price($b['order_total']) . "\n";
     return $out;

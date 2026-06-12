@@ -131,9 +131,9 @@ require __DIR__ . '/header.php';
           </div>
 
           <?php if (paypal_is_configured()): ?>
-            <div id="paypal-button-container"></div>
-            <div id="cart-error" class="flash flash-error" style="display:none;margin-top:1rem"></div>
-            <p class="note">Pay with PayPal or any major credit card. Your payment is processed securely by PayPal.</p>
+            <a class="btn btn-primary" href="/shop/confirm.php" style="width:100%;justify-content:center">Proceed to checkout →</a>
+            <p class="note">Next: confirm where it ships, then pay with PayPal or any major credit card — processed securely by PayPal.</p>
+            <p class="note" style="margin-top:.35rem">Texas sales tax (if shipping to TX) is calculated at checkout.</p>
           <?php else: ?>
             <p class="note">Online checkout isn't configured yet. Message Kanda on Facebook to buy these dolls.</p>
             <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener" target="_blank" style="width:100%;justify-content:center">Message on Facebook →</a>
@@ -179,52 +179,5 @@ require __DIR__ . '/header.php';
     <?php endif; ?>
   </div>
 </section>
-
-<?php if ($items && paypal_is_configured()): ?>
-<script src="https://www.paypal.com/sdk/js?client-id=<?= h(urlencode(paypal_client_id())) ?>&currency=<?= h(paypal_currency()) ?>&intent=authorize&commit=false&components=buttons&enable-funding=venmo"
-        data-namespace="paypalSDK"></script>
-<script>
-(function(){
-  var errBox = document.getElementById('cart-error');
-  function showErr(msg){
-    errBox.textContent = msg || 'Something went wrong. Please try again.';
-    errBox.style.display = 'block';
-  }
-  if (!window.paypalSDK || !window.paypalSDK.Buttons) {
-    showErr('PayPal failed to load. Refresh the page or try again later.');
-    return;
-  }
-  window.paypalSDK.Buttons({
-    style: { layout: 'vertical', shape: 'pill', label: 'paypal' },
-    createOrder: function(){
-      errBox.style.display = 'none';
-      return fetch('/api/create-cart-order.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        if (data.error) throw new Error(data.error);
-        return data.id;
-      });
-    },
-    onApprove: function(data){
-      // Hand off to the confirm page where the buyer reviews / edits shipping
-      // and contact info. Capture happens after confirm. No charge until then.
-      window.location.href = '/shop/confirm.php?order=' + encodeURIComponent(data.orderID);
-    },
-    onError: function(err){
-      console.error(err);
-      showErr('Payment could not be completed. ' + (err && err.message ? err.message : ''));
-    },
-    onCancel: function(){ /* no-op */ }
-  }).render('#paypal-button-container').catch(function(err){
-    showErr('Could not load PayPal buttons.');
-    console.error(err);
-  });
-})();
-</script>
-<?php endif; ?>
 
 <?php require __DIR__ . '/footer.php'; ?>

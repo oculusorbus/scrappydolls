@@ -5,6 +5,7 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS order_checkout_intents;
 DROP TABLE IF EXISTS order_coupon_intents;
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS product_images;
@@ -89,6 +90,7 @@ CREATE TABLE orders (
   amount_cents INT UNSIGNED NOT NULL,
   coupon_code VARCHAR(40) DEFAULT NULL,
   discount_cents INT UNSIGNED NOT NULL DEFAULT 0,
+  tax_cents INT UNSIGNED NOT NULL DEFAULT 0,
   currency CHAR(3) NOT NULL DEFAULT 'USD',
   customer_email VARCHAR(255) DEFAULT NULL,
   customer_name VARCHAR(255) DEFAULT NULL,
@@ -138,5 +140,30 @@ CREATE TABLE order_coupon_intents (
   free_shipping TINYINT(1) NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE CASCADE,
+  INDEX idx_paypal (paypal_order_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------
+-- order_checkout_intents: confirmed contact + ship-to + priced
+-- breakdown, snapshotted per PayPal order at creation time. Capture
+-- reads this row, never the session — so the recorded charge, tax,
+-- and ship-to always match what PayPal authorized.
+-- ---------------------------------------------------------------
+CREATE TABLE order_checkout_intents (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  paypal_order_id VARCHAR(64) NOT NULL,
+  customer_name VARCHAR(255) NOT NULL,
+  customer_email VARCHAR(255) NOT NULL,
+  customer_phone VARCHAR(40) NOT NULL,
+  is_gift TINYINT(1) NOT NULL DEFAULT 0,
+  gift_recipient_name VARCHAR(255) DEFAULT NULL,
+  gift_message TEXT DEFAULT NULL,
+  shipping_address JSON NOT NULL,
+  item_total_cents INT UNSIGNED NOT NULL,
+  discount_cents INT UNSIGNED NOT NULL DEFAULT 0,
+  shipping_cents INT UNSIGNED NOT NULL DEFAULT 0,
+  tax_cents INT UNSIGNED NOT NULL DEFAULT 0,
+  total_cents INT UNSIGNED NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_paypal (paypal_order_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

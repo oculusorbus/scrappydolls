@@ -36,6 +36,12 @@ return [
     //      Events: PAYMENT.CAPTURE.COMPLETED, PAYMENT.CAPTURE.DENIED,
     //              PAYMENT.CAPTURE.REFUNDED
     //      Copy the Webhook ID into 'webhook_id' below.
+    //
+    // 5. "Log in with PayPal" (used to pre-fill checkout + compute tax)
+    //    reuses these SAME client_id/secret. In Apps & Credentials →
+    //    your app → enable "Log in with PayPal" and, under its settings,
+    //    request the Address attribute (plus name + email) and set the
+    //    Return URL to https://scrappydolls.com/api/paypal-login-callback.php
     // -----------------------------------------------------------------
     'paypal' => [
         'environment' => 'sandbox',     // 'sandbox' or 'live'
@@ -43,6 +49,13 @@ return [
         'secret'      => 'CHANGE_ME',
         'webhook_id'  => '',            // optional but recommended
         'currency'    => 'USD',
+
+        // Sales tax. Charged ONLY when the package ships to a Texas (US)
+        // address (Scrappy Dolls is a San Antonio seller). 0.0825 = 8.25%,
+        // the TX maximum combined rate. Omit this block to use that default.
+        'tax' => [
+            'tx_rate' => 0.0825,
+        ],
     ],
 
     // -----------------------------------------------------------------

@@ -69,6 +69,30 @@ switch ($type) {
             // amount already reflects it; this records which code was used.
             $couponIntent = coupon_intent_for_order($orderLink);
 
+            // Checkout snapshot (if any) holds the authoritative confirmed
+            // contact + ship-to + tax. Prefer it over PayPal's payer/shipping
+            // so a fallback insert matches what capture-cart-order would write.
+            $checkoutIntent = checkout_intent_for_order($orderLink);
+            if ($checkoutIntent) {
+                $custEmail = (string)$checkoutIntent['customer_email'];
+                $custName  = (string)$checkoutIntent['customer_name'];
+                $custPhone = (string)$checkoutIntent['customer_phone'];
+                $isGift    = !empty($checkoutIntent['is_gift']) ? 1 : 0;
+                $giftName  = $checkoutIntent['gift_recipient_name'] ?: null;
+                $giftMsg   = $checkoutIntent['gift_message'] ?: null;
+                $shipJson  = (string)$checkoutIntent['shipping_address'];
+                $taxCents  = (int)$checkoutIntent['tax_cents'];
+            } else {
+                $custEmail = $payer['email'];
+                $custName  = $payer['name'];
+                $custPhone = null;
+                $isGift    = 0;
+                $giftName  = null;
+                $giftMsg   = null;
+                $shipJson  = $shipping ? json_encode($shipping) : null;
+                $taxCents  = 0;
+            }
+
             $pdo = db();
             $pdo->beginTransaction();
             $upd = $pdo->prepare("UPDATE products SET status='sold', sold_at=COALESCE(sold_at, NOW()) WHERE id=:id AND status='available'");
@@ -77,10 +101,14 @@ switch ($type) {
             $ins = $pdo->prepare('
                 INSERT INTO orders
                     (product_id, paypal_order_id, paypal_capture_id, amount_cents,
-                     coupon_code, discount_cents, currency,
-                     customer_email, customer_name, shipping_address, status, paid_at)
+                     coupon_code, discount_cents, tax_cents, currency,
+                     customer_email, customer_name, customer_phone,
+                     shipping_address, is_gift, gift_recipient_name, gift_message,
+                     status, paid_at)
                 VALUES
-                    (NULL, :poid, :pcid, :amt, :ccode, :disc, :cur, :email, :name, :ship, "paid", NOW())
+                    (NULL, :poid, :pcid, :amt, :ccode, :disc, :tax, :cur,
+                     :email, :name, :phone,
+                     :ship, :gift, :grname, :gmsg, "paid", NOW())
             ');
             $ins->execute([
                 ':poid'  => $orderLink,
@@ -88,10 +116,15 @@ switch ($type) {
                 ':amt'   => (int)round(((float)$totalAmt) * 100),
                 ':ccode' => $couponIntent ? (string)$couponIntent['code'] : null,
                 ':disc'  => $couponIntent ? (int)$couponIntent['discount_cents'] : 0,
+                ':tax'   => $taxCents,
                 ':cur'   => $currency,
-                ':email' => $payer['email'],
-                ':name'  => $payer['name'],
-                ':ship'  => $shipping ? json_encode($shipping) : null,
+                ':email' => $custEmail,
+                ':name'  => $custName,
+                ':phone' => $custPhone,
+                ':ship'  => $shipJson,
+                ':gift'  => $isGift,
+                ':grname'=> $giftName,
+                ':gmsg'  => $giftMsg,
             ]);
             $newOrderId = (int)$pdo->lastInsertId();
 

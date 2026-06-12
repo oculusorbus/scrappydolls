@@ -2,39 +2,27 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../lib/bootstrap.php';
 
-$pageTitle = 'Confirm shipping';
-$pageDesc  = 'Confirm your contact and shipping details before we charge your card.';
+$pageTitle = 'Checkout';
+$pageDesc  = 'Confirm your contact and shipping details, then pay securely with PayPal.';
 
-$orderId = trim((string)($_GET['order'] ?? ''));
-if ($orderId === '') {
-    header('Location: /shop/cart.php');
-    exit;
-}
-
-// Sanity-check: the order must have been created in this session.
-// PayPal order IDs are short-lived, but defense-in-depth in case one is shared.
-$intentStmt = db()->prepare(
-    'SELECT session_hash FROM order_intents WHERE paypal_order_id = :p ORDER BY id DESC LIMIT 1'
-);
-$intentStmt->execute([':p' => $orderId]);
-$intent = $intentStmt->fetch();
-if (!$intent || $intent['session_hash'] !== tracking_session_hash()) {
-    header('Location: /shop/cart.php');
-    exit;
-}
-
-// If the buyer's cart was somehow emptied, send them back.
+// Need a cart and a working PayPal config to check out.
 $items = cart_items();
 if (!$items) {
     header('Location: /shop/cart.php');
     exit;
 }
+if (!paypal_is_configured()) {
+    header('Location: /shop/cart.php');
+    exit;
+}
 
-// Prefill from PayPal. Payer/shipping calls can fail if the order expired
-// — that's not fatal; we just render an empty form.
-$prefillName  = '';
-$prefillEmail = '';
-$prefillPhone = '';
+// Pre-fill from a completed "Log in with PayPal" round-trip, if any.
+$profile  = $_SESSION['paypal_login_profile'] ?? null;
+$loggedIn = is_array($profile);
+
+$prefillName  = $loggedIn ? (string)($profile['name']  ?? '') : '';
+$prefillEmail = $loggedIn ? (string)($profile['email'] ?? '') : '';
+$prefillPhone = $loggedIn ? (string)($profile['phone'] ?? '') : '';
 $prefillAddr  = [
     'address_line_1' => '',
     'address_line_2' => '',
@@ -43,45 +31,29 @@ $prefillAddr  = [
     'postal_code'    => '',
     'country_code'   => 'US',
 ];
-try {
-    $orderData = paypal_get_order($orderId);
-    $payer    = paypal_extract_payer($orderData);
-    $shipping = paypal_extract_shipping($orderData);
-
-    $prefillName  = (string)($payer['name'] ?? '');
-    $prefillEmail = (string)($payer['email'] ?? '');
-
-    $rawPayer = $orderData['payer'] ?? [];
-    $phoneNum = $rawPayer['phone']['phone_number']['national_number']
-        ?? $rawPayer['phone_number']['national_number']
-        ?? '';
-    $prefillPhone = (string)$phoneNum;
-
-    if ($shipping) {
-        if (empty($prefillName) && !empty($shipping['name'])) {
-            $prefillName = (string)$shipping['name'];
-        }
-        $a = $shipping['address'] ?? [];
-        foreach ($prefillAddr as $k => $_) {
-            if (!empty($a[$k])) $prefillAddr[$k] = (string)$a[$k];
-        }
-        if (empty($prefillAddr['country_code'])) $prefillAddr['country_code'] = 'US';
+if ($loggedIn && is_array($profile['address'] ?? null)) {
+    foreach ($prefillAddr as $k => $_) {
+        if (!empty($profile['address'][$k])) $prefillAddr[$k] = (string)$profile['address'][$k];
     }
-} catch (Throwable $e) {
-    error_log('confirm.php prefill error: ' . $e->getMessage());
+    if (empty($prefillAddr['country_code'])) $prefillAddr['country_code'] = 'US';
 }
 
-// Totals as PayPal authorized them: prices from order_intents, coupon from
-// order_coupon_intents — both snapshotted at order-creation time, immune to
-// session drift (and this matches exactly what capture will record).
-$itemsTotal = 0;
+// Totals from the current cart/coupon. Tax depends on the ship-to and is
+// previewed live in JS; the authoritative tax is recomputed server-side in
+// create-cart-order.php from the same rule.
+$itemsTotal     = 0;
 foreach ($items as $it) $itemsTotal += (int)$it['price_cents'];
-$couponIntent  = coupon_intent_for_order($orderId);
-$discountCents = $couponIntent ? min((int)$couponIntent['discount_cents'], $itemsTotal) : 0;
-$shippingCents = ($couponIntent && !empty($couponIntent['free_shipping']))
-    ? 0
-    : shipping_cents(count($items), $itemsTotal);
-$grandTotal = $itemsTotal - $discountCents + $shippingCents;
+$coupon         = cart_coupon();
+$discountCents  = $coupon ? coupon_discount_cents($coupon, $itemsTotal) : 0;
+$couponFreeShip = $coupon && coupon_waives_shipping($coupon);
+$shippingCents  = $couponFreeShip ? 0 : shipping_cents(count($items), $itemsTotal);
+
+$taxBase      = max(0, $itemsTotal - $discountCents) + $shippingCents;
+$taxRate      = tax_rate_tx();
+$initialTax   = order_tax_cents($taxBase, $prefillAddr['admin_area_1'], $prefillAddr['country_code']);
+$initialTotal = $itemsTotal - $discountCents + $shippingCents + $initialTax;
+
+track_view('/shop/confirm.php');
 
 require __DIR__ . '/header.php';
 ?>
@@ -102,6 +74,17 @@ require __DIR__ . '/header.php';
 .confirm-summary dd { margin: 0; text-align: right; }
 .confirm-summary .grand { font-weight: 700; padding-top: 0.5rem; border-top: 1px dashed var(--rule, #ead7d2); margin-top: 0.5rem; }
 .confirm-summary .grand dt, .confirm-summary .grand dd { padding-top: 0.5rem; }
+.confirm-login { margin: 0 0 1.5rem; }
+.confirm-login .btn-paypal-login {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  width: 100%; justify-content: center;
+  background: #ffc439; color: #0c0c0c; border: 1px solid #e3a900;
+  border-radius: 999px; padding: 0.7rem 1rem; font: inherit; font-weight: 600;
+  text-decoration: none;
+}
+.confirm-login .btn-paypal-login:hover { background: #f0b72c; }
+.confirm-login-note { margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--ink-soft, #6b5852); }
+.confirm-login-or { text-align: center; color: var(--ink-soft, #6b5852); font-size: 0.88rem; margin: 0.9rem 0 0; }
 .confirm-section {
   border: 1px solid var(--rule, #ead7d2);
   border-radius: 14px;
@@ -145,8 +128,8 @@ require __DIR__ . '/header.php';
 }
 .confirm-gift-toggle input { margin-top: 0.25rem; }
 .confirm-ship-block { padding-top: 0.5rem; }
-.confirm-submit { width: 100%; margin-top: 0.75rem; justify-content: center; }
-.confirm-submit[disabled] { opacity: 0.7; cursor: not-allowed; }
+.confirm-pay { margin-top: 0.75rem; }
+.confirm-pay-note { margin: 0.5rem 0 0; font-size: 0.88rem; color: var(--ink-soft, #6b5852); text-align: center; }
 .confirm-back { display: inline-block; margin-top: 1rem; color: var(--ink-soft, #6b5852); }
 .flash.flash-error { display: none; padding: 0.85rem 1rem; border-radius: 8px; background: #fde8eb; color: #7a1d2c; margin: 1rem 0; }
 </style>
@@ -157,7 +140,7 @@ require __DIR__ . '/header.php';
       <div class="confirm-head">
         <p class="eyebrow">One last step</p>
         <h1 class="h-display">Confirm <em style="color: var(--rose); font-style: italic; font-weight: 400;">shipping</em>.</h1>
-        <p class="confirm-help">Your card hasn't been charged yet. Tell us where to send the dolls and we'll finish the order.</p>
+        <p class="confirm-help">Your card hasn't been charged yet. Tell us where to send the dolls, then pay securely with PayPal.</p>
       </div>
 
       <div class="confirm-summary">
@@ -168,26 +151,39 @@ require __DIR__ . '/header.php';
               <dd><?= fmt_price((int)$it['price_cents']) ?></dd>
             </div>
           <?php endforeach; ?>
-          <?php if ($couponIntent && $discountCents > 0): ?>
+          <?php if ($coupon && $discountCents > 0): ?>
             <div style="display:contents">
-              <dt>Discount (<?= h($couponIntent['code']) ?>)</dt>
+              <dt>Discount (<?= h($coupon['code']) ?>)</dt>
               <dd>−<?= fmt_price($discountCents) ?></dd>
             </div>
           <?php endif; ?>
           <div style="display:contents">
-            <dt>Shipping<?= ($couponIntent && !empty($couponIntent['free_shipping'])) ? ' (waived with code ' . h($couponIntent['code']) . ')' : '' ?></dt>
+            <dt>Shipping<?= $couponFreeShip ? ' (waived with code ' . h($coupon['code']) . ')' : '' ?></dt>
             <dd><?= fmt_price($shippingCents) ?></dd>
+          </div>
+          <div id="sum-tax-row" style="display:<?= $initialTax > 0 ? 'contents' : 'none' ?>">
+            <dt>Sales tax (TX)</dt>
+            <dd id="sum-tax"><?= fmt_price($initialTax) ?></dd>
           </div>
           <div class="grand" style="display:contents">
             <dt>Total</dt>
-            <dd><?= fmt_price($grandTotal) ?></dd>
+            <dd id="sum-total"><?= fmt_price($initialTotal) ?></dd>
           </div>
         </dl>
       </div>
 
-      <form id="confirm-form" novalidate>
-        <input type="hidden" name="order_id" value="<?= h($orderId) ?>">
+      <div class="confirm-login">
+        <a class="btn-paypal-login" href="/api/paypal-login-start.php">
+          <strong>Log in with PayPal</strong> to autofill
+        </a>
+        <?php if ($loggedIn): ?>
+          <p class="confirm-login-note">✓ Filled in from your PayPal account — edit anything below before you pay.</p>
+        <?php else: ?>
+          <p class="confirm-login-or">— or just enter your details below —</p>
+        <?php endif; ?>
+      </div>
 
+      <form id="confirm-form" novalidate>
         <fieldset class="confirm-section">
           <legend>Your contact</legend>
           <p class="confirm-help">We'll email tracking here and call only if there's a question about your order.</p>
@@ -239,7 +235,7 @@ require __DIR__ . '/header.php';
                        value="<?= h($prefillAddr['admin_area_2']) ?>" autocomplete="address-level2">
               </label>
               <label>State / Region
-                <input type="text" name="self[admin_area_1]" data-shipreq required maxlength="120"
+                <input type="text" name="self[admin_area_1]" data-shipreq data-taxstate required maxlength="120"
                        value="<?= h($prefillAddr['admin_area_1']) ?>" autocomplete="address-level1">
               </label>
             </div>
@@ -249,7 +245,7 @@ require __DIR__ . '/header.php';
                        value="<?= h($prefillAddr['postal_code']) ?>" autocomplete="postal-code">
               </label>
               <label>Country
-                <input type="text" name="self[country_code]" data-shipreq required maxlength="2"
+                <input type="text" name="self[country_code]" data-shipreq data-taxcountry required maxlength="2"
                        value="<?= h($prefillAddr['country_code'] ?: 'US') ?>"
                        autocomplete="country" pattern="[A-Za-z]{2}" style="text-transform:uppercase">
               </label>
@@ -288,7 +284,7 @@ require __DIR__ . '/header.php';
                 <input type="text" name="gift[admin_area_2]" data-giftreq maxlength="120" autocomplete="off">
               </label>
               <label>State / Region
-                <input type="text" name="gift[admin_area_1]" data-giftreq maxlength="120" autocomplete="off">
+                <input type="text" name="gift[admin_area_1]" data-giftreq data-taxstate maxlength="120" autocomplete="off">
               </label>
             </div>
             <div class="confirm-row split">
@@ -296,7 +292,7 @@ require __DIR__ . '/header.php';
                 <input type="text" name="gift[postal_code]" data-giftreq maxlength="32" autocomplete="off">
               </label>
               <label>Country
-                <input type="text" name="gift[country_code]" data-giftreq maxlength="2"
+                <input type="text" name="gift[country_code]" data-giftreq data-taxcountry maxlength="2"
                        value="US" pattern="[A-Za-z]{2}" style="text-transform:uppercase" autocomplete="off">
               </label>
             </div>
@@ -305,32 +301,78 @@ require __DIR__ . '/header.php';
 
         <div id="confirm-error" class="flash flash-error"></div>
 
-        <button type="submit" class="btn btn-primary confirm-submit">Confirm and pay <?= fmt_price($grandTotal) ?></button>
+        <div id="paypal-button-container" class="confirm-pay"></div>
+        <p class="confirm-pay-note">Pay with PayPal or any major credit card — no PayPal account required. Processed securely by PayPal.</p>
         <a class="confirm-back" href="/shop/cart.php">← Back to cart</a>
       </form>
     </div>
   </div>
 </section>
 
+<script src="https://www.paypal.com/sdk/js?client-id=<?= h(urlencode(paypal_client_id())) ?>&currency=<?= h(paypal_currency()) ?>&intent=authorize&commit=false&components=buttons&enable-funding=venmo"
+        data-namespace="paypalSDK"></script>
 <script>
 (function(){
+  var TAX_BASE_CENTS = <?= (int)$taxBase ?>;
+  var TAX_RATE = <?= json_encode((float)$taxRate) ?>;
+  var BASE_TOTAL_CENTS = <?= (int)($itemsTotal - $discountCents + $shippingCents) ?>; // total before tax
+
   var form = document.getElementById('confirm-form');
   var giftCheckbox = document.getElementById('is-gift');
   var shipSelf = document.getElementById('ship-self');
   var shipGift = document.getElementById('ship-gift');
   var errBox = document.getElementById('confirm-error');
-  var submitBtn = form.querySelector('.confirm-submit');
+  var taxRow = document.getElementById('sum-tax-row');
+  var taxCell = document.getElementById('sum-tax');
+  var totalCell = document.getElementById('sum-total');
+
+  function money(cents){
+    return '$' + (cents / 100).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
 
   function setVisibility(isGift) {
     shipSelf.hidden = isGift;
     shipGift.hidden = !isGift;
     // Toggle "required" on the inactive block — hidden inputs that are still
-    // required will block form submission with no visible error.
+    // required will block submission with no visible error.
     shipSelf.querySelectorAll('[data-shipreq]').forEach(function(i){ i.required = !isGift; });
     shipGift.querySelectorAll('[data-giftreq]').forEach(function(i){ i.required = isGift; });
   }
+
+  // --- Live Texas sales-tax preview ---
+  function activeBlock(){ return giftCheckbox.checked ? shipGift : shipSelf; }
+  function isTexas(state){
+    var s = String(state || '').trim().toUpperCase().replace(/\./g, '');
+    return s === 'TX' || s === 'TEXAS';
+  }
+  function computeTaxCents(){
+    var block = activeBlock();
+    var stateEl = block.querySelector('[data-taxstate]');
+    var countryEl = block.querySelector('[data-taxcountry]');
+    var state = stateEl ? stateEl.value : '';
+    var country = countryEl ? String(countryEl.value || '').trim().toUpperCase() : '';
+    if (country === 'US' && isTexas(state)) {
+      return Math.round(TAX_BASE_CENTS * TAX_RATE);
+    }
+    return 0;
+  }
+  function refreshTax(){
+    var tax = computeTaxCents();
+    if (tax > 0) {
+      taxRow.style.display = 'contents';
+      taxCell.textContent = money(tax);
+    } else {
+      taxRow.style.display = 'none';
+    }
+    totalCell.textContent = money(BASE_TOTAL_CENTS + tax);
+  }
+
   setVisibility(false);
-  giftCheckbox.addEventListener('change', function(){ setVisibility(giftCheckbox.checked); });
+  refreshTax();
+  giftCheckbox.addEventListener('change', function(){ setVisibility(giftCheckbox.checked); refreshTax(); });
+  form.addEventListener('input', function(ev){
+    if (ev.target.matches('[data-taxstate], [data-taxcountry]')) refreshTax();
+  });
 
   function showErr(msg) {
     errBox.textContent = msg || 'Something went wrong. Please review the fields and try again.';
@@ -352,15 +394,9 @@ require __DIR__ . '/header.php';
       country_code:   val(prefix + '[country_code]').toUpperCase(),
     };
   }
-
-  form.addEventListener('submit', function(ev) {
-    ev.preventDefault();
-    if (!form.reportValidity()) return;
-    errBox.style.display = 'none';
-
+  function buildPayload() {
     var isGift = giftCheckbox.checked;
-    var payload = {
-      order_id: val('order_id'),
+    return {
       name:     val('name'),
       email:    val('email'),
       phone:    val('phone'),
@@ -369,34 +405,60 @@ require __DIR__ . '/header.php';
       gift_message: isGift ? val('gift_message') : '',
       address:  isGift ? addrFromBlock('gift') : addrFromBlock('self'),
     };
+  }
 
-    submitBtn.disabled = true;
-    var prevLabel = submitBtn.textContent;
-    submitBtn.textContent = 'Processing…';
+  if (!window.paypalSDK || !window.paypalSDK.Buttons) {
+    showErr('PayPal failed to load. Refresh the page or try again later.');
+    return;
+  }
 
-    fetch('/api/capture-cart-order.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
-    .then(function(r){ return r.json().then(function(j){ return { status: r.status, body: j }; }); })
-    .then(function(res){
-      if (res.body.error) {
-        if (res.status === 409) {
-          // Race: a doll sold while we were on this screen. Bounce to cart.
-          showErr(res.body.error + ' Returning to your cart…');
-          setTimeout(function(){ window.location.href = '/shop/cart.php'; }, 1800);
-          return;
-        }
-        throw new Error(res.body.error);
+  window.paypalSDK.Buttons({
+    style: { layout: 'vertical', shape: 'pill', label: 'paypal' },
+    // Validate the form, then create the order priced with the confirmed
+    // ship-to (so tax is included). Rejecting here keeps the popup closed.
+    createOrder: function(){
+      errBox.style.display = 'none';
+      if (!form.reportValidity()) {
+        return Promise.reject(new Error('Please complete the required fields above.'));
       }
-      window.location.href = '/shop/success.php?order=' + encodeURIComponent(res.body.order_id);
-    })
-    .catch(function(err){
-      submitBtn.disabled = false;
-      submitBtn.textContent = prevLabel;
-      showErr(err && err.message ? err.message : '');
-    });
+      return fetch('/api/create-cart-order.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildPayload())
+      })
+      .then(function(r){ return r.json().then(function(j){ return { status: r.status, body: j }; }); })
+      .then(function(res){
+        if (res.body.error) throw new Error(res.body.error);
+        return res.body.id;
+      });
+    },
+    onApprove: function(data){
+      return fetch('/api/capture-cart-order.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: data.orderID })
+      })
+      .then(function(r){ return r.json().then(function(j){ return { status: r.status, body: j }; }); })
+      .then(function(res){
+        if (res.body.error) {
+          if (res.status === 409) {
+            showErr(res.body.error + ' Returning to your cart…');
+            setTimeout(function(){ window.location.href = '/shop/cart.php'; }, 1800);
+            return;
+          }
+          throw new Error(res.body.error);
+        }
+        window.location.href = '/shop/success.php?order=' + encodeURIComponent(res.body.order_id);
+      });
+    },
+    onError: function(err){
+      console.error(err);
+      showErr('Payment could not be completed. ' + (err && err.message ? err.message : ''));
+    },
+    onCancel: function(){ /* buyer closed the popup — no-op */ }
+  }).render('#paypal-button-container').catch(function(err){
+    console.error(err);
+    showErr('Could not load the PayPal buttons. Refresh and try again.');
   });
 })();
 </script>
