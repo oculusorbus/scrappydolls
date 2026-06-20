@@ -13,7 +13,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tn = trim((string)($_POST['tracking_number'] ?? ''));
         $stmt = db()->prepare("UPDATE orders SET status='shipped', shipped_at = NOW(), tracking_number = :tn WHERE id = :id");
         $stmt->execute([':tn' => $tn ?: null, ':id' => $id]);
-        flash('success', 'Marked as shipped.');
+
+        // Notify the customer their order is on its way (with tracking #).
+        // Best-effort: a mail failure must not block marking the order shipped.
+        $oStmt = db()->prepare("SELECT * FROM orders WHERE id = :id");
+        $oStmt->execute([':id' => $id]);
+        $shippedOrder = $oStmt->fetch();
+        $iStmt = db()->prepare("SELECT * FROM order_items WHERE order_id = :id ORDER BY id ASC");
+        $iStmt->execute([':id' => $id]);
+        $shippedItems = $iStmt->fetchAll();
+        $emailed = false;
+        if ($shippedOrder && !empty($shippedOrder['customer_email'])) {
+            try {
+                mail_customer_shipped($shippedOrder, $shippedItems);
+                $emailed = true;
+            } catch (Throwable $e) {
+                error_log('mark_shipped: customer shipping email failed for order ' . $id . ': ' . $e->getMessage());
+            }
+        }
+        flash('success', $emailed
+            ? 'Marked as shipped — tracking email sent to the customer.'
+            : 'Marked as shipped.');
     } elseif ($action === 'save_notes') {
         $notes = trim((string)($_POST['notes'] ?? ''));
         $stmt = db()->prepare("UPDATE orders SET notes = :n WHERE id = :id");

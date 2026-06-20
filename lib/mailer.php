@@ -149,6 +149,84 @@ function mail_customer_receipt_multi(array $order, array $items): void {
 }
 
 /**
+ * Best-effort carrier guess from a tracking number's format, returning a
+ * ['carrier' => label, 'url' => trackingUrl] pair (empty strings if we
+ * can't tell). Stripped of spaces first since admins paste them grouped.
+ *   • UPS    — starts with "1Z", or an 18-digit all-numeric account form.
+ *   • USPS   — 20–22 digit numeric (often begins 9400/9205/9407/93…).
+ *   • FedEx  — 12 or 15 digit numeric.
+ * When uncertain we return no URL and the email falls back to a bare number.
+ */
+function _mail_tracking_carrier(string $tracking): array {
+    $t = strtoupper(preg_replace('/\s+/', '', $tracking));
+    if ($t === '') return ['carrier' => '', 'url' => ''];
+
+    if (preg_match('/^1Z[0-9A-Z]{16}$/', $t)) {
+        return ['carrier' => 'UPS', 'url' => 'https://www.ups.com/track?tracknum=' . rawurlencode($t)];
+    }
+    if (ctype_digit($t)) {
+        $len = strlen($t);
+        if ($len >= 20 && $len <= 22) {
+            return ['carrier' => 'USPS', 'url' => 'https://tools.usps.com/go/TrackConfirmAction?tLabels=' . rawurlencode($t)];
+        }
+        if ($len === 12 || $len === 15) {
+            return ['carrier' => 'FedEx', 'url' => 'https://www.fedex.com/fedextrack/?trknbr=' . rawurlencode($t)];
+        }
+        if ($len === 18) {
+            return ['carrier' => 'UPS', 'url' => 'https://www.ups.com/track?tracknum=' . rawurlencode($t)];
+        }
+    }
+    return ['carrier' => '', 'url' => ''];
+}
+
+/**
+ * "Your order is on its way" note, sent when an admin marks an order shipped.
+ * Includes the tracking number (and a carrier-specific tracking link when the
+ * number's format is recognizable). Once a package is in the carrier's hands,
+ * delivery issues are theirs to resolve — the note nudges the customer to the
+ * carrier rather than back to us. No-op if we have no email on file.
+ */
+function mail_customer_shipped(array $order, array $items): void {
+    $email = $order['customer_email'] ?? null;
+    if (!$email) return;
+    $cfg = config('mail');
+    $replyTo = $cfg['support_email'] ?? $cfg['admin_email'] ?? null;
+
+    $count = count($items);
+    $lines = '';
+    foreach ($items as $it) {
+        $lines .= '  • ' . ($it['title_snapshot'] ?? '(unknown)') . "\n";
+    }
+
+    $tracking = trim((string)($order['tracking_number'] ?? ''));
+    $trackBlock = '';
+    if ($tracking !== '') {
+        $info = _mail_tracking_carrier($tracking);
+        $label = $info['carrier'] !== '' ? $info['carrier'] . ' tracking number' : 'Tracking number';
+        $trackBlock = $label . ': ' . $tracking . "\n";
+        if ($info['url'] !== '') {
+            $trackBlock .= 'Track your package: ' . $info['url'] . "\n";
+        }
+        $trackBlock .= "\nOnce your package is in the carrier's hands, they're best placed to "
+                     . "help with any delivery questions — you can use the tracking number above "
+                     . "to check status or open a claim with them directly.\n\n";
+    }
+
+    $intro = $count === 1
+        ? "Good news — your doll is on its way!\n\n"
+        : "Good news — your order of $count dolls is on its way!\n\n";
+    $body = $intro
+          . $lines . "\n"
+          . $trackBlock
+          . "Thanks again for your order.\n\n"
+          . "— Kanda Kay\n  scrappydolls.com\n";
+    $subject = $count === 1
+        ? "Shipped — " . ($items[0]['title_snapshot'] ?? 'your doll')
+        : "Shipped — $count dolls";
+    send_mail($email, $subject, $body, $replyTo);
+}
+
+/**
  * Inbound message from the public contact form. Goes to the support
  * address; Reply-To is set to the customer's email so a one-click reply
  * lands back in their inbox.
