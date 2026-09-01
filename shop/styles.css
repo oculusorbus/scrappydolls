@@ -276,6 +276,7 @@ h2.h-display{font-size:clamp(1.8rem,4vw,2.75rem)}
 }
 .product-gallery .thumbs button.active{border-color:var(--rose)}
 .product-gallery .thumbs img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.share-prominent.is-copied{background:var(--rose);color:#fff;border-color:var(--rose)}
 
 .product-info h1{margin:0 0 .5rem}
 .product-info .price{

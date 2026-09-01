@@ -30,6 +30,23 @@ $ogType    = 'product';
 
 track_view('/shop/product/' . $product['slug'], (int)$product['id']);
 
+// Share targets — full URLs / encoded params for each network. Computed
+// once here so both the prominent share button (below the photo) and the
+// share-row (bottom of the info column) can use them.
+$shareUrl   = $pageUrl;
+$shareTitle = $product['title'];
+$shareText  = $product['title'] . ' — handmade by Kanda Kay';
+$shareImage = $images ? url('uploads/' . $images[0]['filename']) : url('images/og-image.jpg');
+
+$eUrl   = rawurlencode($shareUrl);
+$eText  = rawurlencode($shareText);
+$eTitle = rawurlencode($shareTitle);
+$eImg   = rawurlencode($shareImage);
+
+$emailSubject = rawurlencode('Check out this handmade doll: ' . $shareTitle);
+$emailBody    = rawurlencode($shareText . "\n\n" . $shareUrl);
+$smsBody      = rawurlencode($shareText . ' ' . $shareUrl);
+
 require __DIR__ . '/header.php';
 ?>
 
@@ -53,6 +70,15 @@ require __DIR__ . '/header.php';
             <?php endforeach; ?>
           </div>
         <?php endif; ?>
+
+        <button type="button" class="btn btn-ghost share-prominent" id="share-main"
+          data-share-title="<?= h($shareTitle) ?>"
+          data-share-text="<?= h($shareText) ?>"
+          data-share-url="<?= h($shareUrl) ?>"
+          style="width:100%;justify-content:center" aria-label="Share this doll with a friend">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
+          <span class="share-main-label">Share this doll with a friend</span>
+        </button>
       </div>
 
       <div class="product-info">
@@ -102,22 +128,6 @@ require __DIR__ . '/header.php';
           <p><a class="btn btn-ghost" href="https://www.facebook.com/kandakayartist/" rel="noopener">Follow on Facebook for new work</a></p>
         <?php endif; ?>
 
-        <?php
-          // Share targets — full URLs / encoded params for each network.
-          $shareUrl   = url('shop/product.php?slug=' . urlencode($product['slug']));
-          $shareTitle = $product['title'];
-          $shareText  = $product['title'] . ' — handmade by Kanda Kay';
-          $shareImage = $images ? url('uploads/' . $images[0]['filename']) : url('images/og-image.jpg');
-
-          $eUrl   = rawurlencode($shareUrl);
-          $eText  = rawurlencode($shareText);
-          $eTitle = rawurlencode($shareTitle);
-          $eImg   = rawurlencode($shareImage);
-
-          $emailSubject = rawurlencode('Check out this handmade doll: ' . $shareTitle);
-          $emailBody    = rawurlencode($shareText . "\n\n" . $shareUrl);
-          $smsBody      = rawurlencode($shareText . ' ' . $shareUrl);
-        ?>
         <div class="share-row" aria-label="Share this doll">
           <span class="share-label">Share:</span>
           <a class="share-btn" href="mailto:?subject=<?= $emailSubject ?>&body=<?= $emailBody ?>" aria-label="Share by email">
@@ -231,6 +241,43 @@ require __DIR__ . '/header.php';
       el.style.display = 'none';
     });
   }
+})();
+(function(){
+  var mainBtn = document.getElementById('share-main');
+  if (!mainBtn) return;
+  var label = mainBtn.querySelector('.share-main-label');
+  var defaultLabel = label ? label.textContent : '';
+  var url = mainBtn.getAttribute('data-share-url');
+  mainBtn.addEventListener('click', function(){
+    // Prefer the device's native share sheet (iOS/Android/most modern
+    // desktop browsers) so it can go straight to Messages, Mail, etc.
+    if (navigator.share) {
+      navigator.share({
+        title: mainBtn.getAttribute('data-share-title'),
+        text: mainBtn.getAttribute('data-share-text'),
+        url: url
+      }).catch(function(){ /* user cancelled — nothing to do */ });
+      return;
+    }
+    // Fallback: copy the link and confirm in place.
+    var done = function(){
+      mainBtn.classList.add('is-copied');
+      if (label) label.textContent = 'Link copied!';
+      setTimeout(function(){
+        mainBtn.classList.remove('is-copied');
+        if (label) label.textContent = defaultLabel;
+      }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done).catch(function(){
+        var t = document.createElement('textarea');
+        t.value = url; t.style.position='fixed'; t.style.opacity='0';
+        document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); done(); } catch (e) {}
+        document.body.removeChild(t);
+      });
+    }
+  });
 })();
 (function(){
   var copyBtn = document.querySelector('.share-copy');
