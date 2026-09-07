@@ -43,6 +43,7 @@ $effective = 'May 18, 2026';
 </style>
 </head>
 <body>
+<?= promo_bar_html() ?>
 <header class="site">
   <div class="wrap">
     <div class="brand">

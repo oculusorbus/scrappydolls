@@ -6,10 +6,9 @@ declare(strict_types=1);
  * from the admin panel (as opposed to config.php, which is deploy-time
  * and gitignored). One row per key in `site_settings`.
  *
- * First user: the landing-page offer snipe — the diagonal banner that
- * swipes across the top-right corner of the home page announcing a
- * discount. It's edited on /admin/coupons.php, right next to the codes
- * it advertises.
+ * Its user is the promo bar — the colored strip across the top of every
+ * public page announcing whatever discount is running. It's edited on
+ * /admin/coupons.php, right next to the codes it advertises.
  */
 
 /**
@@ -17,7 +16,7 @@ declare(strict_types=1);
  *
  * If the table isn't there yet (files deployed before migration 010 was
  * run), behave as if nothing is set rather than taking the whole site
- * down — the banner just stays hidden until the migration lands.
+ * down — the bar just stays hidden until the migration lands.
  */
 function settings_all(): array {
     if (isset($GLOBALS['__settings'])) return $GLOBALS['__settings'];
@@ -46,51 +45,55 @@ function setting_set(string $key, string $value): void {
 }
 
 // ---------------------------------------------------------------
-// Landing-page offer snipe
+// Promo bar
 // ---------------------------------------------------------------
 
-const SNIPE_ON      = 'snipe_on';
-const SNIPE_TEXT    = 'snipe_text';
-const SNIPE_SUBTEXT = 'snipe_subtext';
-const SNIPE_PALETTE = 'snipe_palette';
-const SNIPE_LINK    = 'snipe_link';
-
-const SNIPE_TEXT_MAX    = 26;
-const SNIPE_SUBTEXT_MAX = 22;
+const PROMO_ON      = 'promo_on';
+const PROMO_TEXT    = 'promo_text';
+const PROMO_CODE    = 'promo_code';
+const PROMO_PALETTE = 'promo_palette';
+const PROMO_LINK    = 'promo_link';
 
 /**
- * The colors the banner is allowed to be. Only the *key* is stored, so
+ * The bar wraps, so the message can run long — this cap only exists so
+ * a stray paste can't push the whole page below the fold.
+ */
+const PROMO_TEXT_MAX = 240;
+const PROMO_CODE_MAX = 40;
+
+/**
+ * The colors the bar is allowed to be. Only the *key* is stored, so
  * nothing a form post says can ever reach the page as raw CSS.
  *
  * `ink` is picked to stay readable against the darker end of each
  * gradient (bright yellow/green get near-black text, the rest white).
  */
-function snipe_palettes(): array {
+function promo_palettes(): array {
     return [
-        'cherry'   => ['label' => 'Cherry',    'from' => '#ff3b5c', 'to' => '#b4243d', 'ink' => '#ffffff'],
-        'tangerine'=> ['label' => 'Tangerine', 'from' => '#ff9a1f', 'to' => '#ef5b0c', 'ink' => '#ffffff'],
-        'sunshine' => ['label' => 'Sunshine',  'from' => '#ffe14d', 'to' => '#f7b500', 'ink' => '#3a2a00'],
-        'lime'     => ['label' => 'Lime',      'from' => '#a8ee5c', 'to' => '#5cbb2e', 'ink' => '#11300a'],
-        'teal'     => ['label' => 'Teal',      'from' => '#3ce6cb', 'to' => '#0f9b8e', 'ink' => '#043029'],
-        'ocean'    => ['label' => 'Ocean',     'from' => '#5cb4ff', 'to' => '#1f5fd0', 'ink' => '#ffffff'],
-        'violet'   => ['label' => 'Violet',    'from' => '#b98cff', 'to' => '#6d35d6', 'ink' => '#ffffff'],
-        'hotpink'  => ['label' => 'Hot pink',  'from' => '#ff6fb1', 'to' => '#d61f7a', 'ink' => '#ffffff'],
+        'cherry'    => ['label' => 'Cherry',    'from' => '#ff3b5c', 'to' => '#b4243d', 'ink' => '#ffffff'],
+        'tangerine' => ['label' => 'Tangerine', 'from' => '#ff9a1f', 'to' => '#ef5b0c', 'ink' => '#ffffff'],
+        'sunshine'  => ['label' => 'Sunshine',  'from' => '#ffe14d', 'to' => '#f7b500', 'ink' => '#3a2a00'],
+        'lime'      => ['label' => 'Lime',      'from' => '#a8ee5c', 'to' => '#5cbb2e', 'ink' => '#11300a'],
+        'teal'      => ['label' => 'Teal',      'from' => '#3ce6cb', 'to' => '#0f9b8e', 'ink' => '#043029'],
+        'ocean'     => ['label' => 'Ocean',     'from' => '#5cb4ff', 'to' => '#1f5fd0', 'ink' => '#ffffff'],
+        'violet'    => ['label' => 'Violet',    'from' => '#b98cff', 'to' => '#6d35d6', 'ink' => '#ffffff'],
+        'hotpink'   => ['label' => 'Hot pink',  'from' => '#ff6fb1', 'to' => '#d61f7a', 'ink' => '#ffffff'],
     ];
 }
 
-function snipe_palette_key(string $key): string {
-    return isset(snipe_palettes()[$key]) ? $key : 'cherry';
+function promo_palette_key(string $key): string {
+    return isset(promo_palettes()[$key]) ? $key : 'cherry';
 }
 
-function snipe_colors(string $key): array {
-    return snipe_palettes()[snipe_palette_key($key)];
+function promo_colors(string $key): array {
+    return promo_palettes()[promo_palette_key($key)];
 }
 
 /**
  * A link target is only kept if it's a same-site path or an http(s)
  * URL — anything else (javascript:, data:) is dropped to ''.
  */
-function snipe_clean_link(string $link): string {
+function promo_clean_link(string $link): string {
     $link = trim($link);
     if ($link === '') return '';
     if (preg_match('#^/[^/\\\\]#', $link)) return $link;      // /shop/ but not //evil.com
@@ -99,50 +102,117 @@ function snipe_clean_link(string $link): string {
 }
 
 /**
- * Current banner settings, normalized. `on` is only true when there is
+ * Current bar settings, normalized. `on` is only true when there is
  * actually something to say.
  */
-function snipe_settings(): array {
-    $text = trim(setting_get(SNIPE_TEXT));
+function promo_settings(): array {
+    $text = trim(setting_get(PROMO_TEXT));
     return [
-        'on'      => setting_get(SNIPE_ON) === '1' && $text !== '',
+        'on'      => setting_get(PROMO_ON) === '1' && $text !== '',
         'text'    => $text,
-        'subtext' => trim(setting_get(SNIPE_SUBTEXT)),
-        'palette' => snipe_palette_key(setting_get(SNIPE_PALETTE, 'cherry')),
-        'link'    => snipe_clean_link(setting_get(SNIPE_LINK)),
+        'code'    => trim(setting_get(PROMO_CODE)),
+        'palette' => promo_palette_key(setting_get(PROMO_PALETTE, 'cherry')),
+        'link'    => promo_clean_link(setting_get(PROMO_LINK)),
     ];
 }
 
 /**
- * The corner banner itself. Returns '' when it's switched off.
+ * The bar's stylesheet, emitted at most once per request.
  *
- * Markup only — the CSS lives with the rest of the landing-page styles
- * in index.php (`.snipe`).
+ * It travels with the markup on purpose: the bar appears on the landing
+ * page (inline <style>), the shop (shop/styles.css), and the standalone
+ * legal/contact pages (each with their own inline <style>), so there is
+ * no one stylesheet all of them already share. The admin preview asks
+ * for it directly so it renders the real thing rather than a lookalike.
  */
-function snipe_html(?array $s = null): string {
-    $s = $s ?? snipe_settings();
+function promo_bar_css(): string {
+    static $emitted = false;
+    if ($emitted) return '';
+    $emitted = true;
+
+    return <<<CSS
+<style>
+.promo-bar {
+  background: linear-gradient(90deg, var(--promo-from), var(--promo-to));
+  color: var(--promo-ink);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.promo-bar-inner {
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.75rem;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.promo-bar-tail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+.promo-bar-code {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  background: color-mix(in oklab, var(--promo-ink) 16%, transparent);
+  font-size: 0.85em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.promo-bar-go { transition: transform 0.2s ease; }
+a.promo-bar-inner:hover .promo-bar-go { transform: translateX(3px); }
+a.promo-bar-inner:hover .promo-bar-text { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 40rem) {
+  .promo-bar-inner { font-size: 0.85rem; padding: 0.6rem 1rem; }
+}
+@media print { .promo-bar { display: none; } }
+</style>
+CSS;
+}
+
+/**
+ * The bar itself, stylesheet included. Returns '' when it's switched off.
+ * Goes immediately after <body> on every public page.
+ */
+function promo_bar_html(?array $s = null): string {
+    $s = $s ?? promo_settings();
     if (empty($s['on'])) return '';
 
-    $c = snipe_colors((string)$s['palette']);
-
-    // Longer offers step down a size so the band still fits the corner.
-    $len  = max(mb_strlen($s['text']), (int)round(mb_strlen($s['subtext']) * 0.8));
-    $size = $len > 22 ? ' snipe-long' : ($len > 16 ? ' snipe-med' : '');
+    $c = promo_colors((string)$s['palette']);
     $style = sprintf(
-        '--snipe-from:%s;--snipe-to:%s;--snipe-ink:%s',
+        '--promo-from:%s;--promo-to:%s;--promo-ink:%s',
         $c['from'], $c['to'], $c['ink']
     );
-    $label = $s['text'] . ($s['subtext'] !== '' ? ' — ' . $s['subtext'] : '');
 
-    $inner = '<span class="snipe-line">' . h($s['text']) . '</span>';
-    if ($s['subtext'] !== '') {
-        $inner .= '<span class="snipe-sub">' . h($s['subtext']) . '</span>';
+    // The code pill and the arrow ride together so a narrow screen never
+    // wraps the arrow onto a line of its own.
+    $tail = '';
+    if ($s['code'] !== '') {
+        $tail .= '<span class="promo-bar-code">' . h($s['code']) . '</span>';
     }
-
     if ($s['link'] !== '') {
-        return '<a class="snipe' . $size . '" href="' . h($s['link']) . '" style="' . h($style) . '"'
-            . ' aria-label="' . h($label) . '">' . $inner . '</a>';
+        $tail .= '<span class="promo-bar-go" aria-hidden="true">&rarr;</span>';
     }
-    return '<div class="snipe' . $size . '" style="' . h($style) . '" role="note"'
-        . ' aria-label="' . h($label) . '">' . $inner . '</div>';
+    $inner = '<span class="promo-bar-text">' . h($s['text']) . '</span>'
+        . ($tail !== '' ? '<span class="promo-bar-tail">' . $tail . '</span>' : '');
+
+    $row = $s['link'] !== ''
+        ? '<a class="promo-bar-inner" href="' . h($s['link']) . '">' . $inner . '</a>'
+        : '<div class="promo-bar-inner">' . $inner . '</div>';
+
+    return promo_bar_css()
+        . '<div class="promo-bar" style="' . h($style) . '" role="region" aria-label="Store offer">'
+        . $row . '</div>';
 }

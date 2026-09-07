@@ -42,6 +42,7 @@ $pageUrl   = $pageUrl   ?? url($_SERVER['REQUEST_URI'] ?? '/shop/');
 <?php require __DIR__ . '/../lib/google_analytics.php'; ?>
 </head>
 <body>
+<?= promo_bar_html() ?>
 <header class="site">
   <div class="wrap">
     <div class="brand">

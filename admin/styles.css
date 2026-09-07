@@ -471,66 +471,36 @@ tr.row-dirty:hover td{background:color-mix(in oklab,var(--rose-light) 35%, var(-
   font-weight:600;margin-top:.45rem;
 }
 
-/* Home page offer banner editor (coupons page) --------------------- */
-.snipe-blurb{margin:-.4rem 0 1.2rem;font-size:.9rem;color:var(--ink-muted);max-width:44rem}
-.snipe-editor{
-  display:grid;grid-template-columns:minmax(18rem,1fr) 19rem;
-  gap:2rem;align-items:start;
-}
-@media(max-width:56rem){.snipe-editor{grid-template-columns:1fr}}
+/* Offer bar editor (coupons page) ---------------------------------- */
+.promo-blurb{margin:-.4rem 0 1.2rem;font-size:.9rem;color:var(--ink-muted);max-width:46rem}
+.promo-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem;margin-bottom:1rem}
 
-.snipe-swatches{display:flex;flex-wrap:wrap;gap:.85rem}
-.snipe-swatch{position:relative;display:flex;flex-direction:column;align-items:center;gap:.3rem;cursor:pointer}
-.snipe-swatch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
-.snipe-swatch span{
+.promo-swatches{display:flex;flex-wrap:wrap;gap:.85rem}
+.promo-swatch{position:relative;display:flex;flex-direction:column;align-items:center;gap:.3rem;cursor:pointer}
+.promo-swatch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.promo-swatch span{
   display:block;width:2.3rem;height:2.3rem;border-radius:50%;
   border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.10);
   transition:transform .15s ease,border-color .15s ease;
 }
-.snipe-swatch em{font-style:normal;font-size:.72rem;color:var(--ink-muted)}
-.snipe-swatch:hover span{transform:scale(1.06)}
-.snipe-swatch input:checked + span{border-color:var(--ink);transform:scale(1.1)}
-.snipe-swatch input:checked ~ em{color:var(--ink);font-weight:600}
-.snipe-swatch input:focus-visible + span{box-shadow:0 0 0 3px color-mix(in oklab,var(--rose) 35%, transparent)}
+.promo-swatch em{font-style:normal;font-size:.72rem;color:var(--ink-muted)}
+.promo-swatch:hover span{transform:scale(1.06)}
+.promo-swatch input:checked + span{border-color:var(--ink);transform:scale(1.1)}
+.promo-swatch input:checked ~ em{color:var(--ink);font-weight:600}
+.promo-swatch input:focus-visible + span{box-shadow:0 0 0 3px color-mix(in oklab,var(--rose) 35%, transparent)}
 
-.snipe-preview-label{
+.promo-preview-label{
   font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;
   color:var(--ink-muted);font-weight:600;margin:0 0 .5rem;
 }
-/* A miniature of the home page's top-right corner. */
-.snipe-preview{
-  position:relative;overflow:hidden;height:13.5rem;border-radius:12px;
-  border:1px solid var(--rule);background:#faf3ee;
-}
-.snipe-preview.is-off .pv-band{opacity:.25;filter:grayscale(.7)}
-.pv-header{
+/* Holds the real .promo-bar over a sketch of the page it sits on. */
+.promo-preview{overflow:hidden;border:1px solid var(--rule);border-radius:12px;background:#faf3ee}
+.promo-preview.is-off{opacity:.45;filter:grayscale(.65)}
+.promo-preview .promo-bar-inner{cursor:default}
+.promo-preview .pv-page{
   display:flex;align-items:center;justify-content:space-between;
-  padding:.6rem .8rem;border-bottom:1px solid #ede0d2;background:rgba(255,255,255,.5);
+  padding:.85rem 1rem 1.6rem;
 }
-.pv-brand{font-family:var(--font-display);font-size:.9rem;color:#1a1318;font-weight:600}
+.pv-brand{font-family:var(--font-display);font-size:1.05rem;color:#1a1318;font-weight:600}
 .pv-brand em{font-style:italic;color:#b13e54;font-weight:400}
-.pv-nav{display:block;width:4.5rem;height:.4rem;border-radius:99px;background:#e2cfbe}
-.pv-body{padding:1.4rem .8rem;display:flex;flex-direction:column;gap:.5rem}
-.pv-line{display:block;height:.7rem;border-radius:4px;background:#ecdccd}
-.pv-line-1{width:70%}
-.pv-line-2{width:45%}
-/* Same construction as .snipe on the live page, at preview scale. */
-.pv-band{
-  --pv-d:4.3rem;
-  position:absolute;top:0;right:0;width:15rem;
-  padding:.3rem 0 .35rem;font-size:.66rem;
-  display:flex;flex-direction:column;align-items:center;gap:.05rem;
-  transform:translate(calc(50% - var(--pv-d)),calc(-50% + var(--pv-d))) rotate(45deg);
-  background:linear-gradient(90deg,var(--pv-from,#ff3b5c),var(--pv-to,#b4243d));
-  color:#fff;text-align:center;box-shadow:0 4px 12px rgba(26,19,24,.25);
-}
-.pv-band.pv-med{font-size:.58rem}
-.pv-band.pv-long{font-size:.51rem}
-.pv-band-line{
-  font-weight:800;font-size:1em;line-height:1.15;letter-spacing:.06em;
-  text-transform:uppercase;white-space:nowrap;
-}
-.pv-band-sub{
-  font-weight:600;font-size:.78em;line-height:1.15;letter-spacing:.1em;
-  text-transform:uppercase;white-space:nowrap;opacity:.92;
-}
+.pv-nav{display:block;width:7rem;height:.45rem;border-radius:99px;background:#e2cfbe}

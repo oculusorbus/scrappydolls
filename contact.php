@@ -87,6 +87,7 @@ $csrfToken           = csrf_token();
 </style>
 </head>
 <body>
+<?= promo_bar_html() ?>
 <header class="site">
   <div class="wrap">
     <div class="brand">
