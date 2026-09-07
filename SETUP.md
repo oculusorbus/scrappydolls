@@ -39,8 +39,12 @@ Self-contained PHP/MySQL e-commerce for Kanda's dolls, with a public shop, an ad
    mysql -u <user> -p scrappydolls < sql/migrations/002_add_analytics.sql
    mysql -u <user> -p scrappydolls < sql/migrations/003_add_featured.sql
    mysql -u <user> -p scrappydolls < sql/migrations/004_renumber_scrappy_dolls.sql
+   mysql -u <user> -p scrappydolls < sql/migrations/010_add_site_settings.sql
    ```
-   Migrations are additive — safe to run on an already-populated DB. If you set up before a migration existed, run it now: 002 enables Reports, 003 enables the Featured flag, 004 bumps existing "Scrappy Doll #N" titles by +100 to align with the catalog protocol (#1→#101, #99→#199, etc.). 004 is idempotent — re-running it does nothing once numbers are at 101+.
+   Migrations are additive — safe to run on an already-populated DB. If you set up before a migration existed, run it now: 002 enables Reports, 003 enables the Featured flag, 004 bumps existing "Scrappy Doll #N" titles by +100 to align with the catalog protocol (#1→#101, #99→#199, etc.). 004 is idempotent — re-running it does nothing once numbers are at 101+; 010 adds the
+   `site_settings` table behind the home-page offer banner (see **Operational notes**).
+   (Migrations 005–009 came in with the cart, coupons, and sales tax — run those too if
+   you set up before they existed.)
 
 ## Step 2 — Config
 
@@ -118,6 +122,13 @@ If `webhook_id` is empty, the webhook endpoint refuses all requests (signature v
 
 **Adding a doll** (mom's flow): `/admin/products.php` → **+ Add new doll** → fill title, price, description, drag images, set status to Available → Save. Doll instantly appears at `/shop/`.
 
+**Announcing a sale** (stepdad's flow): `/admin/coupons.php` → create the code → in the
+**Home page banner** card at the top, type the offer ("20% OFF EVERY DOLL"), put the code on
+the second line, pick a color, tick **Show it on the home page**, Save. A bright diagonal
+banner swipes across the top-right corner of `/` until it's unticked. The preview next to the
+fields shows exactly what it will look like. Only the home page carries it — the shop and doll
+pages are unchanged.
+
 **An order arrives**: mom gets email → opens `/admin/orders.php` → opens the order → ships → enters tracking number → clicks **Mark shipped**.
 
 **A buyer cancels mid-checkout**: nothing happens — no order is recorded, doll stays Available.
@@ -190,6 +201,8 @@ If the EU/UK ever becomes a meaningful audience, you'll likely want to add a coo
 | `admin/reports.php` | Analytics dashboard: KPIs, funnel, channels, geography, operations |
 | `lib/analytics.php` | First-party tracking helpers (page views, intents, UTM) |
 | `sql/migrations/002_add_analytics.sql` | Adds page_views, order_intents, UTM cols on orders |
+| `lib/settings.php` | Admin-editable site settings + the home-page offer snipe (palette, text, markup) |
+| `sql/migrations/010_add_site_settings.sql` | Adds the `site_settings` key/value table |
 | `api/create-order.php` | Called by Smart Buttons to create the PayPal order |
 | `api/capture-order.php` | Called on user approval; captures payment, marks sold, emails |
 | `api/webhook.php` | PayPal webhook (verify signature, idempotent) |

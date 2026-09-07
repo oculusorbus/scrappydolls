@@ -9,6 +9,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_require_post();
     $action = $_POST['action'] ?? '';
 
+    if ($action === 'save_snipe') {
+        $text = trim((string)($_POST['snipe_text'] ?? ''));
+        $sub  = trim((string)($_POST['snipe_subtext'] ?? ''));
+        $on   = !empty($_POST['snipe_on']) ? '1' : '0';
+
+        if ($on === '1' && $text === '') {
+            $errors[] = 'Type the offer before turning the banner on — e.g. "20% OFF EVERY DOLL".';
+        }
+        if (!$errors) {
+            try {
+                setting_set(SNIPE_ON,      $on);
+                setting_set(SNIPE_TEXT,    mb_substr($text, 0, SNIPE_TEXT_MAX));
+                setting_set(SNIPE_SUBTEXT, mb_substr($sub,  0, SNIPE_SUBTEXT_MAX));
+                setting_set(SNIPE_PALETTE, snipe_palette_key((string)($_POST['snipe_palette'] ?? '')));
+                setting_set(SNIPE_LINK,    snipe_clean_link((string)($_POST['snipe_link'] ?? '')));
+            } catch (Throwable $e) {
+                // Almost always the one cause: migration 010 hasn't been run.
+                error_log('Saving banner settings failed: ' . $e->getMessage());
+                $errors[] = 'Could not save the banner — the site_settings table is missing. '
+                    . 'Run sql/migrations/010_add_site_settings.sql against the database.';
+            }
+            if (!$errors) {
+                flash('success', $on === '1'
+                    ? 'Banner saved — it\'s live on the home page now.'
+                    : 'Banner saved and turned off.');
+                redirect('/admin/coupons.php');
+            }
+        }
+    }
+
     if ($action === 'toggle') {
         $id = (int)($_POST['id'] ?? 0);
         $stmt = db()->prepare('UPDATE coupons SET active = 1 - active WHERE id = :id');
@@ -141,9 +171,22 @@ $f = function (string $key, string $default = '') use ($edit) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') return (string)($_POST[$key] ?? $default);
     return $default;
 };
-$showForm = $edit || $_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['new']);
+$showForm = $edit || isset($_GET['new'])
+    || ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') !== 'save_snipe');
 
 $coupons = db()->query('SELECT * FROM coupons ORDER BY active DESC, created_at DESC')->fetchAll();
+
+// Home-page offer banner. On a failed save, show back what was typed.
+$snipe = snipe_settings();
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_snipe') {
+    $snipe = [
+        'on'      => !empty($_POST['snipe_on']),
+        'text'    => mb_substr(trim((string)($_POST['snipe_text'] ?? '')), 0, SNIPE_TEXT_MAX),
+        'subtext' => mb_substr(trim((string)($_POST['snipe_subtext'] ?? '')), 0, SNIPE_SUBTEXT_MAX),
+        'palette' => snipe_palette_key((string)($_POST['snipe_palette'] ?? '')),
+        'link'    => snipe_clean_link((string)($_POST['snipe_link'] ?? '')),
+    ];
+}
 
 $page = 'coupons';
 $title = 'Coupons';
@@ -160,6 +203,132 @@ require __DIR__ . '/header.php';
 <?php foreach ($errors as $e): ?>
   <div class="flash flash-error"><?= h($e) ?></div>
 <?php endforeach; ?>
+
+<!-- snipe-card:start — the home-page offer banner, edited here because it
+     advertises the codes on this page. Preview mirrors the real thing. -->
+<div class="card snipe-card" style="margin-bottom:1.5rem">
+  <h3>Home page banner</h3>
+  <p class="snipe-blurb">
+    A bright diagonal banner that swipes across the top-right corner of the home page.
+    Type the offer, pick a color, and turn it on — everyone landing on
+    <a href="/" target="_blank" rel="noopener">scrappydolls.com</a> sees it.
+  </p>
+
+  <form method="post" id="snipe-form">
+    <?= csrf_field() ?>
+    <input type="hidden" name="action" value="save_snipe">
+
+    <div class="snipe-editor">
+      <div class="snipe-fields">
+        <div class="field" style="margin-bottom:1rem">
+          <label for="snipe_text">The offer — keep it short and loud</label>
+          <input type="text" id="snipe_text" name="snipe_text" maxlength="<?= SNIPE_TEXT_MAX ?>"
+                 placeholder="e.g. 20% OFF EVERY DOLL"
+                 value="<?= h($snipe['text']) ?>">
+          <span class="hint"><span class="snipe-count" data-for="snipe_text"></span> characters left</span>
+        </div>
+
+        <div class="field" style="margin-bottom:1rem">
+          <label for="snipe_subtext">Second line — the code (optional)</label>
+          <input type="text" id="snipe_subtext" name="snipe_subtext" maxlength="<?= SNIPE_SUBTEXT_MAX ?>"
+                 placeholder="e.g. CODE SUMMER10"
+                 value="<?= h($snipe['subtext']) ?>">
+          <span class="hint"><span class="snipe-count" data-for="snipe_subtext"></span> characters left</span>
+        </div>
+
+        <div class="field" style="margin-bottom:1rem">
+          <label>Color</label>
+          <div class="snipe-swatches">
+            <?php foreach (snipe_palettes() as $key => $p): ?>
+              <label class="snipe-swatch" title="<?= h($p['label']) ?>">
+                <input type="radio" name="snipe_palette" value="<?= h($key) ?>"
+                       <?= $snipe['palette'] === $key ? 'checked' : '' ?>>
+                <span style="background:linear-gradient(135deg,<?= h($p['from']) ?>,<?= h($p['to']) ?>)"></span>
+                <em><?= h($p['label']) ?></em>
+              </label>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:1rem">
+          <label for="snipe_link">Where it goes when clicked</label>
+          <input type="text" id="snipe_link" name="snipe_link" maxlength="255"
+                 placeholder="/shop/" value="<?= h($snipe['link']) ?>">
+          <span class="hint">Leave blank and the banner is just a sign — nothing to click.</span>
+        </div>
+
+        <div class="field" style="margin-bottom:1.25rem">
+          <label style="display:flex;align-items:center;gap:.5rem;text-transform:none;letter-spacing:0;font-size:.95rem">
+            <input type="checkbox" id="snipe_on" name="snipe_on" value="1" <?= $snipe['on'] ? 'checked' : '' ?>>
+            Show it on the home page
+          </label>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Save banner</button>
+      </div>
+
+      <div class="snipe-preview-wrap">
+        <p class="snipe-preview-label">Preview</p>
+        <div class="snipe-preview" id="snipe-preview" aria-hidden="true">
+          <div class="pv-header"><span class="pv-brand">scrappy<em>dolls</em></span><span class="pv-nav"></span></div>
+          <div class="pv-body"><span class="pv-line pv-line-1"></span><span class="pv-line pv-line-2"></span></div>
+          <div class="pv-band" id="snipe-band">
+            <span class="pv-band-line"></span>
+            <span class="pv-band-sub"></span>
+          </div>
+        </div>
+        <p class="hint" style="margin-top:.6rem">Long offers shrink to fit the corner.</p>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+(function () {
+  var palettes = <?= json_encode(snipe_palettes(), JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+  var form = document.getElementById('snipe-form');
+  if (!form) return;
+  var text = document.getElementById('snipe_text');
+  var sub  = document.getElementById('snipe_subtext');
+  var on   = document.getElementById('snipe_on');
+  var band = document.getElementById('snipe-band');
+  var bandLine = band.querySelector('.pv-band-line');
+  var bandSub  = band.querySelector('.pv-band-sub');
+  var preview  = document.getElementById('snipe-preview');
+
+  function paint() {
+    var t = text.value.trim() || text.placeholder.replace(/^e\.g\. /, '');
+    var s = sub.value.trim();
+    var key = (form.querySelector('input[name=snipe_palette]:checked') || {}).value;
+    var p = palettes[key] || palettes.cherry;
+
+    bandLine.textContent = t;
+    bandSub.textContent = s;
+    bandSub.style.display = s ? '' : 'none';
+
+    band.style.setProperty('--pv-from', p.from);
+    band.style.setProperty('--pv-to', p.to);
+    band.style.color = p.ink;
+
+    // Same length-based step-down the live page uses.
+    var len = Math.max(t.length, Math.round(s.length * 0.8));
+    band.classList.toggle('pv-med',  len > 16 && len <= 22);
+    band.classList.toggle('pv-long', len > 22);
+
+    preview.classList.toggle('is-off', !on.checked);
+
+    form.querySelectorAll('.snipe-count').forEach(function (el) {
+      var input = document.getElementById(el.dataset.for);
+      el.textContent = String(input.maxLength - input.value.length);
+    });
+  }
+
+  form.addEventListener('input', paint);
+  form.addEventListener('change', paint);
+  paint();
+})();
+</script>
+<!-- snipe-card:end -->
 
 <?php if ($showForm): ?>
   <div class="card" style="margin-bottom:1.5rem">

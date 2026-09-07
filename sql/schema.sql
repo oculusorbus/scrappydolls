@@ -167,3 +167,14 @@ CREATE TABLE order_checkout_intents (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_paypal (paypal_order_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------
+-- site_settings: key/value for things the admin panel changes at any
+-- time (config.php stays deploy-time). Currently the landing-page
+-- offer snipe — see sql/migrations/010_add_site_settings.sql.
+-- ---------------------------------------------------------------
+CREATE TABLE site_settings (
+  setting_key VARCHAR(64) NOT NULL PRIMARY KEY,
+  setting_value TEXT,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

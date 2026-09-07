@@ -6,6 +6,9 @@ require_once __DIR__ . '/lib/bootstrap.php';
 // dolls take precedence in both surfaces.
 $_pool = landing_dolls(24);
 
+// Admin-controlled corner banner (edited on /admin/coupons.php).
+$snipe = snipe_settings();
+
 // Distribute across two surfaces. If there aren't enough unique dolls for
 // non-overlapping sets, allow overlap so neither surface is empty.
 if (count($_pool) >= 21) {
@@ -474,6 +477,82 @@ if (count($_pool) >= 21) {
       border: none;
       margin: 0;
     }
+
+    /* === OFFER SNIPE ===
+       Bright diagonal banner across the top-right corner, announcing
+       whatever discount is running. Text, color, and link are set in
+       /admin/coupons.php; markup comes from snipe_html() in
+       lib/settings.php. Colors arrive as --snipe-* custom properties
+       from a fixed palette — never as free-form CSS. */
+    .snipe {
+      --snipe-d: 6.2rem;            /* how far down the corner diagonal the band sits */
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 60;                  /* above the sticky header (50) */
+      width: 22rem;
+      padding: 0.5rem 0 0.6rem;
+      font-size: 0.95rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.1rem;
+      transform: translate(calc(50% - var(--snipe-d)), calc(-50% + var(--snipe-d))) rotate(45deg);
+      background: linear-gradient(90deg, var(--snipe-from), var(--snipe-to));
+      color: var(--snipe-ink);
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(26, 19, 24, 0.28);
+      transition: filter 0.2s ease;
+    }
+    a.snipe:hover { filter: brightness(1.06) saturate(1.05); }
+    /* Longer offers step down a size so they still fit the corner
+       without wrapping — snipe_html() picks the class by length. */
+    .snipe-med  { font-size: 0.84rem; }
+    .snipe-long { font-size: 0.74rem; }
+    .snipe-line {
+      font-family: var(--font-sans);
+      font-weight: 800;
+      font-size: 1em;
+      line-height: 1.15;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.16);
+    }
+    .snipe-sub {
+      font-size: 0.78em;
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      opacity: 0.92;
+    }
+    /* Keep the Follow button out from under the band. Only needed while
+       the header still reaches the viewport corner — past ~1568px the
+       centred wrap has pulled away from it on its own. */
+    @media (min-width: 68rem) and (max-width: 98rem) {
+      body.has-snipe header.site .wrap { padding-right: 13.5rem; }
+    }
+
+    /* Below desktop width the page corner *is* the header's corner, and
+       the nav has nowhere to move to. Drop the band just under the header
+       instead and let it slide beneath (z-index below the header's 50). */
+    @media (max-width: 68rem) {
+      .snipe {
+        --snipe-d: 4.6rem;
+        top: 6.5rem;          /* clears the header even when the brand wraps */
+        z-index: 40;
+        width: 17rem;
+        padding: 0.3rem 0 0.4rem;
+        font-size: 0.7rem;
+      }
+      .snipe-med  { font-size: 0.62rem; }
+      .snipe-long { font-size: 0.55rem; }
+      .snipe-line { letter-spacing: 0.04em; }
+    }
+    @media print { .snipe { display: none; } }
 
     /* === HERO === */
     .hero {
@@ -1327,8 +1406,10 @@ if (count($_pool) >= 21) {
   </style>
   <?php require __DIR__ . '/lib/google_analytics.php'; ?>
 </head>
-<body>
+<body class="<?= $snipe['on'] ? 'has-snipe' : '' ?>">
   <a class="skip" href="#main">Skip to content</a>
+
+  <?= snipe_html($snipe) ?>
 
   <header class="site">
     <div class="wrap">

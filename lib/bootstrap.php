@@ -38,6 +38,7 @@ require_once __DIR__ . '/cart.php';
 require_once __DIR__ . '/coupons.php';
 require_once __DIR__ . '/tax.php';
 require_once __DIR__ . '/checkout.php';
+require_once __DIR__ . '/settings.php';
 
 function config(?string $key = null) {
     if ($key === null) return $GLOBALS['config'];
