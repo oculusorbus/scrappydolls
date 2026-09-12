@@ -44,6 +44,12 @@ function setting_set(string $key, string $value): void {
     if (isset($GLOBALS['__settings'])) $GLOBALS['__settings'][$key] = $value;
 }
 
+/** Forget a setting entirely — the caller's default takes over again. */
+function setting_delete(string $key): void {
+    db()->prepare('DELETE FROM site_settings WHERE setting_key = :k')->execute([':k' => $key]);
+    if (isset($GLOBALS['__settings'])) unset($GLOBALS['__settings'][$key]);
+}
+
 // ---------------------------------------------------------------
 // Promo bar
 // ---------------------------------------------------------------

@@ -131,6 +131,26 @@ the top of every public page — home, shop, doll pages, cart, contact, legal �
 unticked. The preview in the card is the real bar, same markup and stylesheet, so what it
 shows is what visitors get.
 
+**Changing the home page** (mom & stepdad's flow): `/admin/home.php` → open a section →
+edit → **Save this section**. Every word and photo on the home page is there, grouped the way
+the page reads: hero, the studio, process, size, Meet Kanda, the roster wording, kind words,
+the tradition, FAQ, follow, footer, plus the title and description Google shows.
+
+A few things worth knowing:
+- **Nothing is stored until they change it.** The original copy lives in `lib/home_content.php`
+  as defaults, so an untouched field always shows what the site launched with, and every
+  changed field gets a **Put back the original** button. That also means a wiped
+  `site_settings` table restores the launch copy rather than emptying the page.
+- **Formatting**: `*stars*` colour words rose in a headline; in body text `[words](https://link)`
+  make a link, `**words**` bold, `*words*` italic. Everything else is escaped — pasted HTML
+  shows as text rather than running.
+- **Photos**: any size upload is fine. It's auto-oriented from EXIF, downscaled to
+  1600px on the long edge, re-encoded as a progressive JPEG, and stripped of metadata —
+  the same pipeline doll photos go through. In practice a 3 MB phone photo lands around
+  400 KB. The originals in `/images/` are never overwritten; uploads go to `/uploads/`.
+- **Lists**: process steps, testimonials, FAQ entries and the three hero facts can be added,
+  removed, and reordered. They're stored as JSON in one settings row each.
+
 **An order arrives**: mom gets email → opens `/admin/orders.php` → opens the order → ships → enters tracking number → clicks **Mark shipped**.
 
 **A buyer cancels mid-checkout**: nothing happens — no order is recorded, doll stays Available.
@@ -204,6 +224,8 @@ If the EU/UK ever becomes a meaningful audience, you'll likely want to add a coo
 | `lib/analytics.php` | First-party tracking helpers (page views, intents, UTM) |
 | `sql/migrations/002_add_analytics.sql` | Adds page_views, order_intents, UTM cols on orders |
 | `lib/settings.php` | Admin-editable site settings + the site-wide offer bar (palette, text, markup, CSS) |
+| `lib/home_content.php` | Home page copy + photos: the schema, the originals as defaults, and the render helpers |
+| `admin/home.php` | Home page editor — every section, with add/remove rows and photo upload |
 | `sql/migrations/010_add_site_settings.sql` | Adds the `site_settings` key/value table |
 | `sql/migrations/011_promo_bar.sql` | Renames the banner's settings keys (`snipe_*` → `promo_*`) |
 | `api/create-order.php` | Called by Smart Buttons to create the PayPal order |

@@ -117,14 +117,14 @@ function _image_resize_gd(string $src, string $dst, int $max, int $quality): boo
         $white = imagecolorallocate($resized, 255, 255, 255);
         imagefilledrectangle($resized, 0, 0, $newW, $newH, $white);
         imagecopyresampled($resized, $img, 0, 0, 0, 0, $newW, $newH, $w, $h);
-        imagedestroy($img);
+        // (no imagedestroy — a no-op since PHP 8.0, deprecated in 8.5, and it
+        // printed a Deprecated notice straight into the admin page on upload)
         $img = $resized;
     }
 
     // Progressive JPEG for nicer perceived load
     if (function_exists('imageinterlace')) imageinterlace($img, true);
     $ok = imagejpeg($img, $dst, $quality);
-    imagedestroy($img);
     return (bool)$ok;
 }
 

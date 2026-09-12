@@ -22,8 +22,8 @@ if (count($_pool) >= 21) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Scrappy Dolls — Handmade Cloth Dolls &amp; Memory Dolls by Kanda Kay</title>
-  <meta name="description" content="Scrappy Dolls by artist Kanda Kay — one-of-a-kind handmade cloth dolls and custom memory dolls stitched from quilting cottons, vintage prints, and fabric remnants. OOAK art dolls, folk art tradition, and the scrappy doll community.">
+  <title><?= home_text('seo_title') ?></title>
+  <meta name="description" content="<?= home_text('seo_description') ?>">
   <meta name="author" content="Kanda Kay">
   <meta name="keywords" content="scrappy dolls, handmade cloth dolls, memory dolls, custom dolls, OOAK art dolls, one of a kind dolls, fabric dolls, folk art dolls, scrap fabric dolls, quilting cotton dolls, artisan dolls, handmade doll artist, cloth doll artist, keepsake dolls, heirloom dolls, doll commissions, Kanda Kay, scrappy doll community, wonky dolls, textile art dolls">
   <link rel="canonical" href="https://scrappydolls.com/">
@@ -36,17 +36,23 @@ if (count($_pool) >= 21) {
   <link rel="apple-touch-icon" href="/favicon-192.png">
 
   <!-- Preload hero image for LCP -->
-  <link rel="preload" as="image" href="/images/doll-rainbow-hair.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="<?= h(home_image_url('hero_image')) ?>" fetchpriority="high">
 
   <?php
     // Cache-bust the OG share image so Facebook/Twitter/etc fetch the
     // current file whenever it's replaced (a new mtime → new URL → fresh
     // scrape). Replace images/og-image.jpg on the server to update the
     // social preview everywhere this site is shared.
-    $ogPath = __DIR__ . '/images/og-image.jpg';
-    $ogVer  = @filemtime($ogPath) ?: 0;
-    $ogQs   = $ogVer ? '?v=' . $ogVer : '';
-    $ogImageUrl = 'https://scrappydolls.com/images/og-image.jpg' . $ogQs;
+    // An uploaded sharing image already carries a unique filename, so it
+    // only needs the mtime trick while the original shipped file is in use.
+    if (home_is_customized('seo_image')) {
+        $ogImageUrl = home_image_url('seo_image');
+    } else {
+        $ogPath = __DIR__ . '/images/og-image.jpg';
+        $ogVer  = @filemtime($ogPath) ?: 0;
+        $ogQs   = $ogVer ? '?v=' . $ogVer : '';
+        $ogImageUrl = 'https://scrappydolls.com/images/og-image.jpg' . $ogQs;
+    }
   ?>
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -166,7 +172,7 @@ if (count($_pool) >= 21) {
         "@id": "https://scrappydolls.com/#webpage",
         "url": "https://scrappydolls.com/",
         "name": "Scrappy Dolls — Handmade Cloth & Memory Dolls by Kanda Kay",
-        "description": "Handmade cloth dolls and custom memory dolls by artist Kanda Kay. One-of-a-kind keepsakes stitched from quilting cottons, vintage prints, and fabric remnants.",
+        "description": <?= json_encode(home_raw('seo_description'), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>,
         "inLanguage": "en-US",
         "isPartOf": { "@id": "https://scrappydolls.com/#website" },
         "about": { "@id": "https://scrappydolls.com/#business" },
@@ -175,7 +181,7 @@ if (count($_pool) >= 21) {
       {
         "@type": "ImageObject",
         "@id": "https://scrappydolls.com/#hero-image",
-        "url": "https://scrappydolls.com/images/doll-rainbow-hair.jpg",
+        "url": <?= json_encode(home_image_url('hero_image'), JSON_UNESCAPED_SLASHES) ?>,
         "caption": "Handmade Scrappy Doll by Kanda Kay with multicolored yarn hair, embroidered features, and a vibrant patchwork dress with lace trim.",
         "creditText": "Kanda Kay",
         "creator": { "@id": "https://scrappydolls.com/#kanda" }
@@ -694,6 +700,14 @@ if (count($_pool) >= 21) {
         margin: 0 auto;
       }
     }
+
+    /* Body paragraphs generated from the editable copy in /admin/home.php.
+       Matches what the hand-written markup used to carry inline. */
+    .rich-p {
+      margin-top: 1rem;
+      color: var(--ink-soft);
+    }
+    :not(.rich-p) + .rich-p { margin-top: 1.5rem; }
 
     .pull-quote {
       font-family: var(--font-display);
@@ -1361,35 +1375,37 @@ if (count($_pool) >= 21) {
       <div class="wrap">
         <div class="hero-grid">
           <div>
-            <p class="eyebrow">Handmade by Kanda Kay</p>
-            <h1 class="h-display">Cloth dolls,<br>stitched <em style="color: var(--rose); font-style: italic; font-weight: 400;">one&nbsp;at&nbsp;a&nbsp;time</em>.</h1>
-            <p class="lede" style="margin-top: 1.75rem;">Scrappy Dolls is a growing collection of one-of-a-kind cloth dolls and custom memory dolls — each hand-cut and stitched from quilting cottons, vintage prints, and beloved fabric remnants too lovely to throw away.</p>
+            <p class="eyebrow"><?= home_text('hero_eyebrow') ?></p>
+            <h1 class="h-display"><?= home_headline('hero_headline') ?></h1>
+            <p class="lede" style="margin-top: 1.75rem;"><?= home_line('hero_lede') ?></p>
             <div class="cta-row">
-              <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">
-                Follow on Facebook <span class="arrow" aria-hidden="true">→</span>
-              </a>
-              <a class="btn btn-ghost" href="#gallery">See the dolls</a>
+              <?php if (home_url('hero_btn1_url') !== '' || home_raw('hero_btn1_label') !== ''): ?>
+                <a class="btn btn-primary" href="<?= home_url('hero_btn1_url') ?>" rel="noopener">
+                  <?= home_text('hero_btn1_label') ?> <span class="arrow" aria-hidden="true">→</span>
+                </a>
+              <?php endif; ?>
+              <?php if (home_url('hero_btn2_url') !== '' || home_raw('hero_btn2_label') !== ''): ?>
+                <a class="btn btn-ghost" href="<?= home_url('hero_btn2_url') ?>"><?= home_text('hero_btn2_label') ?></a>
+              <?php endif; ?>
             </div>
+            <?php $heroStats = home_list('hero'); if ($heroStats): ?>
             <div class="hero-meta">
-              <div>
-                <span class="k">100%</span>
-                <span class="v">Handmade</span>
-              </div>
-              <div>
-                <span class="k">1 of 1</span>
-                <span class="v">Every doll</span>
-              </div>
-              <div>
-                <span class="k" aria-hidden="true">♥</span>
-                <span class="v">Stitched with love</span>
-              </div>
+              <?php foreach ($heroStats as $stat): ?>
+                <div>
+                  <span class="k"<?= preg_match('/[\p{L}\p{N}]/u', $stat['k']) ? '' : ' aria-hidden="true"' ?>><?= h($stat['k']) ?></span>
+                  <span class="v"><?= h($stat['v']) ?></span>
+                </div>
+              <?php endforeach; ?>
             </div>
+            <?php endif; ?>
           </div>
           <div class="hero-image-stack reveal">
             <div class="frame">
-              <img src="images/doll-rainbow-hair.jpg" alt="Handmade Scrappy Doll by Kanda Kay with multicolored yarn hair, embroidered features, and a vibrant patchwork dress with lace trim" width="800" height="1000" fetchpriority="high">
+              <img src="<?= h(home_image_url('hero_image')) ?>" alt="<?= home_image_alt('hero_image') ?>" width="800" height="1000" fetchpriority="high">
             </div>
-            <div class="badge">No two <em>alike</em></div>
+            <?php if (home_raw('hero_badge') !== ''): ?>
+              <div class="badge"><?= home_headline('hero_badge', '') ?></div>
+            <?php endif; ?>
           </div>
         </div>
       </div>
@@ -1399,12 +1415,13 @@ if (count($_pool) >= 21) {
     <section id="about" class="alt">
       <div class="wrap">
         <div class="about-grid">
-          <div class="about-portrait reveal" role="img" aria-label="A handmade Scrappy Doll by Kanda Kay — brown curly hair, a poppy headband, and a green floral dress"></div>
+          <div class="about-portrait reveal" role="img" aria-label="<?= home_image_alt('about_image') ?>"
+               style="background-image: url('<?= h(home_image_url('about_image')) ?>')"></div>
           <div class="reveal">
-            <p class="eyebrow">The Studio</p>
-            <h2 class="h-display">Made by hand.<br>Made <em style="color: var(--rose); font-style: italic; font-weight: 400;">to keep</em>.</h2>
-            <p class="pull-quote">Every Scrappy Doll begins as a pile of fabric — quilt offcuts, an old pillowcase, the last good piece of a favorite shirt.</p>
-            <p style="margin-top: 1.5rem; color: var(--ink-soft);">Kanda Kay cuts and pieces each doll by hand, machine-stitches the seams for strength, and finishes with embroidered features and a name only that doll will ever wear. The result is a small, characterful keepsake — warm-feeling, hand-finished, and unmistakably one of a kind.</p>
+            <p class="eyebrow"><?= home_text('about_eyebrow') ?></p>
+            <h2 class="h-display"><?= home_headline('about_headline') ?></h2>
+            <p class="pull-quote"><?= home_line('about_quote') ?></p>
+            <?= home_rich('about_body') ?>
           </div>
         </div>
       </div>
@@ -1414,26 +1431,16 @@ if (count($_pool) >= 21) {
     <section id="process">
       <div class="wrap">
         <div class="reveal" style="max-width: 36rem;">
-          <p class="eyebrow">The Process</p>
-          <h2 class="h-display">From scraps<br>to <em style="color: var(--rose); font-style: italic; font-weight: 400;">heirloom</em>.</h2>
+          <p class="eyebrow"><?= home_text('process_eyebrow') ?></p>
+          <h2 class="h-display"><?= home_headline('process_headline') ?></h2>
         </div>
         <div class="process">
-          <article class="step reveal">
-            <h3>Gather</h3>
-            <p>Vintage prints, quilt remnants, and meaningful scraps — every doll begins with fabric that already has a story.</p>
-          </article>
-          <article class="step reveal">
-            <h3>Cut &amp; piece</h3>
-            <p>Pattern pieces are hand-cut, then arranged and pieced into a unique combination of color, weight, and texture.</p>
-          </article>
-          <article class="step reveal">
-            <h3>Stitch</h3>
-            <p>Each seam is machine-sewn for strength and hand-stitched for detail. Faces are embroidered with thread — not printed or stamped.</p>
-          </article>
-          <article class="step reveal">
-            <h3>Finish</h3>
-            <p>Hair, jewelry, dresses, and details are added one at a time until a doll has clearly arrived as itself.</p>
-          </article>
+          <?php foreach (home_list('process') as $step): ?>
+            <article class="step reveal">
+              <h3><?= h($step['title']) ?></h3>
+              <?= home_paragraphs($step['body']) ?>
+            </article>
+          <?php endforeach; ?>
         </div>
       </div>
     </section>
@@ -1443,13 +1450,12 @@ if (count($_pool) >= 21) {
       <div class="wrap">
         <div class="size-grid">
           <div class="size-portrait reveal">
-            <img src="images/size.png" alt="A handmade Scrappy Doll standing beside a 12-inch wooden ruler, showing the doll is approximately one foot tall" loading="lazy" width="1000" height="1295">
+            <img src="<?= h(home_image_url('size_image')) ?>" alt="<?= home_image_alt('size_image') ?>" loading="lazy" width="1000" height="1295">
           </div>
           <div class="reveal">
-            <p class="eyebrow">Hold one in your hands</p>
-            <h2 class="h-display">About a <em style="color: var(--rose); font-style: italic; font-weight: 400;">foot tall</em>.</h2>
-            <p style="margin-top: 1.5rem; color: var(--ink-soft);">Most Scrappy Dolls stand around 12 inches — small enough to hold, big enough to have presence on a shelf, a bookcase, or a window seat.</p>
-            <p style="margin-top: 1rem; color: var(--ink-soft);">There's natural variation: some are a little taller, some a little stouter, depending on the fabric and the personality that emerges along the way. Each one's exact size is part of who she is.</p>
+            <p class="eyebrow"><?= home_text('size_eyebrow') ?></p>
+            <h2 class="h-display"><?= home_headline('size_headline') ?></h2>
+            <?= home_rich('size_body') ?>
           </div>
         </div>
       </div>
@@ -1460,14 +1466,13 @@ if (count($_pool) >= 21) {
       <div class="wrap">
         <div class="bio-grid">
           <div class="bio-portrait reveal">
-            <img src="images/kanda-kay.png" alt="Kanda Kay — artist and maker behind Scrappy Dolls" loading="lazy" width="1648" height="1366">
+            <img src="<?= h(home_image_url('artist_image')) ?>" alt="<?= home_image_alt('artist_image') ?>" loading="lazy" width="1648" height="1366">
           </div>
           <div class="reveal">
-            <p class="eyebrow">Meet Kanda Kay</p>
-            <h2 class="h-display">A lifetime of <em style="color: var(--rose); font-style: italic; font-weight: 400;">making</em>.</h2>
-            <p class="lede" style="margin-top: 1.5rem;">Kanda grew up in a family of painters, photographers, musicians, and seamstresses — making was simply the language spoken at home.</p>
-            <p style="margin-top: 1.25rem; color: var(--ink-soft);">After studying art education at <a href="https://ku.edu/" target="_blank" rel="noopener">Kansas University (KU)</a>, she opened her own weaving shop. While homeschooling her three children, she kept creative work at the center of family life — and watched that next generation grow into artists, musicians, photographers, graphic designers, and web developers in their own right.</p>
-            <p style="margin-top: 1rem; color: var(--ink-soft);">In retirement, she founded <a href="https://www.facebook.com/kandakayartist/" target="_blank" rel="noopener">Art Safari Studio</a> and has never stopped making. Her work there has gravitated toward combining everyday materials — quilt offcuts, vintage prints, the last good piece of a beloved shirt — into one-of-a-kind pieces. Scrappy Dolls is where that lifelong practice has landed.</p>
+            <p class="eyebrow"><?= home_text('artist_eyebrow') ?></p>
+            <h2 class="h-display"><?= home_headline('artist_headline') ?></h2>
+            <p class="lede" style="margin-top: 1.5rem;"><?= home_line('artist_lede') ?></p>
+            <?= home_rich('artist_body') ?>
           </div>
         </div>
       </div>
@@ -1499,10 +1504,10 @@ if (count($_pool) >= 21) {
       <div class="wrap">
         <div class="gallery-head reveal">
           <div>
-            <p class="eyebrow">Available Now</p>
-            <h2 class="h-display">A roster of <em style="color: var(--rose); font-style: italic; font-weight: 400;">characters</em>.</h2>
+            <p class="eyebrow"><?= home_text('gallery_eyebrow') ?></p>
+            <h2 class="h-display"><?= home_headline('gallery_headline') ?></h2>
           </div>
-          <p>A live look at the studio. Click any doll to take her home.</p>
+          <p><?= home_line('gallery_note') ?></p>
         </div>
 
         <?php if ($rosterDolls): ?>
@@ -1543,31 +1548,19 @@ if (count($_pool) >= 21) {
     <section class="testimonials alt">
       <div class="wrap">
         <div class="testimonials-head reveal">
-          <p class="eyebrow">Kind Words</p>
-          <h2 class="h-display">From <em style="color: var(--rose); font-style: italic; font-weight: 400;">collectors</em>.</h2>
+          <p class="eyebrow"><?= home_text('testimonials_eyebrow') ?></p>
+          <h2 class="h-display"><?= home_headline('testimonials_headline') ?></h2>
         </div>
         <div class="testimonials-grid">
-          <figure class="testimonial-card reveal">
-            <blockquote>Kanda is an AMAZING artist! She is friendly, professional, very reasonable in pricing, and responsive. We are SO HAPPY with the final product — she captured our furr-babes so perfectly in her whimsical, fun way!</blockquote>
-            <figcaption>
-              <cite>Carrie S.</cite>
-              <span class="meta">Commissioned pet portraits</span>
-            </figcaption>
-          </figure>
-          <figure class="testimonial-card reveal">
-            <blockquote>I know and recommend this artist — she is amazing and talented. One of a kind.</blockquote>
-            <figcaption>
-              <cite>Albert H.</cite>
-              <span class="meta">Collector</span>
-            </figcaption>
-          </figure>
-          <figure class="testimonial-card reveal">
-            <blockquote>This artist is magic! I have quite a few pieces, plus one that was specifically commissioned.</blockquote>
-            <figcaption>
-              <cite>Terise B.</cite>
-              <span class="meta">Collector &amp; commission client</span>
-            </figcaption>
-          </figure>
+          <?php foreach (home_list('testimonials') as $t): ?>
+            <figure class="testimonial-card reveal">
+              <blockquote><?= home_inline($t['quote']) ?></blockquote>
+              <figcaption>
+                <cite><?= h($t['name']) ?></cite>
+                <?php if (trim($t['meta']) !== ''): ?><span class="meta"><?= h($t['meta']) ?></span><?php endif; ?>
+              </figcaption>
+            </figure>
+          <?php endforeach; ?>
         </div>
       </div>
     </section>
@@ -1576,12 +1569,11 @@ if (count($_pool) >= 21) {
     <section id="what-are-scrappy-dolls">
       <div class="wrap-narrow">
         <div class="reveal">
-          <p class="eyebrow">The Tradition</p>
-          <h2 class="h-display">What are <em style="color: var(--rose); font-style: italic; font-weight: 400;">scrappy dolls</em>?</h2>
+          <p class="eyebrow"><?= home_text('tradition_eyebrow') ?></p>
+          <h2 class="h-display"><?= home_headline('tradition_headline') ?></h2>
         </div>
         <div class="reveal" style="margin-top: 2rem; color: var(--ink-soft); line-height: 1.75;">
-          <p>Scrappy dolls are handmade cloth dolls stitched from leftover fabric — quilting cottons, vintage prints, worn-out clothing, and remnants too small for anything else but too beautiful to discard. The tradition runs centuries deep. In early America, mothers and grandmothers fashioned dolls from household scraps — old dresses, flour sacks, handkerchiefs — using whatever the household could spare. Appalachian folk dolls, prairie dolls, and Amish faceless dolls all grew from this same impulse: take what you have and make something worth keeping.</p>
-          <p>What sets scrappy dolls apart is the material itself. Every scrap carries a history — a quilt that wore through, a child's outgrown shirt, the last cut from a bolt of fabric a grandmother picked out. The doll becomes a vessel for those stories. No two scrappy dolls look alike because no two fabric piles are the same. The wonky proportions, mismatched prints, and hand-stitched imperfections are not flaws. They are the entire point.</p>
+          <?= home_rich('tradition_body', '') ?>
         </div>
       </div>
     </section>
@@ -1591,36 +1583,17 @@ if (count($_pool) >= 21) {
       <div class="wrap-narrow">
         <div class="faq-head reveal">
           <div>
-            <p class="eyebrow">Frequently Asked</p>
-            <h2 class="h-display">Good <em style="color: var(--rose); font-style: italic; font-weight: 400;">questions</em>.</h2>
+            <p class="eyebrow"><?= home_text('faq_eyebrow') ?></p>
+            <h2 class="h-display"><?= home_headline('faq_headline') ?></h2>
           </div>
           <button type="button" class="faq-toggle" id="faq-toggle-all" aria-pressed="false">Expand all</button>
         </div>
-        <!-- TODO: Confirm answers with Kanda before publishing — these are reasonable defaults, not commitments. -->
-        <details class="faq">
-          <summary>Are dolls available to purchase?</summary>
-          <p>Yes. Browse available dolls in the <a href="/shop/">shop</a> — each is one of a kind, so when she's gone, she's gone. New work is announced on <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Art Safari Studio's Facebook page</a> as it comes off the table.</p>
-        </details>
-        <details class="faq">
-          <summary>Can a doll be made from my own fabric?</summary>
-          <p>Memory dolls — made from outgrown clothing, a wedding dress, a beloved quilt — are part of what scrappy dolls are best at. Reach out to Kanda on <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a> to talk through your fabric and what you'd like.</p>
-        </details>
-        <details class="faq">
-          <summary>How big are the dolls?</summary>
-          <p>Most Scrappy Dolls stand around 12 inches tall — about a foot — with natural variation depending on the fabric and the character that emerges. <a href="#size">See the size comparison →</a></p>
-        </details>
-        <details class="faq">
-          <summary>How much is shipping?</summary>
-          <p><strong>Free shipping on orders $50 or more.</strong> Otherwise: $7.99 for the first doll and $2.99 each additional doll in the same order. Calculated automatically at checkout — bundling is the cheapest way to bring more than one home.</p>
-        </details>
-        <details class="faq">
-          <summary>How do I care for a Scrappy Doll?</summary>
-          <p>Spot clean only, with a damp cloth and mild soap if needed. Treat your Scrappy Doll as a display piece — hand-washing, soaking, or laundering will loosen the adhesives and undermine the fabric construction, and can cause the doll to fall apart.</p>
-        </details>
-        <details class="faq">
-          <summary>How long does it take to make a doll?</summary>
-          <p>It depends on the fabric, the character, and the level of detail. A doll can take anywhere from an afternoon to several days — and each one tells you when it's done.</p>
-        </details>
+        <?php foreach (home_list('faq') as $item): ?>
+          <details class="faq">
+            <summary><?= h($item['q']) ?></summary>
+            <?= home_paragraphs($item['a']) ?>
+          </details>
+        <?php endforeach; ?>
       </div>
     </section>
 
@@ -1629,13 +1602,15 @@ if (count($_pool) >= 21) {
       <div class="wrap">
         <div class="follow-card reveal">
           <div>
-            <p class="eyebrow" style="color: var(--rose-light);">Stay close</p>
-            <h2 class="h-display">See new dolls<br>as they're <em style="color: var(--rose-light); font-style: italic; font-weight: 400;">finished</em>.</h2>
-            <p style="margin-top: 1rem;">Follow Art Safari Studio on Facebook for new work, sneak peeks of what's on the table, and the stories behind the dolls.</p>
+            <p class="eyebrow" style="color: var(--rose-light);"><?= home_text('follow_eyebrow') ?></p>
+            <h2 class="h-display"><?= home_headline('follow_headline', '--rose-light') ?></h2>
+            <p style="margin-top: 1rem;"><?= home_line('follow_body') ?></p>
           </div>
-          <a class="btn btn-primary" href="https://www.facebook.com/kandakayartist/" rel="noopener">
-            Follow on Facebook <span class="arrow" aria-hidden="true">→</span>
-          </a>
+          <?php if (home_url('follow_btn_url') !== '' || home_raw('follow_btn_label') !== ''): ?>
+            <a class="btn btn-primary" href="<?= home_url('follow_btn_url') ?>" rel="noopener">
+              <?= home_text('follow_btn_label') ?> <span class="arrow" aria-hidden="true">→</span>
+            </a>
+          <?php endif; ?>
         </div>
       </div>
     </section>
@@ -1646,11 +1621,11 @@ if (count($_pool) >= 21) {
       <div class="row">
         <div>
           <p class="sig">Scrappy Dolls</p>
-          <p style="margin: 0;"><a href="https://www.facebook.com/kandakayartist/" rel="noopener">from Art Safari Studio · Handmade by Kanda Kay</a></p>
+          <p style="margin: 0;"><?= home_line('footer_tagline') ?></p>
         </div>
         <div style="text-align: right;">
           <p style="margin: 0 0 0.5rem;"><a href="/privacy.php">Privacy</a> · <a href="/terms.php">Terms</a> · <a href="https://www.facebook.com/kandakayartist/" rel="noopener">Facebook</a></p>
-          <p class="legal">&copy; <span id="y"></span> Scrappy Dolls · San Antonio, Texas.</p>
+          <p class="legal">&copy; <span id="y"></span> <?= home_text('footer_legal') ?></p>
         </div>
       </div>
     </div>

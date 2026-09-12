@@ -28,6 +28,7 @@ $title = $title ?? 'Admin';
   <nav>
     <a href="/admin/dashboard.php" class="<?= $page === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
     <a href="/admin/products.php"  class="<?= $page === 'products'  ? 'active' : '' ?>">Dolls</a>
+    <a href="/admin/home.php"      class="<?= $page === 'home'      ? 'active' : '' ?>">Home page</a>
     <a href="/admin/orders.php"    class="<?= $page === 'orders'    ? 'active' : '' ?>">Orders</a>
     <a href="/admin/coupons.php"   class="<?= $page === 'coupons'   ? 'active' : '' ?>">Coupons</a>
     <a href="/admin/reports.php"   class="<?= $page === 'reports'   ? 'active' : '' ?>">Reports</a>
