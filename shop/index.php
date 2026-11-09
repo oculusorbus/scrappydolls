@@ -10,12 +10,11 @@ $sort = in_array($_GET['sort'] ?? '', $validSorts, true) ? $_GET['sort'] : 'all'
 
 switch ($sort) {
     case 'newest':
-        // Bargain dolls live in their own tab, not New/Popular.
-        $where = "p.status = 'available' AND p.bargain = 0";
+        $where = "p.status = 'available'";
         $orderBy = 'p.featured DESC, p.created_at DESC';
         break;
     case 'popular':
-        $where = "p.status = 'available' AND p.bargain = 0";
+        $where = "p.status = 'available'";
         // Sort by views first so the most-viewed (and most-flamed) dolls
         // sit at the top regardless of featured status. Featured is a
         // tiebreaker, then newest.
@@ -61,9 +60,7 @@ try {
     // page_views / featured / bargain column missing — fall back to a basic
     // query. Without the bargain column there are no bargains to show.
     error_log('shop listing fallback: ' . $e->getMessage());
-    $fallbackWhere = $sort === 'bargains'
-        ? '0 = 1'
-        : str_replace(['AND p.bargain = 0', 'AND p.bargain = 1'], '', $where);
+    $fallbackWhere = $sort === 'bargains' ? '0 = 1' : $where;
     $rows = db()->query("
       SELECT p.id, p.slug, p.title, p.price_cents, p.status, p.created_at,
         (SELECT filename FROM product_images WHERE product_id = p.id ORDER BY sort_order ASC, id ASC LIMIT 1) AS thumb,
@@ -123,7 +120,7 @@ require __DIR__ . '/header.php';
           $isSold = ($r['status'] ?? 'available') === 'sold';
           // NEW / popularity badges only apply to currently-available dolls.
           $isBargain = !$isSold && !empty($r['bargain']);
-          $isNew = !$isSold && !$isBargain && product_is_new($r['created_at'] ?? null, 14);
+          $isNew = !$isSold && product_is_new($r['created_at'] ?? null, 14);
           $tier  = $isSold ? 0 : product_popularity_tier((int)($r['views_30d'] ?? 0));
           $inCart = !$isSold && cart_has((int)$r['id']);
         ?>
