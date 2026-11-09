@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $price = (string)($_POST['price'] ?? '');
         $status = (string)($_POST['status'] ?? 'draft');
         $featured = !empty($_POST['featured']) ? 1 : 0;
+        $bargain = !empty($_POST['bargain']) ? 1 : 0;
 
         if ($title === '') $errors[] = 'Title is required.';
         if (!preg_match('/^\d+(\.\d{1,2})?$/', $price)) $errors[] = 'Price must look like 125 or 125.00.';
@@ -48,17 +49,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$errors) {
             if ($id) {
-                $up = db()->prepare('UPDATE products SET slug=:slug,title=:t,description=:d,price_cents=:p,status=:s,featured=:f WHERE id=:id');
+                $up = db()->prepare('UPDATE products SET slug=:slug,title=:t,description=:d,price_cents=:p,status=:s,featured=:f,bargain=:b WHERE id=:id');
                 $up->execute([
                     ':slug' => $slug, ':t' => $title, ':d' => $description,
-                    ':p' => $priceCents, ':s' => $status, ':f' => $featured, ':id' => $id,
+                    ':p' => $priceCents, ':s' => $status, ':f' => $featured, ':b' => $bargain, ':id' => $id,
                 ]);
                 $productId = $id;
             } else {
-                $ins = db()->prepare('INSERT INTO products (slug,title,description,price_cents,status,featured) VALUES (:slug,:t,:d,:p,:s,:f)');
+                $ins = db()->prepare('INSERT INTO products (slug,title,description,price_cents,status,featured,bargain) VALUES (:slug,:t,:d,:p,:s,:f,:b)');
                 $ins->execute([
                     ':slug' => $slug, ':t' => $title, ':d' => $description,
-                    ':p' => $priceCents, ':s' => $status, ':f' => $featured,
+                    ':p' => $priceCents, ':s' => $status, ':f' => $featured, ':b' => $bargain,
                 ]);
                 $productId = (int)db()->lastInsertId();
             }
@@ -148,6 +149,11 @@ require __DIR__ . '/header.php';
       <label style="display:flex;align-items:center;gap:.5rem;margin-top:.6rem;font-size:.92rem;color:var(--ink);text-transform:none;letter-spacing:0;font-weight:500">
         <input type="checkbox" name="featured" value="1" <?= $isFeatured ? 'checked' : '' ?>>
         ★ Featured (prioritized on the landing page)
+      </label>
+      <?php $isBargain = !empty($_POST['bargain']) || (!isset($_POST['bargain']) && !empty($product['bargain'])); ?>
+      <label style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem;font-size:.92rem;color:var(--ink);text-transform:none;letter-spacing:0;font-weight:500">
+        <input type="checkbox" name="bargain" value="1" <?= $isBargain ? 'checked' : '' ?>>
+        Bargain (moves her to the shop's Bargains tab)
       </label>
     </div>
   </div>
@@ -295,6 +301,8 @@ require __DIR__ . '/header.php';
     data.append('status', form.querySelector('[name="status"]').value);
     var feat = form.querySelector('[name="featured"]');
     if (feat && feat.checked) data.append('featured', '1');
+    var barg = form.querySelector('[name="bargain"]');
+    if (barg && barg.checked) data.append('bargain', '1');
 
     fetch('/admin/save-fields.php', {
       method: 'POST',

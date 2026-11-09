@@ -16,6 +16,7 @@ $slugs    = $_POST['slug']    ?? [];
 $prices   = $_POST['price']   ?? [];
 $statuses = $_POST['status']  ?? [];
 $featured = $_POST['featured'] ?? []; // checkboxes — only present rows that are checked
+$bargain  = $_POST['bargain']  ?? []; // same
 
 if (!is_array($ids) || !$ids) {
     flash('info', 'No rows to save.');
@@ -30,7 +31,7 @@ if (!$idList) {
     redirect($returnUrl);
 }
 $placeholders = implode(',', array_fill(0, count($idList), '?'));
-$sel = $pdo->prepare("SELECT id, slug, title, price_cents, status, featured FROM products WHERE id IN ($placeholders)");
+$sel = $pdo->prepare("SELECT id, slug, title, price_cents, status, featured, bargain FROM products WHERE id IN ($placeholders)");
 $sel->execute($idList);
 $current = [];
 foreach ($sel->fetchAll() as $row) $current[(int)$row['id']] = $row;
@@ -70,19 +71,21 @@ try {
         }
 
         $newFeatured = !empty($featured[$id]) ? 1 : 0;
+        $newBargain  = !empty($bargain[$id]) ? 1 : 0;
 
         // Detect any actual change
         $diff = ($newTitle !== $row['title'])
              || ($newSlug  !== $row['slug'])
              || ($newPriceC !== (int)$row['price_cents'])
              || ($newStatus !== $row['status'])
-             || ($newFeatured !== (int)$row['featured']);
+             || ($newFeatured !== (int)$row['featured'])
+             || ($newBargain !== (int)$row['bargain']);
         if (!$diff) continue;
 
         $statusToSold = ($newStatus === 'sold' && $row['status'] !== 'sold');
 
         $sql = 'UPDATE products
-                SET title = :t, slug = :slug, price_cents = :p, status = :s, featured = :f'
+                SET title = :t, slug = :slug, price_cents = :p, status = :s, featured = :f, bargain = :b'
              . ($statusToSold ? ', sold_at = NOW()' : '')
              . ' WHERE id = :id';
         $upd = $pdo->prepare($sql);
@@ -92,6 +95,7 @@ try {
             ':p'    => $newPriceC,
             ':s'    => $newStatus,
             ':f'    => $newFeatured,
+            ':b'    => $newBargain,
             ':id'   => $id,
         ]);
         $changed++;

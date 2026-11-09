@@ -19,6 +19,7 @@ $description = trim((string)($_POST['description'] ?? ''));
 $price       = (string)($_POST['price'] ?? '');
 $status      = (string)($_POST['status'] ?? 'draft');
 $featured    = !empty($_POST['featured']) ? 1 : 0;
+$bargain     = !empty($_POST['bargain']) ? 1 : 0;
 
 $errors = [];
 if ($title === '') $errors[] = 'Title is required.';
@@ -31,10 +32,10 @@ $slug = $slugRaw !== '' ? slugify($slugRaw) : slugify($title);
 $slug = unique_slug($slug, $id);
 
 try {
-    $up = db()->prepare('UPDATE products SET slug=:slug,title=:t,description=:d,price_cents=:p,status=:s,featured=:f WHERE id=:id');
+    $up = db()->prepare('UPDATE products SET slug=:slug,title=:t,description=:d,price_cents=:p,status=:s,featured=:f,bargain=:b WHERE id=:id');
     $up->execute([
         ':slug' => $slug, ':t' => $title, ':d' => $description,
-        ':p' => $priceCents, ':s' => $status, ':f' => $featured, ':id' => $id,
+        ':p' => $priceCents, ':s' => $status, ':f' => $featured, ':b' => $bargain, ':id' => $id,
     ]);
 } catch (Throwable $e) {
     error_log('save-fields error: ' . $e->getMessage());

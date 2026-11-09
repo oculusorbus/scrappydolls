@@ -41,10 +41,12 @@ Self-contained PHP/MySQL e-commerce for Kanda's dolls, with a public shop, an ad
    mysql -u <user> -p scrappydolls < sql/migrations/004_renumber_scrappy_dolls.sql
    mysql -u <user> -p scrappydolls < sql/migrations/010_add_site_settings.sql
    mysql -u <user> -p scrappydolls < sql/migrations/011_promo_bar.sql
+   mysql -u <user> -p scrappydolls < sql/migrations/012_add_bargain.sql
    ```
    Migrations are additive — safe to run on an already-populated DB. If you set up before a migration existed, run it now: 002 enables Reports, 003 enables the Featured flag, 004 bumps existing "Scrappy Doll #N" titles by +100 to align with the catalog protocol (#1→#101, #99→#199, etc.). 004 is idempotent — re-running it does nothing once numbers are at 101+; 010 adds the
    `site_settings` table behind the offer bar (see **Operational notes**), and 011 renames its
-   keys after the bar moved from a corner banner to a full-width strip.
+   keys after the bar moved from a corner banner to a full-width strip. 012 adds the
+   Bargain flag behind the shop's Bargains tab.
    (Migrations 005–009 came in with the cart, coupons, and sales tax — run those too if
    you set up before they existed.)
 

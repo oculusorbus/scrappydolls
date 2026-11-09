@@ -13,10 +13,12 @@ if (in_array($filter, ['draft', 'available', 'sold'], true)) {
     $params[':s'] = $filter;
 } elseif ($filter === 'featured') {
     $where = 'WHERE p.featured = 1';
+} elseif ($filter === 'bargain') {
+    $where = 'WHERE p.bargain = 1';
 }
 
 $sql = "
-  SELECT p.id, p.slug, p.title, p.price_cents, p.status, p.featured, p.updated_at,
+  SELECT p.id, p.slug, p.title, p.price_cents, p.status, p.featured, p.bargain, p.updated_at,
     (SELECT filename FROM product_images WHERE product_id = p.id ORDER BY sort_order ASC, id ASC LIMIT 1) AS thumb
   FROM products p
   $where
@@ -47,6 +49,7 @@ $enterEditUrl = '/admin/products.php?mode=edit' . ($filter !== 'all' ? '&status=
   <a class="btn btn-sm <?= $filter==='all' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php">All</a>
   <a class="btn btn-sm <?= $filter==='featured' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php?status=featured">★ Featured</a>
   <a class="btn btn-sm <?= $filter==='available' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php?status=available">Available</a>
+  <a class="btn btn-sm <?= $filter==='bargain' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php?status=bargain">Bargains</a>
   <a class="btn btn-sm <?= $filter==='draft' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php?status=draft">Drafts</a>
   <a class="btn btn-sm <?= $filter==='sold' ? 'btn-primary' : 'btn-ghost' ?>" href="/admin/products.php?status=sold">Sold</a>
 </div>
@@ -83,6 +86,7 @@ $enterEditUrl = '/admin/products.php?mode=edit' . ($filter !== 'all' ? '&status=
           <th>Price</th>
           <th>Status</th>
           <th title="Featured on landing page" style="width:3rem;text-align:center">★</th>
+          <th title="In the shop's Bargains tab" style="width:4.5rem;text-align:center">Bargain</th>
           <th><?= $editMode ? 'Slug' : 'Updated' ?></th>
           <th></th>
         </tr>
@@ -126,6 +130,11 @@ $enterEditUrl = '/admin/products.php?mode=edit' . ($filter !== 'all' ? '&status=
                        class="cell-input featured-cb" data-orig="<?= (int)$r['featured'] ?>"
                        <?= (int)$r['featured']===1 ? 'checked' : '' ?>>
               </td>
+              <td style="width:4.5rem;text-align:center">
+                <input type="checkbox" name="bargain[<?= $id ?>]" value="1"
+                       class="cell-input featured-cb" data-orig="<?= (int)$r['bargain'] ?>"
+                       <?= (int)$r['bargain']===1 ? 'checked' : '' ?>>
+              </td>
               <td style="width:14rem">
                 <input type="text" name="slug[<?= $id ?>]" value="<?= h($r['slug']) ?>"
                        class="cell-input slug" data-orig="<?= h($r['slug']) ?>" maxlength="255">
@@ -141,6 +150,7 @@ $enterEditUrl = '/admin/products.php?mode=edit' . ($filter !== 'all' ? '&status=
               <td><?= fmt_price((int)$r['price_cents']) ?></td>
               <td><span class="badge badge-<?= h($r['status']) ?>"><?= h($r['status']) ?></span></td>
               <td style="text-align:center"><?= !empty($r['featured']) ? '<span title="Featured" style="color:var(--rose);font-size:1.1rem">★</span>' : '<span style="color:var(--rule);font-size:1rem">☆</span>' ?></td>
+              <td style="text-align:center"><?= !empty($r['bargain']) ? '<span title="In Bargains" style="color:#b08a45;font-weight:600;font-size:.8rem">✓</span>' : '<span style="color:var(--rule)">–</span>' ?></td>
               <td style="color:var(--ink-muted);font-size:.85rem"><?= h(date('M j, Y', strtotime($r['updated_at']))) ?></td>
               <td class="actions">
                 <a class="btn btn-sm btn-ghost" href="/shop/product.php?slug=<?= h(urlencode($r['slug'])) ?>" target="_blank" rel="noopener">View</a>

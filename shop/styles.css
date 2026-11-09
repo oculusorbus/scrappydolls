@@ -184,6 +184,9 @@ h2.h-display{font-size:clamp(1.8rem,4vw,2.75rem)}
 .badge-sold{
   background:var(--ink);color:var(--paper);
 }
+.badge-bargain{
+  background:#c9a567;color:#fff;   /* gold */
+}
 .shop-card.is-sold .img img{filter:grayscale(.45) brightness(.92)}
 .shop-card.is-sold:hover .img img{filter:grayscale(.2) brightness(.96)}
 .price-sold{color:var(--ink-muted) !important;font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:.85rem}

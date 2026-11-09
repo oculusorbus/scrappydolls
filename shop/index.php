@@ -5,20 +5,25 @@ require_once __DIR__ . '/../lib/bootstrap.php';
 $pageTitle = 'Shop available dolls';
 $pageDesc  = 'One-of-a-kind handmade cloth dolls and memory dolls by Kanda Kay. Shop the dolls available right now.';
 
-$validSorts = ['all', 'newest', 'popular', 'sold'];
+$validSorts = ['all', 'newest', 'popular', 'bargains', 'sold'];
 $sort = in_array($_GET['sort'] ?? '', $validSorts, true) ? $_GET['sort'] : 'all';
 
 switch ($sort) {
     case 'newest':
-        $where = "p.status = 'available'";
+        // Bargain dolls live in their own tab, not New/Popular.
+        $where = "p.status = 'available' AND p.bargain = 0";
         $orderBy = 'p.featured DESC, p.created_at DESC';
         break;
     case 'popular':
-        $where = "p.status = 'available'";
+        $where = "p.status = 'available' AND p.bargain = 0";
         // Sort by views first so the most-viewed (and most-flamed) dolls
         // sit at the top regardless of featured status. Featured is a
         // tiebreaker, then newest.
         $orderBy = 'views_30d DESC, p.featured DESC, p.created_at DESC';
+        break;
+    case 'bargains':
+        $where = "p.status = 'available' AND p.bargain = 1";
+        $orderBy = 'p.featured DESC, p.price_cents ASC, p.created_at DESC';
         break;
     case 'sold':
         $where = "p.status = 'sold'";
@@ -35,7 +40,7 @@ switch ($sort) {
 }
 
 $sqlWithViews = "
-  SELECT p.id, p.slug, p.title, p.price_cents, p.featured, p.status, p.created_at,
+  SELECT p.id, p.slug, p.title, p.price_cents, p.featured, p.bargain, p.status, p.created_at,
     (SELECT filename FROM product_images WHERE product_id = p.id ORDER BY sort_order ASC, id ASC LIMIT 1) AS thumb,
     COALESCE(v.views_30d, 0) AS views_30d
   FROM products p
@@ -53,14 +58,18 @@ $sqlWithViews = "
 try {
     $rows = db()->query($sqlWithViews)->fetchAll();
 } catch (Throwable $e) {
-    // page_views or featured column missing — fall back to a basic query
+    // page_views / featured / bargain column missing — fall back to a basic
+    // query. Without the bargain column there are no bargains to show.
     error_log('shop listing fallback: ' . $e->getMessage());
+    $fallbackWhere = $sort === 'bargains'
+        ? '0 = 1'
+        : str_replace(['AND p.bargain = 0', 'AND p.bargain = 1'], '', $where);
     $rows = db()->query("
       SELECT p.id, p.slug, p.title, p.price_cents, p.status, p.created_at,
         (SELECT filename FROM product_images WHERE product_id = p.id ORDER BY sort_order ASC, id ASC LIMIT 1) AS thumb,
         0 AS views_30d
       FROM products p
-      WHERE $where
+      WHERE $fallbackWhere
       ORDER BY p.created_at DESC
     ")->fetchAll();
 }
@@ -87,6 +96,7 @@ require __DIR__ . '/header.php';
       <a href="/shop/"              class="<?= $sort === 'all'     ? 'is-active' : '' ?>">All</a>
       <a href="/shop/?sort=newest"  class="<?= $sort === 'newest'  ? 'is-active' : '' ?>">New</a>
       <a href="/shop/?sort=popular" class="<?= $sort === 'popular' ? 'is-active' : '' ?>">Popular</a>
+      <a href="/shop/?sort=bargains" class="<?= $sort === 'bargains' ? 'is-active' : '' ?>">Bargains</a>
       <a href="/shop/?sort=sold"    class="<?= $sort === 'sold'    ? 'is-active' : '' ?>">Sold</a>
     </nav>
 
@@ -95,6 +105,9 @@ require __DIR__ . '/header.php';
         <?php if ($sort === 'sold'): ?>
           <h3>No sold dolls yet</h3>
           <p>Once a doll finds her home, she'll show up here.</p>
+        <?php elseif ($sort === 'bargains'): ?>
+          <h3>No bargains right now</h3>
+          <p>Check back soon — or <a href="/shop/">browse all the dolls</a>.</p>
         <?php else: ?>
           <h3>No dolls available right now</h3>
           <p>New work appears first on Facebook — <a href="https://www.facebook.com/kandakayartist/" rel="noopener">follow along</a> to see them as they're finished.</p>
@@ -109,7 +122,8 @@ require __DIR__ . '/header.php';
         <?php foreach ($rows as $r):
           $isSold = ($r['status'] ?? 'available') === 'sold';
           // NEW / popularity badges only apply to currently-available dolls.
-          $isNew = !$isSold && product_is_new($r['created_at'] ?? null, 14);
+          $isBargain = !$isSold && !empty($r['bargain']);
+          $isNew = !$isSold && !$isBargain && product_is_new($r['created_at'] ?? null, 14);
           $tier  = $isSold ? 0 : product_popularity_tier((int)($r['views_30d'] ?? 0));
           $inCart = !$isSold && cart_has((int)$r['id']);
         ?>
@@ -125,10 +139,13 @@ require __DIR__ . '/header.php';
                 <?php if ($r['thumb']): ?>
                   <img src="<?= h(thumb_url($r['thumb'])) ?>" alt="<?= h($r['title']) ?>" loading="lazy">
                 <?php endif; ?>
-                <?php if ($isSold || $isNew || $tier > 0): ?>
+                <?php if ($isSold || $isNew || $isBargain || $tier > 0): ?>
                   <div class="card-badges">
                     <?php if ($isSold): ?>
                       <span class="card-badge badge-sold">Sold</span>
+                    <?php endif; ?>
+                    <?php if ($isBargain): ?>
+                      <span class="card-badge badge-bargain">Bargain</span>
                     <?php endif; ?>
                     <?php if ($isNew): ?>
                       <span class="card-badge badge-new">New</span>
